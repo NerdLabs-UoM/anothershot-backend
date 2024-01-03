@@ -16,14 +16,17 @@ export class AuthService {
         
         const payload = {
             email: user.email,
-            id: user.id,
+            sub: {
+                id: user.id,
+                email: user.email,
+            }
         };
 
         return {
             user,
             backendTokens: {
                 accessToken: await this.jwtService.signAsync(payload,{
-                    expiresIn: '20s',
+                    expiresIn: '6h',
                     secret: process.env.jwtSecretKey,
                 }),
                 refreshToken: await this.jwtService.signAsync(payload,{
@@ -48,7 +51,10 @@ export class AuthService {
     async refreshToken(user: any) {
         const payload = {
             email: user.email,
-            id: user.id,
+            sub: {
+                id: user.id,
+                email: user.email,
+            }
         };
 
         return {
