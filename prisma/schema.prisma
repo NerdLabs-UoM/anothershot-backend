@@ -11,41 +11,314 @@ datasource db {
 }
 
 model Account {
-    id                String  @id @default(auto()) @map("_id") @db.ObjectId
-    userId            String  @db.ObjectId
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?
-    session_state     String?
+  id                String  @id @default(uuid()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(auto()) @map("_id") @db.ObjectId
-    sessionToken String   @unique
-    userId       String   @db.ObjectId
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(uuid()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(auto()) @map("_id") @db.ObjectId
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    password      String?
-    userRole      String?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id            String        @id @default(uuid()) @map("_id") @db.ObjectId
+  name          String?       @default("UserName")
+  email         String        @unique
+  emailVerified DateTime?
+  password      String
+  userRole      UserRole      @default(CLIENT)
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  photographer  Photographer?
+  client        Client?
+  admin         Admin?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
+model Photographer {
+  id             String                 @id @default(uuid()) @map("_id") @db.ObjectId
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String                 @unique @db.ObjectId
+  coverPhoto     String
+  bio            String
+  featured       String[]
+  category       PhotographerCategory[]
+  contactDetails ContactDetails?
+  testimonial    Testimonial[]
+  feed           FeedImage[]
+  packages       Package[]
+  albums         Album[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  Booking        Booking[]
+  BankDetails    BankDetails?
+  Earnings       Earnings?
+  Report         Report[]
+}
+
+model Client {
+  id          String        @id @default(uuid()) @map("_id") @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String        @unique @db.ObjectId
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  testimonial Testimonial[]
+  Booking     Booking[]
+  Report      Report[]
+}
+
+model Admin {
+  id        String   @id @default(uuid()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Booking {
+  id             String               @id @default(uuid()) @map("_id") @db.ObjectId
+  client         Client               @relation(fields: [clientId], references: [id])
+  clientId       String               @db.ObjectId
+  photographer   Photographer         @relation(fields: [photographerId], references: [id])
+  photographerId String               @db.ObjectId
+  subject        String               @db.ObjectId
+  category       PhotographerCategory
+  package        Package              @relation(fields: [packageId], references: [id])
+  packageId      String               @db.ObjectId
+  payment        String?
+  date           DateTime
+  start          DateTime?
+  end            DateTime?
+  status         BookingStatus        @default(PENDING)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+
+model BankDetails {
+  id                String       @id @default(uuid()) @map("_id") @db.ObjectId
+  photographer      Photographer @relation(fields: [photographerId], references: [id])
+  photographerId    String       @unique @db.ObjectId
+  bankName          String
+  accountName       String
+  accountNumber     String
+  accountBranch     String
+  accountBranchCode String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Earnings {
+  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographerId String       @unique @db.ObjectId
+  totalAmount    Float
+  pending        Float
+  fees           Float
+  date           DateTime
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Report {
+  id             String        @id @default(uuid()) @map("_id") @db.ObjectId
+  client         Client?       @relation(fields: [clientId], references: [id])
+  clientId       String?       @db.ObjectId
+  photographer   Photographer? @relation(fields: [photographerId], references: [id])
+  photographerId String?       @db.ObjectId
+  subject        String
+  description    String
+  status         ReportStatus  @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Package {
+  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographerId String       @db.ObjectId
+  name           String
+  description    String
+  coverPhotos    String[]
+  price          Float
+  Booking        Booking[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model ContactDetails {
+  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographerId String       @unique @db.ObjectId
+  phone          String
+  email          String
+  address        Address?
+  socialMedia    SocialMedia?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  socialMediaId  String       @db.ObjectId
+}
+
+model Address {
+  id               String         @id @default(uuid()) @map("_id") @db.ObjectId
+  contactDetails   ContactDetails @relation(fields: [contactDetailsId], references: [id])
+  contactDetailsId String         @unique @db.ObjectId
+  street           String
+  city             String
+  state            String
+  country          String
+  zip              String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model SocialMedia {
+  id               String         @id @default(uuid()) @map("_id") @db.ObjectId
+  contactDetails   ContactDetails @relation(fields: [contactDetailsId], references: [id])
+  contactDetailsId String         @unique @db.ObjectId
+  facebook         String?
+  instagram        String?
+  twitter          String?
+  linkedin         String?
+  youtube          String?
+  tiktok           String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model Testimonial {
+  id             String                @id @default(uuid()) @map("_id") @db.ObjectId
+  client         Client                @relation(fields: [clientId], references: [id])
+  clientId       String                @db.ObjectId
+  photographer   Photographer          @relation(fields: [photographerId], references: [id])
+  photographerId String                @db.ObjectId
+  visibility     TestimonialVisibility @default(PUBLIC)
+  rating         Int
+  review         String
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+}
+
+model FeedImage {
+  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographerId String       @db.ObjectId
+  image          String
+  caption        String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Album {
+  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographerId String       @db.ObjectId
+  name           String
+  description    String
+  images         AlbumImage[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model AlbumImage {
+  id      String @id @default(uuid()) @map("_id") @db.ObjectId
+  album   Album  @relation(fields: [albumId], references: [id])
+  albumId String @db.ObjectId
+  image   String
+  caption String
+}
+
+enum UserRole {
+  CLIENT
+  PHOTOGRAPHER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
+}
+
+enum TestimonialVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum PhotographerCategory {
+  WEDDING
+  PORTRAIT
+  LANDSCAPE
+  EVENT
+  PRODUCT
+  FASHION
+  FOOD
+  SPORT
+  ARCHITECTURE
+  WILDLIFE
+  TRAVEL
+  DOCUMENTARY
+  STREET
+  FAMILY
+  NEWBORN
+  MATERNITY
+  PET
+  BIRTHDAY
+  BABY_SHOWER
+  ENGAGEMENT
+  ANNIVERSARY
+  GRADUATION
+  PROM
+  BACHELOR
+  BACHELORETTE
+  REUNION
+  RETIREMENT
+  FUNERAL
+  MEMORIAL
+  RELIGIOUS
+  CULTURAL
+  POLITICAL
+  MILITARY
+  CHARITY
+  FESTIVAL
+  FAIR
+  CONCERT
+  CONFERENCE
+  EXPO
+  CONVENTION
+  SEMINAR
+  WORKSHOP
+  RETREAT
+  SUMMIT
+  TRADE_SHOW
+  MEETUP
+  RALLY
+  PROTEST
+  MARCH
+  PARADE
+}
