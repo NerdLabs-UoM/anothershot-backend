@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDto } from "./dto/user.dto";
 import { hash } from "bcrypt";
+import { UserRole } from "@prisma/client";
 
 
 @Injectable()
@@ -29,10 +30,28 @@ export class UserService {
             }
         });
 
-        const { password, ...result } = newUser;
-
-        return result;
-
+        switch (newUser.userRole) {
+            case UserRole.ADMIN:
+                return await this.prisma.admin.create({
+                    data: {
+                        userId: newUser.id,
+                    }
+                });
+            case UserRole.CLIENT:
+                return await this.prisma.client.create({
+                    data: {
+                        userId: newUser.id,
+                    }
+                });
+            case UserRole.PHOTOGRAPHER:
+                return await this.prisma.photographer.create({
+                    data: {
+                        userId: newUser.id,
+                    }
+                });
+            default:
+                return newUser;
+        }
     }
 
     async findByEmail(email: string) {
@@ -48,6 +67,12 @@ export class UserService {
             where: {
                 id: id,
             },
+            include: {
+                admin: true,
+                client: true,
+                photographer: true,
+                chats: true
+            }
         });
     }
 }
