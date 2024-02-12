@@ -9,5 +9,4 @@ export class AdminController {
     async getAllUsers() {
         return await this.adminService.findall();
     }
-
 }
