@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(uuid()) @map("_id") @db.ObjectId
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
   userId            String  @db.ObjectId
   type              String
   provider          String
@@ -30,7 +30,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(uuid()) @map("_id") @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
@@ -38,28 +38,31 @@ model Session {
 }
 
 model User {
-  id            String        @id @default(uuid()) @map("_id") @db.ObjectId
-  name          String?       @default("UserName")
-  email         String        @unique
-  emailVerified DateTime?
-  password      String
-  userRole      UserRole      @default(CLIENT)
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  photographer  Photographer?
-  client        Client?
-  admin         Admin?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id               String        @id @default(auto()) @map("_id") @db.ObjectId
+  name             String        @default("UserName")
+  email            String        @unique
+  emailVerified    DateTime?
+  password         String
+  userRole         UserRole      @default(CLIENT)
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  photographer     Photographer?
+  client           Client?
+  admin            Admin?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  chats            Chat[]
+  messagesSent     Message[]     @relation("senderUser")
+  messagesReceived Message[]     @relation("receiverUser")
 }
 
 model Photographer {
-  id             String                 @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String                 @id @default(auto()) @map("_id") @db.ObjectId
   user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String                 @unique @db.ObjectId
-  coverPhoto     String
-  bio            String
+  coverPhoto     String?
+  bio            String?
   featured       String[]
   category       PhotographerCategory[]
   contactDetails ContactDetails?
@@ -67,35 +70,64 @@ model Photographer {
   feed           FeedImage[]
   packages       Package[]
   albums         Album[]
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
-  Booking        Booking[]
+  Bookings        Booking[]
   BankDetails    BankDetails?
   Earnings       Earnings?
   Report         Report[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
 }
 
 model Client {
-  id          String        @id @default(uuid()) @map("_id") @db.ObjectId
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String        @unique @db.ObjectId
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
   testimonial Testimonial[]
   Booking     Booking[]
   Report      Report[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model Admin {
-  id        String   @id @default(uuid()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Chat {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String    @db.ObjectId
+  messages Message[]
+}
+
+model Message {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  chat        Chat         @relation(fields: [chatId], references: [id])
+  chatId      String       @db.ObjectId
+  sender      User         @relation(name: "senderUser", fields: [senderId], references: [id])
+  senderId    String       @db.ObjectId
+  receiver    User         @relation(name: "receiverUser", fields: [receiverId], references: [id])
+  receiverId  String       @db.ObjectId
+  message     String
+  attachments Attachment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Attachment {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  message   Message @relation(fields: [messageId], references: [id])
+  messageId String  @db.ObjectId
+  type      String
+  url       String
+}
+
 model Booking {
-  id             String               @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String               @id @default(auto()) @map("_id") @db.ObjectId
   client         Client               @relation(fields: [clientId], references: [id])
   clientId       String               @db.ObjectId
   photographer   Photographer         @relation(fields: [photographerId], references: [id])
@@ -114,7 +146,7 @@ model Booking {
 }
 
 model BankDetails {
-  id                String       @id @default(uuid()) @map("_id") @db.ObjectId
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer      Photographer @relation(fields: [photographerId], references: [id])
   photographerId    String       @unique @db.ObjectId
   bankName          String
@@ -127,7 +159,7 @@ model BankDetails {
 }
 
 model Earnings {
-  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer   Photographer @relation(fields: [photographerId], references: [id])
   photographerId String       @unique @db.ObjectId
   totalAmount    Float
@@ -139,7 +171,7 @@ model Earnings {
 }
 
 model Report {
-  id             String        @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
   client         Client?       @relation(fields: [clientId], references: [id])
   clientId       String?       @db.ObjectId
   photographer   Photographer? @relation(fields: [photographerId], references: [id])
@@ -152,7 +184,7 @@ model Report {
 }
 
 model Package {
-  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer   Photographer @relation(fields: [photographerId], references: [id])
   photographerId String       @db.ObjectId
   name           String
@@ -165,7 +197,7 @@ model Package {
 }
 
 model ContactDetails {
-  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer   Photographer @relation(fields: [photographerId], references: [id])
   photographerId String       @unique @db.ObjectId
   phone          String
@@ -178,7 +210,7 @@ model ContactDetails {
 }
 
 model Address {
-  id               String         @id @default(uuid()) @map("_id") @db.ObjectId
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
   contactDetails   ContactDetails @relation(fields: [contactDetailsId], references: [id])
   contactDetailsId String         @unique @db.ObjectId
   street           String
@@ -191,7 +223,7 @@ model Address {
 }
 
 model SocialMedia {
-  id               String         @id @default(uuid()) @map("_id") @db.ObjectId
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
   contactDetails   ContactDetails @relation(fields: [contactDetailsId], references: [id])
   contactDetailsId String         @unique @db.ObjectId
   facebook         String?
@@ -205,7 +237,7 @@ model SocialMedia {
 }
 
 model Testimonial {
-  id             String                @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String                @id @default(auto()) @map("_id") @db.ObjectId
   client         Client                @relation(fields: [clientId], references: [id])
   clientId       String                @db.ObjectId
   photographer   Photographer          @relation(fields: [photographerId], references: [id])
@@ -218,7 +250,7 @@ model Testimonial {
 }
 
 model FeedImage {
-  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer   Photographer @relation(fields: [photographerId], references: [id])
   photographerId String       @db.ObjectId
   image          String
@@ -228,7 +260,7 @@ model FeedImage {
 }
 
 model Album {
-  id             String       @id @default(uuid()) @map("_id") @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer   Photographer @relation(fields: [photographerId], references: [id])
   photographerId String       @db.ObjectId
   name           String
@@ -239,7 +271,7 @@ model Album {
 }
 
 model AlbumImage {
-  id      String @id @default(uuid()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   album   Album  @relation(fields: [albumId], references: [id])
   albumId String @db.ObjectId
   image   String
