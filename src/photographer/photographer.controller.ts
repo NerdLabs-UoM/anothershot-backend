@@ -1,37 +1,42 @@
 import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { PhotographerService } from './photographer.service';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
-
+import { Photographer, User } from '@prisma/client';
 @Controller('api/photographer')
 export class PhotographerController {
-    constructor(private photographerServise: PhotographerService) { }
+  constructor(private photographerService: PhotographerService) {}
 
-    @Get('getallusers')
-    async getAllUsers() {
-        return await this.photographerServise.findall();
-    }
+  @Get('getallusers')
+  async getAllUsers() {
+    return await this.photographerService.findall();
+  }
 
-    @Get(":id")
-    async getUser(@Param("id" ) id: string) {
-        return await this.photographerServise.findById(id);   
-    }
+  @Get(':id')
+  async getUser(@Param('id') id: string) {
+    return await this.photographerService.findById(id);
+  }
 
-    @Put(":id")
-    async updateUser(@Param("id" ) id: string, @Body() data: UpdatePhotographerDto) {
-        return await this.photographerServise.update(id,data);
-    }
+  @Put(':id/profile-picture')
+  async updateProfilePicture(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateProfilePicture(id, data);
+  }
 
-    // @Put(':id/cover-image')
-    // async updateCoverImage(@Body('coverImage') coverImage: string): Promise<any> {
-    //   try {
-    //     const updatedUser = await this.photographerServise.updateCoverImage(coverImage);
-    //     return { message: 'Cover image updated successfully', user: updatedUser };
-    //   } catch (error) {
-    //     console.error('Error updating cover image:', error);
-    //     throw new Error('Failed to update cover image');
-    //   }
-    // }
+  @Put(':id/cover-photo')
+  async updateCoverPhoto(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateCoverPhoto(id, data);
+  }
 
-    
-
+  @Put(':id')
+  async updateData(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateUser(id, data);
+  }
 }
