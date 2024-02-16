@@ -39,7 +39,7 @@ model Session {
 
 model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  name             String        @default("UserName")
+  userName             String        @default("UserName")
   email            String        @unique
   emailVerified    DateTime?
   password         String
@@ -61,6 +61,7 @@ model Photographer {
   id             String                 @id @default(auto()) @map("_id") @db.ObjectId
   user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String                 @unique @db.ObjectId
+  name           String?                @default("Photographer Name")
   coverPhoto     String?
   bio            String?
   featured       String[]

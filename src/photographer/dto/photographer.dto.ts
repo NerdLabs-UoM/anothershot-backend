@@ -1,7 +1,14 @@
+import { UserRole } from '@prisma/client';
+import { IsEmail, IsString } from 'class-validator';
+
 export class UpdatePhotographerDto {
-    readonly id: string;
-    readonly username: string;
-    readonly description : string;
-    readonly coverImageUrl: string;
-    readonly prfileImageUrl: string;
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: Date;
+  password: string;
+  userRole: UserRole;
+  image: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
