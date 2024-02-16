@@ -23,8 +23,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -47,19 +46,21 @@ model User {
   image            String?
   accounts         Account[]
   sessions         Session[]
-  photographer     Photographer?
+  photographer     Photographer? @relation(name: "PhotographerToUser")
+  photographerId   String?       @unique @db.ObjectId
   client           Client?
   admin            Admin?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  chats            Chat[]
+  chats            Chat[]        @relation(fields: [chatIds], references: [id])
+  chatIds          String[]      @db.ObjectId
   messagesSent     Message[]     @relation("senderUser")
   messagesReceived Message[]     @relation("receiverUser")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
 model Photographer {
   id             String                 @id @default(auto()) @map("_id") @db.ObjectId
-  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User                   @relation(name: "PhotographerToUser", fields: [userId], references: [id], onDelete: Cascade)
   userId         String                 @unique @db.ObjectId
   coverPhoto     String?
   bio            String?
@@ -70,7 +71,7 @@ model Photographer {
   feed           FeedImage[]
   packages       Package[]
   albums         Album[]
-  Bookings        Booking[]
+  Bookings       Booking[]
   BankDetails    BankDetails?
   Earnings       Earnings?
   Report         Report[]
@@ -98,10 +99,13 @@ model Admin {
 }
 
 model Chat {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  user     User      @relation(fields: [userId], references: [id])
-  userId   String    @db.ObjectId
-  messages Message[]
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  users       User[]    @relation(fields: [userIds], references: [id])
+  userIds     String[]  @db.ObjectId
+  messages    Message[]
+  messagesIds String[]  @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Message {
