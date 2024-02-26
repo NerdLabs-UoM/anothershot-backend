@@ -20,7 +20,7 @@ model Account {
   access_token      String?
   expires_at        Int?
   token_type        String?
-  scope             String?
+  scope             String?     
   id_token          String?
   session_state     String?
 
