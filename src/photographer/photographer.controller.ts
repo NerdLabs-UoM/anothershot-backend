@@ -31,20 +31,17 @@ export class PhotographerController {
         @Body() data: Partial<Photographer>,
     ) {
         return await this.photographerService.updateCoverPhoto(id, data);
-    }
-
-    // @Put(':id')
-    // async updateData(
-    //     @Param('id') id: string,
-    //     @Body() data: Partial<Photographer>,
-    // ) {
-    //     return await this.photographerService.updateUser(id, data);
-    // }
+    }y
 
     @Put('contactdetails')
     async updateContactDetails(
         @Body() dto: contactDetailsDto,
     ) {
         return await this.photographerService.updateContactDetails(dto);
+    }
+
+    @Get('contactdetails/:id')
+    async getContactDetails(@Param('id') id: string) {
+        return await this.photographerService.getContactDetails(id);
     }
 }
