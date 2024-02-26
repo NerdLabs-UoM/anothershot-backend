@@ -19,7 +19,7 @@ export class PhotographerController {
   constructor(private photographerService: PhotographerService) {}
 
   //@UseGuards(JwtGuard)
-  @Post(':id/testimonial')
+  @Post(':id/profile/testimonial')
   async createTestimonial(@Body() dto: CreateTestimonialDto) {
     return await this.photographerService.createTestimonial(dto);
   }
