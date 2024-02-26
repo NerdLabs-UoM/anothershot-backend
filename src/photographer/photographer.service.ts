@@ -88,16 +88,8 @@ export class PhotographerService {
     });
 
     await Promise.all(updatePromises);
-  }
-  async getAllTestimonials() {
-      const a = await this.prisma.testimonial.findMany({});
-      return a;
-    }
-  
+  } 
 }
 
-  // async getAllPhotographers() {
-  //   const a = await this.prisma.photographer.findMany({});
-  //   return a;
-  // }
+ 
 
