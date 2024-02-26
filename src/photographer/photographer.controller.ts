@@ -37,20 +37,4 @@ export class PhotographerController {
     return await this.photographerService.updateTestimonialVisibility(dto);
   }
 
-  // @Get('getusers')
-  // async getAllPhotographers() {
-  //   try {
-  //     return await this.photographerService.getAllPhotographers();
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
-  // @Get('gettestimonials')
-  // async getAllTestimonials() {
-  //   try {
-  //     return await this.photographerService.getAllTestimonials();
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
 }
