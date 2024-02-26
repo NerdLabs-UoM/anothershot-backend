@@ -22,8 +22,8 @@ export class PhotographerService {
         data: {
           review: dto.review,
           rating: dto.rating,
-          photographer: { connect: { id: dto.photographerId } },
-          client: { connect: { id: dto.clientId } },
+          photographer: { connect: { userId: dto.photographerId } },
+          client: { connect: { userId: dto.clientId } },
         },
       });
     }
