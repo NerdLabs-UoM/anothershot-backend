@@ -13,6 +13,17 @@ export class PhotographerService {
 
   constructor(private prisma: PrismaService) { }
 
+  getContactDetails(id: string) {
+    return this.prisma.contactDetails.findUnique({
+      where: {
+        photographerId: id,
+      },
+      include: {
+        address: true,
+        socialMedia: true,
+      },
+    });
+  }
   async updateContactDetails(dto: contactDetailsDto) {
     const tempUserId = dto.userId;
     const existingContactDetails = await this.prisma.contactDetails.findUnique({
