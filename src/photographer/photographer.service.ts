@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
-import { Photographer, User } from '@prisma/client';
+import { Photographer, User, PhotographerCategory } from '@prisma/client';
+import { UpdateBankDetailsDto } from './dto/bankDetails.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -31,6 +32,7 @@ export class PhotographerService {
   }
 
   async findall() {
+    console.log('findall', this.prisma.photographer.findMany());
     return await this.prisma.photographer.findMany();
   }
 
@@ -41,32 +43,52 @@ export class PhotographerService {
     });
   }
 
+  async updateProfilePicture(
+    userId: string,
+    data: Partial<Photographer & { image: string }>,
+  ) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId, // Use the userId parameter passed to the method
+      },
+      include: {
+        user: true,
+      },
+      data: {
+        user: {
+          // Since image is a property of the user object, you need to update it within the user object
+          update: {
+            image: data.image, // Set the image property to the value provided in the data parameter
+          },
+        },
+      },
+    });
+  }
 
-async updateProfilePicture(userId: string, data: Partial<Photographer & { image: string }>) {
-        return await this.prisma.photographer.update({
-            
-            where: {
-                userId: userId // Use the userId parameter passed to the method
-            },
-            include: {
-                user: true,
-              },
-            data: {
-                user: { // Since image is a property of the user object, you need to update it within the user object
-                    update: {
-                        image: data.image // Set the image property to the value provided in the data parameter
-                    }
-                }
-            }
-        });
-    }
+  async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId, // Use the userId parameter passed to the method
+      },
+      data,
+    });
+  }
 
-    async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
-        return await this.prisma.photographer.update({
-            where: {
-                userId: userId // Use the userId parameter passed to the method
-            },data
-        });
-    }
+  async updateCategory(userId: string, data:Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId, 
+      },
+      include: {
+        user: true,
+      },
+      data: {
+        category: {
+          set: data.category,
+        },
+      },
+    });
+  }
+
+  
 }
-

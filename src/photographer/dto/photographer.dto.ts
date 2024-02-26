@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole,PhotographerCategory } from '@prisma/client';
 import { IsEmail, IsString } from 'class-validator';
 
 export class UpdatePhotographerDto {
@@ -11,4 +11,5 @@ export class UpdatePhotographerDto {
   image: string;
   createdAt: Date;
   updatedAt: Date;
+  category: PhotographerCategory;
 }
