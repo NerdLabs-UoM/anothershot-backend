@@ -20,7 +20,7 @@ model Account {
   access_token      String?
   expires_at        Int?
   token_type        String?
-  scope             String?
+  scope             String?     
   id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -243,9 +243,9 @@ model SocialMedia {
 
 model Testimonial {
   id             String                @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client                @relation(fields: [clientId], references: [id])
+  client         Client                @relation(fields: [clientId], references: [userId])
   clientId       String                @db.ObjectId
-  photographer   Photographer          @relation(fields: [photographerId], references: [id])
+  photographer   Photographer          @relation(fields: [photographerId], references: [userId])
   photographerId String                @db.ObjectId
   visibility     TestimonialVisibility @default(PUBLIC)
   rating         Int
