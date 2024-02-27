@@ -2,16 +2,34 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { ChatCreateDto } from './dto/chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MessageSendDto } from './dto/message.dto';
+import { ChatGateway } from './chat.gateway';
 
 @Injectable()
 export class ChatService {
 
     constructor(
-        private prisma: PrismaService
+        private prisma: PrismaService,
+        private socketGateway: ChatGateway
     ) { }
+    async getChatsByChatId(chatId: string) {
+        return await this.prisma.chat.findUnique({
+            where: {
+                id: chatId,
+            },
+            include: {
+                users: true,
+                messages: {
+                    include: {
+                        sender: true,
+                        receiver: true
+                    }
+                }
+            }
+        });
+    }
 
     async sendMessage(dto: MessageSendDto) {
-        return await this.prisma.message.create({
+        const message = await this.prisma.message.create({
             data: {
                 message: dto.message,
                 sender: {
@@ -31,6 +49,10 @@ export class ChatService {
                 }
             }
         });
+
+        await this.socketGateway.handleSendMessage(dto);
+
+        return message;
     }
 
     getChatsByUserId(id: string) {
@@ -60,7 +82,6 @@ export class ChatService {
 
 
     async create(dto: ChatCreateDto) {
-
         const chat = await this.prisma.chat.findFirst({
             where: {
                 AND: [
@@ -92,7 +113,7 @@ export class ChatService {
 
         const res = await this.prisma.chat.create({
             data: {
-                messages: { 
+                messages: {
                     create: {
                         message: 'Hello...',
                         sender: {
@@ -118,6 +139,5 @@ export class ChatService {
 
         return res;
     }
-
 
 }
