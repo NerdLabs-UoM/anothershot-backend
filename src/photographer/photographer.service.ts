@@ -13,7 +13,7 @@ import { contactDetailsDto } from './dto/contactDetails.dto';
 
 @Injectable()
 export class PhotographerService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createTestimonial(dto: CreateTestimonialDto) {
     const existingTestimonial = await this.prisma.testimonial.findFirst({
@@ -63,7 +63,6 @@ export class PhotographerService {
             id: true,
             user: {
               select: {
-                name: true,
                 image: true,
               },
             },
@@ -101,14 +100,14 @@ export class PhotographerService {
     await Promise.all(updatePromises);
   }
 
-  
+
   async findAll() {
-        return await this.prisma.photographer.findMany({
-            include: {
-                user: true
-            }
-        });
-    }
+    return await this.prisma.photographer.findMany({
+      include: {
+        user: true
+      }
+    });
+  }
 
   async getContactDetails(id: string) {
     return this.prisma.contactDetails.findUnique({
