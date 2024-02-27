@@ -22,5 +22,4 @@ export class AdminController {
             console.log(err);
         }
     }
-
 }
