@@ -10,3 +10,4 @@ import { JwtService } from "@nestjs/jwt";
 })
 
 export class PhotographerModule { }
+

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   ConflictException,
   Injectable,
@@ -12,8 +13,16 @@ import { contactDetailsDto } from './dto/contactDetails.dto';
 export class PhotographerService {
 
   constructor(private prisma: PrismaService) { }
+  
+  async findAll() {
+        return await this.prisma.photographer.findMany({
+            include: {
+                user: true
+            }
+        });
+    }
 
-  getContactDetails(id: string) {
+  async getContactDetails(id: string) {
     return this.prisma.contactDetails.findUnique({
       where: {
         photographerId: id,
@@ -107,10 +116,6 @@ export class PhotographerService {
     });
   }
 
-  async findall() {
-    return await this.prisma.photographer.findMany();
-  }
-
   async updateUser(userId: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: { userId: userId },
@@ -146,4 +151,3 @@ export class PhotographerService {
     });
   }
 }
-
