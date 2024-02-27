@@ -12,6 +12,8 @@ import { CreateTestimonialDto } from './dto/testimonial.dto';
 import { VisibilityDto } from './dto/visibility.dto';
 import { PhotographerService } from './photographer.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { HttpException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
 
 @Controller('api/user/photographer')
@@ -34,7 +36,13 @@ export class PhotographerController {
   async updateTestimonialVisibility(
     @Body() dto: VisibilityDto,
   ) {
-    return await this.photographerService.updateTestimonialVisibility(dto);
-  }
-
+    try {
+      await this.photographerService.updateTestimonialVisibility(
+        dto
+      );
+      return { message: 'Testimonials updated successfully' };
+    } catch (error) {
+      throw new HttpException('Failed to update testimonials', HttpStatus.BAD_REQUEST);
+    }
+  }  
 }
