@@ -24,6 +24,13 @@ export class ChatController {
         return await this.chatService.getChatsByUserId(id);
     }
 
+    @Get('/selected/:chatId')
+    async getChatsByChatId(
+        @Param('chatId') chatId: string
+    ) {
+        return await this.chatService.getChatsByChatId(chatId);
+    }
+
     @Post('message/send')
     async sendMessage(
         @Body() dto: MessageSendDto
