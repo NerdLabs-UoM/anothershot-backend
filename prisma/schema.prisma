@@ -39,7 +39,7 @@ model Session {
 
 model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  userName             String        @default("UserName")
+  userName         String        @default("UserName")
   email            String        @unique
   emailVerified    DateTime?
   password         String
@@ -71,7 +71,7 @@ model Photographer {
   feed           FeedImage[]
   packages       Package[]
   albums         Album[]
-  Bookings        Booking[]
+  Bookings       Booking[]
   BankDetails    BankDetails?
   Earnings       Earnings?
   Report         Report[]
@@ -199,15 +199,15 @@ model Package {
 
 model ContactDetails {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @unique @db.ObjectId
-  phone          String
+  phoneNum1      String
+  phoneNum2      String?
   email          String
   address        Address?
   socialMedia    SocialMedia?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  socialMediaId  String       @db.ObjectId
 }
 
 model Address {
