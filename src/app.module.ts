@@ -6,9 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaService } from './prisma/prisma.service';
 import { AdminModule } from './admin/admin.module';
+import { PhotographerModule } from './photographer/photographer.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule,PhotographerModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
