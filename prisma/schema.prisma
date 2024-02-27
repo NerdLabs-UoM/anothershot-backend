@@ -20,7 +20,7 @@ model Account {
   access_token      String?
   expires_at        Int?
   token_type        String?
-  scope             String?     
+  scope             String?
   id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -84,6 +84,7 @@ model Client {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String        @unique @db.ObjectId
+  name        String        @default("Client Name")
   testimonial Testimonial[]
   Booking     Booking[]
   Report      Report[]
