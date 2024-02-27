@@ -78,18 +78,18 @@ export class PhotographerService {
         visibility: true,
       },
     });
-    const updatePromises = testimonials.map(testimonial => {
+    const updatePromises = testimonials.map((testimonial) => {
       return this.prisma.testimonial.update({
         where: { id: testimonial.id },
         data: {
-          visibility: testimonial.visibility === TestimonialVisibility.PUBLIC ? TestimonialVisibility.PRIVATE : TestimonialVisibility.PUBLIC,
+          visibility:
+            testimonial.visibility === TestimonialVisibility.PUBLIC
+              ? TestimonialVisibility.PRIVATE
+              : TestimonialVisibility.PUBLIC,
         },
       });
     });
 
     await Promise.all(updatePromises);
-  } 
+  }
 }
-
- 
-
