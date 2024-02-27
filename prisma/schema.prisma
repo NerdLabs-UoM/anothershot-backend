@@ -38,7 +38,7 @@ model Session {
 
 model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  name             String        @default("UserName")
+  userName         String        @default("UserName")
   email            String        @unique
   emailVerified    DateTime?
   password         String
@@ -62,6 +62,7 @@ model Photographer {
   id             String                 @id @default(auto()) @map("_id") @db.ObjectId
   user           User                   @relation(name: "PhotographerToUser", fields: [userId], references: [id], onDelete: Cascade)
   userId         String                 @unique @db.ObjectId
+  name           String?                @default("Photographer Name")
   coverPhoto     String?
   bio            String?
   featured       String[]
@@ -202,15 +203,15 @@ model Package {
 
 model ContactDetails {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @unique @db.ObjectId
-  phone          String
+  phoneNum1      String
+  phoneNum2      String?
   email          String
   address        Address?
   socialMedia    SocialMedia?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  socialMediaId  String       @db.ObjectId
 }
 
 model Address {
