@@ -7,10 +7,13 @@ import { UserModule } from './user/user.module';
 import { PrismaService } from './prisma/prisma.service';
 import { AdminModule } from './admin/admin.module';
 import { PhotographerModule } from './photographer/photographer.module';
+import { ClientModule } from './client/client.module';
+import { ChatModule } from './chat/chat.module';
+import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule,PhotographerModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule, PhotographerModule, ClientModule, ChatModule],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, ChatGateway],
 })
-export class AppModule {}
+export class AppModule { }

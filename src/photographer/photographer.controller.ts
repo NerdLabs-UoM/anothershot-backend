@@ -3,14 +3,14 @@ import { PhotographerService } from './photographer.service';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+
 @Controller('api/photographer')
 export class PhotographerController {
     constructor(private photographerService: PhotographerService) { }
 
-    @Get('getallusers')
-    async getAllUsers() {
-        return await this.photographerService.findall();
-    }
+    @Get('get/all')
+    async getAllPhotographers() {
+        return await this.photographerService.findAll();
 
     @Get(':id')
     async getUser(@Param('id') id: string) {
