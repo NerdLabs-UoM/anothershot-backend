@@ -18,6 +18,7 @@ import { HttpStatus } from '@nestjs/common';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+import { packagesDto } from './dto/packages.dto';
 
 @Controller('api/photographer')
 export class PhotographerController {
@@ -85,4 +86,17 @@ export class PhotographerController {
     async getContactDetails(@Param('id') id: string) {
         return await this.photographerService.getContactDetails(id);
     }
+
+    @Put('packages')
+    async updatePackageDetails(
+        @Body() dto: packagesDto,
+    ) {
+        return await this.photographerService.updatePackageDetails(dto);
+    }
+
+    @Get('packages/:id')
+    async getPackageDetails(@Param('id') id: string) {
+        return await this.photographerService.getPackageDetails(id);
+    }
+
 }

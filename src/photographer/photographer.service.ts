@@ -10,6 +10,7 @@ import {
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+import { packagesDto } from './dto/packages.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -237,5 +238,53 @@ export class PhotographerService {
         userId: userId // Use the userId parameter passed to the method
       }, data
     });
+  }
+
+  getPackageDetails(id: string) {
+    return this.prisma.package.findUnique({
+      where: {
+        id: id,
+      },
+      // include: {
+      //     Booking: true,
+      // },
+    });
+  }
+
+  async updatePackageDetails(dto: packagesDto) {
+    const tempUserId = dto.userId;
+    const existingPackages = await this.prisma.package.findUnique({
+      where: { id: dto.userId },
+    });
+
+    if (existingPackages) {
+      await this.prisma.package.update({
+        where: { id: dto.userId },
+        data: {
+          name: dto.name,
+          description: dto.description,
+          coverPhotos: dto.coverPhotos,
+          price: dto.price,
+        },
+      });
+    } else {
+      await this.prisma.package.create({
+        data: {
+          photographer: {
+            connect: {
+              userId: dto.userId,
+            }
+          },
+          name: dto.name,
+          description: dto.description,
+          coverPhotos: dto.coverPhotos,
+          price: dto.price,
+        }
+      });
+
+
+
+    }
+
   }
 }
