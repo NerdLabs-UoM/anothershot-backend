@@ -191,13 +191,13 @@ model Report {
 
 model Package {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
   name           String
   description    String
   coverPhotos    String[]
-  price          Float
-  Booking        Booking[]
+  price          String?
+  booking        Booking[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
