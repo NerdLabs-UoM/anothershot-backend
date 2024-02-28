@@ -12,6 +12,7 @@ import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
+import { deletePackageDto } from './dto/deletePackage.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -302,25 +303,22 @@ export class PhotographerService {
     });
   }
 
-  async deletePackageDetails(photographerId: string, packageId: string) {
+  async deletePackageDetails(dto: deletePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
+      where: {
+        userId: dto.photographerId,
+      }
+    });
+
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
+
     return await this.prisma.package.delete({
       where: {
-          photographerId: photographerId,
-          id: packageId
-      }
-    }
-    )
+        id: dto.packageId,
+      },
+    });
   }
-        
 
-
-  // async deletePackageDetails(photographerId: string,packageId:string) {
-  //   return await this.prisma.package.findMany({
-  //     where: {
-  //       photographerId: photographerId,
-  //       id:packageId
-  //     }
-  //    
-  //   });
-  // }
 }
