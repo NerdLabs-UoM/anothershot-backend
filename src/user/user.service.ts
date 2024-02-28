@@ -25,8 +25,10 @@ export class UserService {
 
         const newUser = await this.prisma.user.create({
             data: {
-                ...dto,
+                email: dto.email,
+                userName: dto.userName,
                 password: hashedPassword,
+                userRole: dto.userRole,
             }
         });
 
@@ -35,18 +37,21 @@ export class UserService {
                 return await this.prisma.admin.create({
                     data: {
                         userId: newUser.id,
+                        name: newUser.userName
                     }
                 });
             case UserRole.CLIENT:
                 return await this.prisma.client.create({
                     data: {
                         userId: newUser.id,
+                        name: newUser.userName
                     }
                 });
             case UserRole.PHOTOGRAPHER:
                 return await this.prisma.photographer.create({
                     data: {
                         userId: newUser.id,
+                        name: newUser.userName
                     }
                 });
             default:
