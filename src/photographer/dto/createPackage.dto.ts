@@ -11,7 +11,7 @@ export class createPackageDto {
     @IsString()
     description: string;
 
-    @IsString({ each: true })
+    @IsString({ each: true })       // use each:true for the string array - access to the each element in the array
     @IsOptional()
     coverPhotos: string[];
 

@@ -246,7 +246,7 @@ export class PhotographerService {
     return await this.prisma.package.create({
       data: {
         photographer: {
-          connect: {
+          connect: {                    //connect with the photographer id
             userId: dto.photographerId,
           }
         },
