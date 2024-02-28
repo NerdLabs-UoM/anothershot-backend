@@ -178,9 +178,9 @@ model Earnings {
 
 model Report {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client?       @relation(fields: [clientId], references: [id])
+  client         Client?       @relation(fields: [clientId], references: [userId])
   clientId       String?       @db.ObjectId
-  photographer   Photographer? @relation(fields: [photographerId], references: [id])
+  photographer   Photographer? @relation(fields: [photographerId], references: [userId])
   photographerId String?       @db.ObjectId
   subject        String
   description    String
@@ -191,7 +191,7 @@ model Report {
 
 model Package {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
   name           String
   description    String
