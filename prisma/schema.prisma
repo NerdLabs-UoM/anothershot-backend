@@ -153,7 +153,7 @@ model Booking {
 
 model BankDetails {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer      Photographer @relation(fields: [photographerId], references: [id])
+  photographer      Photographer @relation(fields: [photographerId], references: [userId])
   photographerId    String       @unique @db.ObjectId
   bankName          String
   accountName       String
