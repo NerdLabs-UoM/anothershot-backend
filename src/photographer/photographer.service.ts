@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { TestimonialVisibility } from '@prisma/client';
+import { Package, TestimonialVisibility } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -269,6 +269,14 @@ export class PhotographerService {
     });
   }
 
+  async getPackageById(packageId: string) {
+    return await this.prisma.package.findUnique({
+      where: {
+        id: packageId,
+      }
+    });
+  }
+
 
 
   async updatePackageDetails(dto: updatePackageDto) {
@@ -321,4 +329,10 @@ export class PhotographerService {
     });
   }
 
+  async saveCoverPhotos(packageId: string, data: Partial<Package>) {
+    await this.prisma.package.update({
+      where: { id: packageId },
+      data
+    });
+  }
 }

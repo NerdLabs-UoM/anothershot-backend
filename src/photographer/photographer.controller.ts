@@ -17,7 +17,7 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { HttpException } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
-import { Photographer, User } from '@prisma/client';
+import { Package, Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
@@ -109,9 +109,19 @@ export class PhotographerController {
         return await this.photographerService.getPackageDetails(photographerId);
     }
 
+    @Get(':packageId/package')
+    async getPackageById(@Param('packageId') packageId: string) {
+        return await this.photographerService.getPackageById(packageId);
+    }
+
     @Delete('packages/delete')
     async deletePackage(@Body() dto: deletePackageDto) {
         return await this.photographerService.deletePackageDetails(dto);
+    }
+
+    @Put(':packageId/coverphotos')
+    async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
+        await this.photographerService.saveCoverPhotos(packageId, coverPhotos);
     }
 
 }
