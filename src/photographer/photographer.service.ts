@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { TestimonialVisibility } from '@prisma/client';
+import { Client, TestimonialVisibility } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -216,15 +216,15 @@ export class PhotographerService {
     return await this.prisma.photographer.update({
 
       where: {
-        userId: userId // Use the userId parameter passed to the method
+        userId: userId 
       },
       include: {
         user: true,
       },
       data: {
-        user: { // Since image is a property of the user object, you need to update it within the user object
+        user: {
           update: {
-            image: data.image // Set the image property to the value provided in the data parameter
+            image: data.image 
           }
         }
       }
@@ -234,8 +234,10 @@ export class PhotographerService {
   async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId // Use the userId parameter passed to the method
+        userId: userId
       }, data
     });
   }
+
+ 
 }
