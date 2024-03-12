@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { TestimonialVisibility} from '@prisma/client';
+import { TestimonialVisibility, Album } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -12,6 +12,7 @@ import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ReportDto } from './dto/report.dto';
+import { AlbumsDto } from './dto/album.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -325,5 +326,95 @@ export class PhotographerService {
     });
   }
 
+  // async addAlbum(userId: string, data:Partial<Album>) {
+  //   console.log("images ",data);
+  //   return await this.prisma.album.update({
+  //     where:{
+  //       id:userId
+  //     },
+  //     data:{
+  //       images:{
+  //         create:{
+  //           image:"image 1 url ",
+  //           caption:"caption of image 1"
+  //         }
+  //       },
+  //     }
+  //   });
+  // }
+
+  // async createAlbum(dto: AlbumsDto) {
+  //   return await this.prisma.album.create({
+  //     data: {
+  //       name: dto.name,
+  //       description: dto.description,
+  //       photographer: {
+  //         connect: {
+  //           userId: dto.photographerId,
+  //         },
+  //       },
+  //       images: {
+  //         create: dto.images.map((image) => {
+  //           return {
+  //             image: image,
+  //           };
+  //         }),
+  //       }
+  //     },
+  //   });
+  // }
+
+  // async createAlbum(dto: { name: string; description: string; photographerId: string; images: string[] }) {
+  //   return await this.prisma.album.create({
+  //     data: {
+  //       name: dto.name,
+  //       description: dto.description,
+  //       photographer: {
+  //         connect: {
+  //           userId: dto.photographerId,
+  //         },
+  //       },
+  //       images: {
+  //         create: dto.images.map((image) => {
+  //           return {
+  //             image: image,
+  //             caption:image
+  //           };
+  //         }),
+  //       }
+  //     },
+  //   });
+
+  async getAlbums(id: string) {
+    return this.prisma.album.findMany({
+      where: {
+        photographerId: id,
+      },
+      include: {
+        images: true,
+      },
+    });
+  }
+
+  // async updateAlbums(userId:string,dto: AlbumsDto) {
+  //   const existingAlbums = await this.prisma.album.findUnique({
+  //     where: { id: dto.photographerId },
+  //   });
+
+  //   if (existingAlbums) {
+  //     await this.prisma.album.update({
+  //       where: { id: dto.photographerId },
+  //       data: {
+  //         name:dto.name,
+  //         description:dto.description,
+  //         images:dto.images{
+  //           create:{
+  //             image:dto.image,
+  //             caption?:dto.caption
+  //           }
+  //         },
+  //       }
+  //     });
+  //   }
 
 }

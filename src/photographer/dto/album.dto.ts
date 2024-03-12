@@ -1,25 +1,22 @@
-// import { AlbumImage } from '@prisma/client';
-// import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray } from 'class-validator';
 
-// export class AlbumDto {
+export class AlbumsDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-//   @IsString()
-//   userId:string;
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-//   userName: string;
+  @IsString()
+  @IsNotEmpty()
+  photographerId: string;
 
-//   description: string;
-
-//   images:AlbumImage[];
-//   @IsNotEmpty()
-//   @IsString()
-//   title: string;
-
-//   @IsNotEmpty()
-//   @IsString()
-//   description: string;
-
-//   @IsNotEmpty()
-//   @IsString()
-//   photographerId: string;
-// }
+  @IsString({ each: true })
+  @IsArray()
+  images: {
+    image: string;
+    caption?: string;
+  };
+}

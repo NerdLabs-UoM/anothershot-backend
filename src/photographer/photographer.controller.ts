@@ -25,6 +25,7 @@ import {
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ReportDto } from './dto/report.dto';
+import { AlbumsDto } from './dto/album.dto';
 @Controller('api/photographer')
 export class PhotographerController {
   constructor(private photographerService: PhotographerService) {}
@@ -116,5 +117,35 @@ export class PhotographerController {
     return await this.photographerService.updateBankDetails(dto);
   }
 
-  
+  // @Post(':id/album')
+  // async addAlbum(
+  //     @Param('id') id: string,
+  //     @Body() data: Partial<Album>,
+  // ) {
+  //     return await this.photographerService.addAlbum(id, data);
+  // }
+
+  @Post(':id/createalbum')
+  async createAlbum(@Body() dto: AlbumsDto) {
+    return await this.createAlbum(dto);
+  }
+
+  @Get(':id/albums')
+  async getAlbums(@Param('id') id: string) {
+    return await this.photographerService.getAlbums(id);
+  }
+
+  // @Get('/selected/:chatId')
+  // async getChatsByChatId(
+  //     @Param('chatId') chatId: string
+  // ) {
+  //     return await this.chatService.getChatsByChatId(chatId);
+  // }
+
+  // @Post('message/send')
+  // async sendMessage(
+  //     @Body() dto: MessageSendDto
+  // ) {
+  //     return await this.chatService.sendMessage(dto);
+  // }
 }
