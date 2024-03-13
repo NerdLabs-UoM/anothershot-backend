@@ -1,5 +1,5 @@
 import { UserRole } from "@prisma/client";
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsEnum, IsObject, IsOptional, IsString } from "class-validator";
 
 export class CreateUserDto {
 
@@ -7,11 +7,50 @@ export class CreateUserDto {
     email: string;
 
     @IsString()
-    name: string;
+    userName: string;
 
     @IsString()
     password: string;
 
     @IsString()
     userRole: UserRole;
+}
+
+export class UpdateUserDto {
+    @IsString()
+    userId: string;
+
+    @IsString()
+    userName: string;
+
+    @IsString()
+    phoneNum1: string;
+
+    @IsEmail()
+    email: string;
+
+    @IsString()
+    @IsOptional()
+    phoneNum2: string;
+
+    @IsOptional()
+    @IsObject()
+    readonly address?: {
+        street: string;
+        city: string;
+        state: string;
+        country: string;
+        zip: string;
+    };
+
+    @IsOptional()
+    @IsObject()
+    readonly socialMedia?: {
+        facebook?: string;
+        instagram?: string;
+        twitter?: string;
+        linkedin?: string;
+        youtube?: string;
+        tiktok?: string;
+    };
 }

@@ -1,25 +1,114 @@
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateTestimonialDto } from './dto/testimonial.dto';
+import { Client, TestimonialVisibility } from '@prisma/client';
+import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 
 @Injectable()
 export class PhotographerService {
-
   constructor(private prisma: PrismaService) { }
-  
-  async findAll() {
-        return await this.prisma.photographer.findMany({
-            include: {
-                user: true
-            }
-        });
+
+  async createTestimonial(dto: CreateTestimonialDto) {
+    const existingTestimonial = await this.prisma.testimonial.findFirst({
+      where: {
+        photographerId: dto.photographerId,
+        clientId: dto.clientId,
+      },
+    });
+
+    if (existingTestimonial) {
+      return await this.updateTestimonial(existingTestimonial.id, dto);
+    } else {
+      return await this.prisma.testimonial.create({
+        data: {
+          review: dto.review,
+          rating: dto.rating,
+          photographer: { connect: { userId: dto.photographerId } },
+          client: { connect: { userId: dto.clientId } },
+        },
+      });
     }
+  }
+
+  async updateTestimonial(id: string, dto: CreateTestimonialDto) {
+    return await this.prisma.testimonial.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...dto,
+      },
+    });
+  }
+
+  async getTestimonials(photographerId: string) {
+    return await this.prisma.testimonial.findMany({
+      where: {
+        photographerId: photographerId,
+      },
+      select: {
+        id: true,
+        review: true,
+        rating: true,
+        visibility: true,
+        client: {
+          select: {
+            id: true,
+            name: true,
+            user: {
+              select: {
+                image: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
+
+  async updateTestimonialVisibility(dto: VisibilityDto) {
+    const testimonials = await this.prisma.testimonial.findMany({
+      where: {
+        id: { in: dto.testimonialId },
+      },
+      select: {
+        id: true,
+        visibility: true,
+      },
+    });
+    const updatePromises = testimonials.map((testimonial) => {
+      return this.prisma.testimonial.update({
+        where: { id: testimonial.id },
+        data: {
+          visibility:
+            testimonial.visibility === TestimonialVisibility.PUBLIC
+              ? TestimonialVisibility.PRIVATE
+              : TestimonialVisibility.PUBLIC,
+        },
+      });
+    });
+
+    await Promise.all(updatePromises);
+  }
+
+
+  async findAll() {
+    return await this.prisma.photographer.findMany({
+      include: {
+        user: true
+      }
+    });
+  }
 
   async getContactDetails(id: string) {
     return this.prisma.contactDetails.findUnique({
@@ -127,15 +216,15 @@ export class PhotographerService {
     return await this.prisma.photographer.update({
 
       where: {
-        userId: userId // Use the userId parameter passed to the method
+        userId: userId 
       },
       include: {
         user: true,
       },
       data: {
-        user: { // Since image is a property of the user object, you need to update it within the user object
+        user: {
           update: {
-            image: data.image // Set the image property to the value provided in the data parameter
+            image: data.image 
           }
         }
       }
@@ -145,7 +234,7 @@ export class PhotographerService {
   async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId // Use the userId parameter passed to the method
+        userId: userId
       }, data
     });
   }
