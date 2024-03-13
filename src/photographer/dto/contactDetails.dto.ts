@@ -29,7 +29,7 @@ export class contactDetailsDto {
     @IsOptional()
     @IsObject()
     readonly socialMedia?: {
-        facebook?: string;
+        facebook?: string;        //use ? for optional parameters
         instagram?: string;
         twitter?: string;
         linkedin?: string;
