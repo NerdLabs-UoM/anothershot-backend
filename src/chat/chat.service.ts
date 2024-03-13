@@ -11,6 +11,7 @@ export class ChatService {
         private prisma: PrismaService,
         private socketGateway: ChatGateway
     ) { }
+
     async getChatsByChatId(chatId: string) {
         return await this.prisma.chat.findUnique({
             where: {
@@ -21,9 +22,10 @@ export class ChatService {
                 messages: {
                     include: {
                         sender: true,
-                        receiver: true
+                        receiver: true,
+                        attachments: true
                     }
-                }
+                },
             }
         });
     }
@@ -46,6 +48,9 @@ export class ChatService {
                     connect: {
                         id: dto.chatId
                     }
+                },
+                attachments: {
+                    create: dto.attachments
                 }
             }
         });
@@ -73,7 +78,8 @@ export class ChatService {
                     },
                     include: {
                         sender: true,
-                        receiver: true
+                        receiver: true,
+                        attachments: true
                     }
                 }
             }
@@ -136,8 +142,29 @@ export class ChatService {
                 }
             }
         });
-
         return res;
     }
 
+    async deleteChat(userId: string, chatId: string) {
+        const chat = await this.prisma.chat.findUnique({
+            where: {
+                id: chatId
+            },
+            include: {
+                users: true
+            }
+        });
+
+        if (chat.users.some(user => user.id === userId)) {
+            await this.prisma.chat.delete({
+                where: {
+                    id: chatId
+                }
+            });
+            return {
+                status: 200,
+                message: 'Chat deleted'
+            }
+        }
+    }
 }

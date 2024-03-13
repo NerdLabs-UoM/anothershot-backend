@@ -73,6 +73,7 @@ export class PhotographerController {
     ) {
         return await this.photographerService.updateCoverPhoto(id, data);
     }
+  
     @Put(':id')
     async updateUser(
         @Param('id') id: string,
