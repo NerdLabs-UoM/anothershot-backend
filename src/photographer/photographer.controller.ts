@@ -11,7 +11,7 @@ export class PhotographerController {
     @Get('get/all')
     async getAllPhotographers() {
         return await this.photographerService.findAll();
-
+    }
     @Get(':id')
     async getUser(@Param('id') id: string) {
         return await this.photographerService.findById(id);
@@ -31,7 +31,7 @@ export class PhotographerController {
         @Body() data: Partial<Photographer>,
     ) {
         return await this.photographerService.updateCoverPhoto(id, data);
-    }y
+    } y
 
     @Put('contactdetails')
     async updateContactDetails(
