@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Client, TestimonialVisibility } from '@prisma/client';
+import { Client,Package, TestimonialVisibility } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -10,6 +10,9 @@ import {
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+import { updatePackageDto } from './dto/updatePackage.dto';
+import { createPackageDto } from './dto/createPackage.dto';
+import { deletePackageDto } from './dto/deletePackage.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -236,6 +239,100 @@ export class PhotographerService {
       where: {
         userId: userId
       }, data
+    });
+  }
+
+  async createPackage(dto: createPackageDto) {
+    return await this.prisma.package.create({
+      data: {
+        photographer: {
+          connect: {                    //connect with the photographer id
+            userId: dto.photographerId,
+          }
+        },
+        name: dto.name,
+        description: dto.description,
+        coverPhotos: dto.coverPhotos,
+        price: dto.price,
+      },
+    });
+  }
+
+  async getPackageDetails(photographerId: string) {
+    return await this.prisma.package.findMany({
+      where: {
+        photographerId: photographerId,
+      },
+      include: {
+        booking: false
+      },
+    });
+  }
+
+  async getPackageById(packageId: string) {
+    return await this.prisma.package.findUnique({
+      where: {
+        id: packageId,
+      }
+    });
+  }
+
+
+
+  async updatePackageDetails(dto: updatePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
+      where: {
+        userId: dto.photographerId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
+
+    return await this.prisma.package.update({
+      where: {
+        id: dto.packageId,
+      },
+      data: {
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          }
+        },
+        name: dto.name,
+        description: dto.description,
+        coverPhotos: dto.coverPhotos,
+        price: dto.price,
+      },
+    });
+  }
+
+  async deletePackageDetails(dto: deletePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
+      where: {
+        userId: dto.photographerId,
+      }
+    });
+
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
+
+    return await this.prisma.package.delete({
+      where: {
+        id: dto.packageId,
+      },
+    });
+  }
+
+  async saveCoverPhotos(packageId: string, data: Partial<Package>) {
+    await this.prisma.package.update({
+      where: { id: packageId },
+      data
     });
   }
 }

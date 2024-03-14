@@ -166,7 +166,9 @@ export class ChatService {
                 users: true
             }
         });
+
         const receiver = chat.users.find(user => user.id !== userId);
+
         if (chat.users.some(user => user.id === userId)) {
             await this.prisma.chat.delete({
                 where: {
