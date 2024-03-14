@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageSendDto } from './dto/message.dto';
+import { Chat } from '@prisma/client';
 
 @WebSocketGateway(8001, { cors: '*' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -13,7 +14,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('connect-user')
   handleConnection(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
     const isConnected = this.connectedUsers.get(userId);
-    if (!isConnected) {
+    if (isConnected === client) {
+      return;
+    }
+    if (isConnected !== client) {
       if (userId !== 'undefined') {
         this.connectedUsers.set(userId, client);
       }
@@ -29,6 +33,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const receiver = this.connectedUsers.get(dto.receiverId);
     if (receiver) {
       receiver.emit('receive-msg', dto);
+    }
+  }
+
+  handleNewChat(chat: Chat, userId: string) {
+    const receiver = this.connectedUsers.get(userId);
+    if (receiver) {
+      receiver.emit('new-chat', chat);
+    }
+  }
+
+  handleDeleteChat(chatId: string, receiverId: string, userId: string) {
+    const receiver = this.connectedUsers.get(receiverId);
+    const sender = this.connectedUsers.get(userId);
+    if (receiver) {
+      receiver.emit('delete-chat', chatId);
+    }
+    if (sender) {
+      sender.emit('delete-chat', chatId);
     }
   }
 }

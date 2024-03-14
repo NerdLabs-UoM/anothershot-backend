@@ -86,7 +86,6 @@ export class ChatService {
         });
     }
 
-
     async create(dto: ChatCreateDto) {
         const chat = await this.prisma.chat.findFirst({
             where: {
@@ -140,8 +139,21 @@ export class ChatService {
                         { id: dto.receiverId }
                     ]
                 }
+            },
+            include: {
+                users: true,
+                messages: {
+                    include: {
+                        sender: true,
+                        receiver: true,
+                        attachments: true
+                    }
+                }
             }
         });
+
+        await this.socketGateway.handleNewChat(res, dto.receiverId);
+
         return res;
     }
 
@@ -155,16 +167,18 @@ export class ChatService {
             }
         });
 
+        const receiver = chat.users.find(user => user.id !== userId);
+
         if (chat.users.some(user => user.id === userId)) {
             await this.prisma.chat.delete({
                 where: {
                     id: chatId
                 }
             });
-            return {
-                status: 200,
-                message: 'Chat deleted'
-            }
         }
+
+        await this.socketGateway.handleDeleteChat(chatId, receiver.id, userId);
+
+        return new Promise((resolve) => resolve({ status: 200, message: 'Chat deleted' }));
     }
 }
