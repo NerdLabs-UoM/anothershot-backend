@@ -87,6 +87,8 @@ model Client {
   testimonial Testimonial[]
   Booking     Booking[]
   Report      Report[]
+  likedImages LikedImages[]
+  savedImages SavedImages[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -257,12 +259,38 @@ model Testimonial {
 
 model FeedImage {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
   image          String
-  caption        String
+  likes          LikedImages[]
+  saves          SavedImages[]
+  likeCount      Int          @default(0)
+  saveCount      Int          @default(0)
+  caption        String ?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+model LikedImages{
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  client       Client       @relation(fields: [clientId], references: [userId], onDelete: Cascade)
+  clientId     String       @db.ObjectId
+  feedImage    FeedImage    @relation(fields: [feedImageId], references: [id], onDelete: Cascade)
+  feedImageId  String       @db.ObjectId
+  isliked      Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model SavedImages{
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  client       Client       @relation(fields: [clientId], references: [userId], onDelete: Cascade)
+  clientId     String       @db.ObjectId
+  feedImage    FeedImage    @relation(fields: [feedImageId], references: [id], onDelete: Cascade)
+  feedImageId  String       @db.ObjectId
+  issaved      Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
 }
 
 model Album {

@@ -10,7 +10,11 @@ import {
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
-
+import { FeedDto } from './dto/feed.dto';
+import { FeedLikeDto } from './dto/feedLike.dto';
+import { FeedSaveDto } from './dto/feedSave.dto';
+import { DeleteFeedDto } from './dto/deleteFeed.dto';
+import { CaptionDto } from './dto/caption.dto';
 @Injectable()
 export class PhotographerService {
   constructor(private prisma: PrismaService) { }
@@ -236,6 +240,220 @@ export class PhotographerService {
       where: {
         userId: userId // Use the userId parameter passed to the method
       }, data
+    });
+  }
+  async getFeed(id: string, clientId: string) {
+    return await this.prisma.feedImage.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: { 
+        id: true,
+        image: true,
+        likeCount: true,
+        saveCount: true,
+        caption: true,
+        photographer : {
+          select: {
+            name: true,
+            user: {
+              select: {
+                image: true,
+              }
+            }
+          }
+        },
+        likes: {
+          where: {
+            clientId: clientId,
+          },
+          select: {
+            isliked: true,
+          },
+          take: 1,
+        },
+        saves: {
+          where: {
+            clientId: clientId,
+          },
+          select: {
+            issaved: true,
+          },
+        }
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    
+  }
+  async createFeedComponent(dto: FeedDto) {
+    return await this.prisma.feedImage.create({
+      data:{
+        // caption: dto.caption,
+        image: dto.image,
+        photographer: {
+          connect: {
+            userId: dto.photographerId
+          }
+        }
+      }
+    });
+  }
+  async feedLike(dto: FeedLikeDto) {
+    // Check if the like exists for the given feedImageId and clientId
+    const existingLike = await this.prisma.likedImages.findFirst({
+        where: {
+            clientId: dto.clientId,
+            feedImageId: dto.feedId
+        }
+    });
+
+    // Get the current like count for the feed image
+    const feed = await this.prisma.feedImage.findUnique({
+        where: {
+            id: dto.feedId
+        },
+        select: {
+            id: true,
+            likeCount: true
+        }
+    });
+    let likeCount = feed.likeCount;
+
+    if (dto.like) {
+        // If like is true, create a new like and increment the like count
+        if (!existingLike) {
+            await this.prisma.likedImages.create({
+                data: {
+                    feedImage: {
+                        connect: {
+                            id: dto.feedId
+                        }
+                    },
+                    client: {
+                        connect: {
+                            userId: dto.clientId
+                        }
+                    }
+                }
+            });
+            likeCount++;
+        }
+    } else {
+        // If like is false, delete the existing like and decrement the like count
+        if (existingLike) {
+            await this.prisma.likedImages.delete({
+                where: {
+                    id: existingLike.id
+                }
+            });
+            likeCount--;
+        }
+    }
+
+    // Update the like count for the feed image
+    return await this.prisma.feedImage.update({
+        where: {
+            id: dto.feedId
+        },
+        data: {
+            likeCount: likeCount
+        }
+    });
+}
+async feedSave(dto: FeedSaveDto) {
+  // Check if the like exists for the given feedImageId and clientId
+  const existingSave = await this.prisma.savedImages.findFirst({
+      where: {
+          clientId: dto.clientId,
+          feedImageId: dto.feedId
+      }
+  });
+
+  // Get the current like count for the feed image
+  const feed = await this.prisma.feedImage.findUnique({
+      where: {
+          id: dto.feedId
+      },
+      select: {
+          id: true,
+          saveCount: true
+      }
+  });
+  let saveCount = feed.saveCount;
+
+  if (dto.save) {
+      // If like is true, create a new like and increment the like count
+      if (!existingSave) {
+          await this.prisma.savedImages.create({
+              data: {
+                  feedImage: {
+                      connect: {
+                          id: dto.feedId
+                      }
+                  },
+                  client: {
+                      connect: {
+                          userId: dto.clientId
+                      }
+                  }
+              }
+          });
+          saveCount++;
+      }
+  } else {
+      // If like is false, delete the existing like and decrement the like count
+      if (existingSave) {
+          await this.prisma.savedImages.delete({
+              where: {
+                  id: existingSave.id
+              }
+          });
+          saveCount--;
+      }
+  }
+
+  // Update the like count for the feed image
+  return await this.prisma.feedImage.update({
+      where: {
+          id: dto.feedId
+      },
+      data: {
+          saveCount: saveCount
+      }
+  });
+}
+  async deleteFeed(dto: DeleteFeedDto) {
+    return await this.prisma.feedImage.delete({
+      where: {
+        id: dto.feedId,
+      }
+    });
+  }
+  async getFeedHeader(id: string) {
+    return await this.prisma.photographer.findUnique({
+      where: {
+        userId: id
+      },
+      select: {
+        name: true,
+        user: {
+          select: {
+            image: true
+          }
+        }
+      }
+    });
+  }
+  async updateCaption(dto: CaptionDto) {
+    return await this.prisma.feedImage.update({
+      where: {
+        id: dto.feedId
+      },
+      data: {
+        caption: dto.caption
+      }
     });
   }
 }

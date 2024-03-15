@@ -8,6 +8,7 @@ import {
   Put,
   Request,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
 import { VisibilityDto } from './dto/visibility.dto';
@@ -18,6 +19,11 @@ import { HttpStatus } from '@nestjs/common';
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+import { FeedDto } from './dto/feed.dto';
+import { FeedLikeDto } from './dto/feedLike.dto';
+import {FeedSaveDto} from './dto/feedSave.dto';
+import { DeleteFeedDto } from './dto/deleteFeed.dto';
+import { CaptionDto } from './dto/caption.dto';
 
 @Controller('api/photographer')
 export class PhotographerController {
@@ -84,5 +90,33 @@ export class PhotographerController {
     @Get('contactdetails/:id')
     async getContactDetails(@Param('id') id: string) {
         return await this.photographerService.getContactDetails(id);
+    }
+    @Get(':id/feed')
+    async getFeed(@Param('id') id: string, clientid: string) {
+        return await this.photographerService.getFeed(id, clientid);
+    }
+    @Post(':id/feed/createFeed')
+      async createFeedComponent(@Body() dto: FeedDto) {
+        return await this.photographerService.createFeedComponent(dto);
+      }
+    @Post(':id/feed/like')
+    async feedLike(@Body() dto: FeedLikeDto) {
+      return await this.photographerService.feedLike(dto);
+    }
+    @Post(`:id/feed/createSave`)
+    async feedSave(@Body() dto: FeedSaveDto){
+      return await this.photographerService.feedSave(dto);
+    }
+    @Delete(':id/feed/delete')
+    async deleteFeed(@Body() dto: DeleteFeedDto) {
+      return await this.photographerService.deleteFeed(dto);
+    }
+    @Get(':id/feed/header')
+    async getFeedHeader(@Param('id') id: string) {
+      return await this.photographerService.getFeedHeader(id);
+    }
+    @Patch(':id/feed/caption')
+    async updateCaption(@Body() dto: CaptionDto) {
+      return await this.photographerService.updateCaption(dto);
     }
 }
