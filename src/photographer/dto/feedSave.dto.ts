@@ -5,7 +5,7 @@ export class FeedSaveDto {
     feedId: string;
 
     @IsString()
-    clientId: string;
+    userId: string;
 
     @IsBoolean()
     save: boolean;

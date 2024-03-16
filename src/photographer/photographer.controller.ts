@@ -93,17 +93,17 @@ export class PhotographerController {
     }
     @Get(':id/feed')
     async getFeed(@Param('id') id: string, clientid: string) {
-        return await this.photographerService.getFeed(id, clientid);
+        return await this.photographerService.getFeed(id);
     }
     @Post(':id/feed/createFeed')
       async createFeedComponent(@Body() dto: FeedDto) {
         return await this.photographerService.createFeedComponent(dto);
       }
-    @Post(':id/feed/like')
+    @Patch(':id/feed/like')
     async feedLike(@Body() dto: FeedLikeDto) {
       return await this.photographerService.feedLike(dto);
     }
-    @Post(`:id/feed/createSave`)
+    @Patch(`:id/feed/createSave`)
     async feedSave(@Body() dto: FeedSaveDto){
       return await this.photographerService.feedSave(dto);
     }

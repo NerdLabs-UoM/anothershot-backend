@@ -5,7 +5,7 @@ export class FeedLikeDto {
     feedId: string;
 
     @IsString()
-    clientId: string;
+    userId: string;
 
     @IsBoolean()
     like: boolean;

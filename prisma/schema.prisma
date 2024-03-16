@@ -37,24 +37,28 @@ model Session {
 }
 
 model User {
-  id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  userName         String        @default("UserName")
-  email            String        @unique
-  emailVerified    DateTime?
-  password         String
-  userRole         UserRole      @default(CLIENT)
-  image            String?
-  accounts         Account[]
-  sessions         Session[]
-  photographer     Photographer? @relation(name: "PhotographerToUser")
-  client           Client?
-  admin            Admin?
-  chats            Chat[]        @relation(fields: [chatIds], references: [id])
-  chatIds          String[]      @db.ObjectId
-  messagesSent     Message[]     @relation("senderUser")
-  messagesReceived Message[]     @relation("receiverUser")
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  userName           String        @default("UserName")
+  email              String        @unique
+  emailVerified      DateTime?
+  password           String
+  userRole           UserRole      @default(CLIENT)
+  image              String?
+  accounts           Account[]
+  sessions           Session[]
+  photographer       Photographer? @relation(name: "PhotographerToUser")
+  client             Client?
+  admin              Admin?
+  chats              Chat[]        @relation(fields: [chatIds], references: [id])
+  chatIds            String[]      @db.ObjectId
+  messagesSent       Message[]     @relation("senderUser")
+  messagesReceived   Message[]     @relation("receiverUser")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
+  likedFeedImagesIds String[]      @db.ObjectId
+  savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
+  savedFeedImagesIds String[]      @db.ObjectId
 }
 
 model Photographer {
@@ -87,8 +91,6 @@ model Client {
   testimonial Testimonial[]
   Booking     Booking[]
   Report      Report[]
-  likedImages LikedImages[]
-  savedImages SavedImages[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -261,36 +263,16 @@ model FeedImage {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
   photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
-  image          String
-  likes          LikedImages[]
-  saves          SavedImages[]
+  imageUrl       String
+  likes          User[]       @relation("LikedImages", fields: [likedUserIds], references: [id])
+  likedUserIds   String[]     @db.ObjectId
+  saves          User[]       @relation("SavedImages", fields: [savedUserIds], references: [id])
+  savedUserIds   String[]     @db.ObjectId
   likeCount      Int          @default(0)
   saveCount      Int          @default(0)
-  caption        String ?
+  caption        String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-}
-model LikedImages{
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  client       Client       @relation(fields: [clientId], references: [userId], onDelete: Cascade)
-  clientId     String       @db.ObjectId
-  feedImage    FeedImage    @relation(fields: [feedImageId], references: [id], onDelete: Cascade)
-  feedImageId  String       @db.ObjectId
-  isliked      Boolean      @default(true)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-}
-
-model SavedImages{
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  client       Client       @relation(fields: [clientId], references: [userId], onDelete: Cascade)
-  clientId     String       @db.ObjectId
-  feedImage    FeedImage    @relation(fields: [feedImageId], references: [id], onDelete: Cascade)
-  feedImageId  String       @db.ObjectId
-  issaved      Boolean      @default(true)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-
 }
 
 model Album {
