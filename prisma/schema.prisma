@@ -113,11 +113,11 @@ model Chat {
 
 model Message {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  chat        Chat         @relation("ChatToMessage",fields: [chatId], references: [id], onDelete: Cascade)
+  chat        Chat         @relation("ChatToMessage", fields: [chatId], references: [id], onDelete: Cascade)
   chatId      String       @db.ObjectId
   sender      User         @relation(name: "senderUser", fields: [senderId], references: [id], onDelete: Cascade)
   senderId    String       @db.ObjectId
-  receiver    User         @relation(name: "receiverUser", fields: [receiverId], references: [id],onDelete: Cascade)
+  receiver    User         @relation(name: "receiverUser", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId  String       @db.ObjectId
   message     String
   attachments Attachment[] @relation("MessageToAttachment")
@@ -127,7 +127,7 @@ model Message {
 
 model Attachment {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  message   Message @relation("MessageToAttachment",fields: [messageId], references: [id],onDelete: Cascade)
+  message   Message @relation("MessageToAttachment", fields: [messageId], references: [id], onDelete: Cascade)
   messageId String  @db.ObjectId
   type      String
   url       String
@@ -144,12 +144,23 @@ model Booking {
   package        Package              @relation(fields: [packageId], references: [id])
   packageId      String               @db.ObjectId
   payment        String?
-  date           DateTime
-  start          DateTime?
-  end            DateTime?
+  event          Event?
   status         BookingStatus        @default(PENDING)
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
+}
+
+model Event {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  Booking     Booking   @relation(fields: [bookingId], references: [id])
+  bookingId   String    @unique @db.ObjectId
+  description String?
+  start       DateTime?
+  end         DateTime?
+  allDay      Boolean?  @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model BankDetails {
@@ -245,9 +256,9 @@ model SocialMedia {
 
 model Testimonial {
   id             String                @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client                @relation(fields: [clientId], references: [userId],onDelete: Cascade)
+  client         Client                @relation(fields: [clientId], references: [userId], onDelete: Cascade)
   clientId       String                @db.ObjectId
-  photographer   Photographer          @relation(fields: [photographerId], references: [userId],onDelete: Cascade)
+  photographer   Photographer          @relation(fields: [photographerId], references: [userId], onDelete: Cascade)
   photographerId String                @db.ObjectId
   visibility     TestimonialVisibility @default(PUBLIC)
   rating         Int
