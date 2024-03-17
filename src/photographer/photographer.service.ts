@@ -274,7 +274,6 @@ export class PhotographerService {
   async createFeedComponent(dto: FeedDto) {
     return await this.prisma.feedImage.create({
       data: {
-        // caption: dto.caption,
         imageUrl: dto.image,
         photographer: {
           connect: {
@@ -285,7 +284,6 @@ export class PhotographerService {
     });
   }
   async feedLike(dto: FeedLikeDto) {
-    // Check if the like exists for the given feedImageId and clientId
     const existingLike = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -294,8 +292,6 @@ export class PhotographerService {
         },
       },
     });
-
-    // Get the current like count for the feed image
     const feed = await this.prisma.feedImage.findUnique({
       where: {
         id: dto.feedId,
@@ -308,7 +304,6 @@ export class PhotographerService {
     let likeCount = feed.likeCount;
 
     if (dto.like) {
-      // If like is true, create a new like and increment the like count
       if (!existingLike) {
         await this.prisma.feedImage.update({
           where: {
@@ -326,7 +321,6 @@ export class PhotographerService {
         likeCount++;
       }
     } else {
-      // If like is false, delete the existing like and decrement the like count
       if (existingLike) {
         await this.prisma.feedImage.update({
           where: {
@@ -350,7 +344,6 @@ export class PhotographerService {
           )
       }
     }
-    // Update the like count for the feed image
     return await this.prisma.feedImage.update({
       where: {
         id: dto.feedId,
@@ -361,7 +354,6 @@ export class PhotographerService {
     });
   }
   async feedSave(dto: FeedSaveDto) {
-    // Check if the like exists for the given feedImageId and clientId
     const existingSave = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -371,7 +363,6 @@ export class PhotographerService {
       },
     });
 
-    // Get the current like count for the feed image
     const feed = await this.prisma.feedImage.findUnique({
       where: {
         id: dto.feedId,
@@ -384,7 +375,6 @@ export class PhotographerService {
     let saveCount = feed.saveCount;
 
     if (dto.save) {
-      // If like is true, create a new like and increment the like count
       if (!existingSave) {
         await this.prisma.feedImage.update({
           where: {
@@ -399,7 +389,6 @@ export class PhotographerService {
         saveCount++;
       }
     } else {
-      // If like is false, delete the existing like and decrement the like count
       if (existingSave) {
         await this.prisma.feedImage.update({
           where: {
@@ -414,8 +403,6 @@ export class PhotographerService {
         saveCount--;
       }
     }
-
-    // Update the like count for the feed image
     return await this.prisma.feedImage.update({
       where: {
         id: dto.feedId,
