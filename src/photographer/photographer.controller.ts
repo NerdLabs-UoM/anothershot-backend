@@ -77,7 +77,7 @@ export class PhotographerController {
     ) {
         return await this.photographerService.updateCoverPhoto(id, data);
     }
-  
+
     @Put(':id')
     async updateUser(
         @Param('id') id: string,
@@ -130,6 +130,16 @@ export class PhotographerController {
     @Put(':packageId/coverphotos')
     async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
         await this.photographerService.saveCoverPhotos(packageId, coverPhotos);
+    }
+
+    @Get('featured/:photographerId')
+    async getFeatured(@Param('id') id: string) {
+        return await this.photographerService.getFeatured(id);
+    }
+
+    @Put(':id/featured')
+    async updateFeatured(@Param('id') id: string, @Body() featured: Partial<Photographer>) {
+        await this.photographerService.updateFeatured(id, featured);
     }
 
 }

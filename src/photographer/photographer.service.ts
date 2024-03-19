@@ -335,4 +335,28 @@ export class PhotographerService {
       data
     });
   }
+
+async getFeatured(userId: string) {
+  return await this.prisma.photographer.findUnique({
+    where: {
+      userId: userId
+    }
+  });
+
 }
+
+async updateFeatured(id: string, data:  Partial<Photographer>) {
+  return await this.prisma.photographer.update({
+    where: {
+      userId: id
+    },
+    data
+  });
+}
+
+
+}
+
+
+
+
