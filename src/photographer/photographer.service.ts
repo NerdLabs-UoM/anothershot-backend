@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Client,Package, TestimonialVisibility } from '@prisma/client';
+import { Client, Package, TestimonialVisibility } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -219,7 +219,7 @@ export class PhotographerService {
     return await this.prisma.photographer.update({
 
       where: {
-        userId: userId 
+        userId: userId
       },
       include: {
         user: true,
@@ -227,7 +227,7 @@ export class PhotographerService {
       data: {
         user: {
           update: {
-            image: data.image 
+            image: data.image
           }
         }
       }
@@ -336,23 +336,22 @@ export class PhotographerService {
     });
   }
 
-async getFeatured(userId: string) {
-  return await this.prisma.photographer.findUnique({
-    where: {
-      userId: userId
-    }
-  });
+  async getFeatured(userId: string) {
+    return await this.prisma.photographer.findUnique({
+      where: {
+        userId: userId
+      }
+    });
+  }
 
-}
-
-async updateFeatured(id: string, data:  Partial<Photographer>) {
-  return await this.prisma.photographer.update({
-    where: {
-      userId: id
-    },
-    data
-  });
-}
+  async updateFeatured(id: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: id
+      },
+      data
+    });
+  }
 
 
 }

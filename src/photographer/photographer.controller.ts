@@ -133,7 +133,7 @@ export class PhotographerController {
     }
 
     @Get('featured/:photographerId')
-    async getFeatured(@Param('id') id: string) {
+    async getFeatured(@Param('photographerId') id: string) {
         return await this.photographerService.getFeatured(id);
     }
 
