@@ -9,7 +9,6 @@ export class UpdatePhotographerDto {
   password: string;
   userRole: UserRole;
   image: string;
-  fearured:string[];
   createdAt: Date;
   updatedAt: Date;
 }
