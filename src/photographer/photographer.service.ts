@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Client,Package, TestimonialVisibility, Album } from '@prisma/client';
+import { Client,Package, TestimonialVisibility, Album, PhotographerCategory } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -19,6 +19,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 
 @Injectable()
 export class PhotographerService {
+
   constructor(private prisma: PrismaService) {}
 
   async createTestimonial(dto: CreateTestimonialDto) {
@@ -515,5 +516,9 @@ export class PhotographerService {
       where: { id: packageId },
       data
     });
+  }
+
+  async getAllCategories() {
+    return PhotographerCategory;
   }
 }
