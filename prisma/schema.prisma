@@ -12,6 +12,7 @@ datasource db {
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  user              User    @relation("AccountToUser", fields: [userId], references: [id], onDelete: Cascade)
   userId            String  @db.ObjectId
   type              String
   provider          String
@@ -23,7 +24,6 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -40,11 +40,11 @@ model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   userName         String        @default("UserName")
   email            String        @unique
-  emailVerified    DateTime?
+  emailVerified    Boolean       @default(false)
   password         String
   userRole         UserRole      @default(CLIENT)
   image            String?
-  accounts         Account[]
+  accounts         Account[]     @relation("AccountToUser")
   sessions         Session[]
   photographer     Photographer? @relation(name: "PhotographerToUser")
   client           Client?

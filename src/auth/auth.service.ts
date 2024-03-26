@@ -6,6 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
+
     constructor(
         private userService: UserService,
         private jwtService: JwtService
@@ -13,7 +14,7 @@ export class AuthService {
 
     async login(dto: LoginDto) {
         const user = await this.validateUser(dto);
-        
+
         const payload = {
             email: user.email,
             id: user.id,
@@ -22,15 +23,16 @@ export class AuthService {
         return {
             user,
             backendTokens: {
-                accessToken: await this.jwtService.signAsync(payload,{
+                accessToken: await this.jwtService.signAsync(payload, {
                     expiresIn: '20s',
                     secret: process.env.jwtSecretKey,
                 }),
-                refreshToken: await this.jwtService.signAsync(payload,{
+                refreshToken: await this.jwtService.signAsync(payload, {
                     expiresIn: '7d',
                     secret: process.env.jwtRefreshTokenKey,
                 }),
-            }
+                expiresIn: new Date().setTime(new Date().getTime() + 20000),
+            },
         };
     }
 
@@ -52,14 +54,34 @@ export class AuthService {
         };
 
         return {
-            accessToken: await this.jwtService.signAsync(payload,{
-                expiresIn: '7d',
+            accessToken: await this.jwtService.signAsync(payload, {
+                expiresIn: '20s',
                 secret: process.env.jwtSecretKey,
             }),
-            refreshToken: await this.jwtService.signAsync(payload,{
+            refreshToken: await this.jwtService.signAsync(payload, {
                 expiresIn: '7d',
                 secret: process.env.jwtRefreshTokenKey,
             }),
+            expiresIn: new Date().setTime(new Date().getTime() + 20000),
+        };
+    }
+
+    async createToken(userId: string, data: any) {
+        const payload = {
+            email: data.email,
+            id: userId,
+        };
+
+        return {
+            accessToken: await this.jwtService.signAsync(payload, {
+                expiresIn: '20s',
+                secret: process.env.jwtSecretKey,
+            }),
+            refreshToken: await this.jwtService.signAsync(payload, {
+                expiresIn: '7d',
+                secret: process.env.jwtRefreshTokenKey,
+            }),
+            expiresIn: new Date().setTime(new Date().getTime() + 20000),
         };
     }
 }
