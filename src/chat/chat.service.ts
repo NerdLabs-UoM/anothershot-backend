@@ -11,6 +11,7 @@ export class ChatService {
         private prisma: PrismaService,
         private socketGateway: ChatGateway
     ) { }
+
     async getChatsByChatId(chatId: string) {
         return await this.prisma.chat.findUnique({
             where: {
@@ -21,9 +22,10 @@ export class ChatService {
                 messages: {
                     include: {
                         sender: true,
-                        receiver: true
+                        receiver: true,
+                        attachments: true
                     }
-                }
+                },
             }
         });
     }
@@ -46,6 +48,9 @@ export class ChatService {
                     connect: {
                         id: dto.chatId
                     }
+                },
+                attachments: {
+                    create: dto.attachments
                 }
             }
         });
@@ -73,13 +78,13 @@ export class ChatService {
                     },
                     include: {
                         sender: true,
-                        receiver: true
+                        receiver: true,
+                        attachments: true
                     }
                 }
             }
         });
     }
-
 
     async create(dto: ChatCreateDto) {
         const chat = await this.prisma.chat.findFirst({
@@ -134,10 +139,46 @@ export class ChatService {
                         { id: dto.receiverId }
                     ]
                 }
+            },
+            include: {
+                users: true,
+                messages: {
+                    include: {
+                        sender: true,
+                        receiver: true,
+                        attachments: true
+                    }
+                }
             }
         });
+
+        await this.socketGateway.handleNewChat(res, dto.receiverId);
 
         return res;
     }
 
+    async deleteChat(userId: string, chatId: string) {
+        const chat = await this.prisma.chat.findUnique({
+            where: {
+                id: chatId
+            },
+            include: {
+                users: true
+            }
+        });
+
+        const receiver = chat.users.find(user => user.id !== userId);
+
+        if (chat.users.some(user => user.id === userId)) {
+            await this.prisma.chat.delete({
+                where: {
+                    id: chatId
+                }
+            });
+        }
+
+        await this.socketGateway.handleDeleteChat(chatId, receiver.id, userId);
+
+        return new Promise((resolve) => resolve({ status: 200, message: 'Chat deleted' }));
+    }
 }
