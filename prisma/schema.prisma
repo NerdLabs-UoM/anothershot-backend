@@ -65,7 +65,7 @@ model Photographer {
   name           String?                @default("Photographer Name")
   coverPhoto     String?
   bio            String?
-  featured       String[]
+  featured       String[] 
   category       PhotographerCategory[]
   contactDetails ContactDetails?
   testimonial    Testimonial[]

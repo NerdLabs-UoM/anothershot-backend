@@ -345,6 +345,10 @@ export class PhotographerService {
   }
 
   async updateFeatured(id: string, data: Partial<Photographer>) {
+  
+    // const dataNew={
+    //   featured: data.featured
+    // }
     return await this.prisma.photographer.update({
       where: {
         userId: id
