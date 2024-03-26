@@ -13,10 +13,29 @@ export class AlbumsDto {
   @IsNotEmpty()
   photographerId: string;
 
-  @IsString({ each: true })
+}
+
+export class updateAlbumDto {
+  @IsString()
+  @IsNotEmpty()
+  albumId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name:string;
+
+  @IsString()
+  @IsNotEmpty()
+  description:string;
+}
+
+
+export class AlbumImagesDto {
+  @IsString()
+  @IsNotEmpty()
+  albumId: string;
+
   @IsArray()
-  images: {
-    image: string;
-    caption?: string;
-  };
+  @IsString({ each: true })
+  images: string[];
 }

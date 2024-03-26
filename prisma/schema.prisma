@@ -40,7 +40,7 @@ model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   userName         String        @default("UserName")
   email            String        @unique
-  emailVerified    DateTime?
+  emailVerified    Boolean       @default(false)
   password         String
   userRole         UserRole      @default(CLIENT)
   image            String?
@@ -281,7 +281,6 @@ model AlbumImage {
   album   Album  @relation(fields: [albumId], references: [id])
   albumId String @db.ObjectId
   image   String
-  caption String
 }
 
 enum UserRole {

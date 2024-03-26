@@ -8,6 +8,7 @@ import {
   Put,
   Request,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
 import { VisibilityDto } from './dto/visibility.dto';
@@ -25,7 +26,7 @@ import {
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ReportDto } from './dto/report.dto';
-import { AlbumsDto } from './dto/album.dto';
+import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 @Controller('api/photographer')
 export class PhotographerController {
   constructor(private photographerService: PhotographerService) {}
@@ -117,35 +118,38 @@ export class PhotographerController {
     return await this.photographerService.updateBankDetails(dto);
   }
 
-  // @Post(':id/album')
-  // async addAlbum(
-  //     @Param('id') id: string,
-  //     @Body() data: Partial<Album>,
-  // ) {
-  //     return await this.photographerService.addAlbum(id, data);
-  // }
-
   @Post(':id/createalbum')
   async createAlbum(@Body() dto: AlbumsDto) {
-    return await this.createAlbum(dto);
+    return await this.photographerService.createAlbum(dto);
   }
 
-  @Get(':id/albums')
+  @Put(':id/editalbum')
+  async editAlbum(@Body() dto:updateAlbumDto) {
+    return await this.photographerService.editAlbum(dto);
+  }
+
+  @Get(':id/getalbums')
   async getAlbums(@Param('id') id: string) {
     return await this.photographerService.getAlbums(id);
   }
 
-  // @Get('/selected/:chatId')
-  // async getChatsByChatId(
-  //     @Param('chatId') chatId: string
-  // ) {
-  //     return await this.chatService.getChatsByChatId(chatId);
-  // }
+  @Get(':id/getimages')
+  async getImages(@Param('id') id: string) {
+    return await this.photographerService.getImages(id);
+  }
 
-  // @Post('message/send')
-  // async sendMessage(
-  //     @Body() dto: MessageSendDto
-  // ) {
-  //     return await this.chatService.sendMessage(dto);
-  // }
+  @Delete(':id/deletealbum')
+  async deleteAlbum(@Param('id') id: string) {
+    return await this.photographerService.deleteAlbum(id);
+  }
+
+  @Post(':id/addimages')
+  async addImages(@Body() dto: AlbumImagesDto) {
+    return await this.photographerService.addImages(dto);
+  }
+
+  @Delete(':id/deleteimage')
+  async deleteImage(@Param('id') id: string) {
+    return await this.photographerService.deleteImage(id);
+  }
 }

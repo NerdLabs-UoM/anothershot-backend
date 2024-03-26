@@ -12,7 +12,7 @@ import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ReportDto } from './dto/report.dto';
-import { AlbumsDto } from './dto/album.dto';
+import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -326,64 +326,45 @@ export class PhotographerService {
     });
   }
 
-  // async addAlbum(userId: string, data:Partial<Album>) {
-  //   console.log("images ",data);
-  //   return await this.prisma.album.update({
-  //     where:{
-  //       id:userId
-  //     },
-  //     data:{
-  //       images:{
-  //         create:{
-  //           image:"image 1 url ",
-  //           caption:"caption of image 1"
-  //         }
-  //       },
-  //     }
-  //   });
-  // }
+  
 
-  // async createAlbum(dto: AlbumsDto) {
-  //   return await this.prisma.album.create({
-  //     data: {
-  //       name: dto.name,
-  //       description: dto.description,
-  //       photographer: {
-  //         connect: {
-  //           userId: dto.photographerId,
-  //         },
-  //       },
-  //       images: {
-  //         create: dto.images.map((image) => {
-  //           return {
-  //             image: image,
-  //           };
-  //         }),
-  //       }
-  //     },
-  //   });
-  // }
+  async createAlbum(dto: AlbumsDto) {
+    return await this.prisma.album.create({
+      data: {
+        name: dto.name,
+        description: dto.description,
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          },
+        },
+      },
+      include:{
+        images:true,
+      }
+    });
+  }
 
-  // async createAlbum(dto: { name: string; description: string; photographerId: string; images: string[] }) {
-  //   return await this.prisma.album.create({
-  //     data: {
-  //       name: dto.name,
-  //       description: dto.description,
-  //       photographer: {
-  //         connect: {
-  //           userId: dto.photographerId,
-  //         },
-  //       },
-  //       images: {
-  //         create: dto.images.map((image) => {
-  //           return {
-  //             image: image,
-  //             caption:image
-  //           };
-  //         }),
-  //       }
-  //     },
-  //   });
+  async editAlbum(dto: updateAlbumDto) {
+    return await this.prisma.album.update({
+      where: {
+        id: dto.albumId,
+      },
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+    });
+  }
+
+  async deleteAlbum(id: string) {
+    return await this.prisma.album.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
+
 
   async getAlbums(id: string) {
     return this.prisma.album.findMany({
@@ -396,25 +377,47 @@ export class PhotographerService {
     });
   }
 
-  // async updateAlbums(userId:string,dto: AlbumsDto) {
-  //   const existingAlbums = await this.prisma.album.findUnique({
-  //     where: { id: dto.photographerId },
-  //   });
+  async getImages(id:string){
+    return this.prisma.albumImage.findMany({
+      where:{
+        albumId:id,
+      }
+    });
+  }
 
-  //   if (existingAlbums) {
-  //     await this.prisma.album.update({
-  //       where: { id: dto.photographerId },
-  //       data: {
-  //         name:dto.name,
-  //         description:dto.description,
-  //         images:dto.images{
-  //           create:{
-  //             image:dto.image,
-  //             caption?:dto.caption
-  //           }
-  //         },
-  //       }
-  //     });
-  //   }
+  async addImages(dto: AlbumImagesDto) {
+    const album = await this.prisma.album.findUnique({
+      where: {
+        id: dto.albumId,
+      },
+    });
 
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+
+    const images = await Promise.all(dto.images.map((imageUrl) =>
+      this.prisma.albumImage.create({
+        data: {
+          image: imageUrl,
+          album: {
+            connect: {
+              id: dto.albumId,
+            },
+          },
+        },
+      }),
+    ));
+
+    return images;
+  }
+
+  async deleteImage(id: string) {
+    return await this.prisma.albumImage.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
+    
 }
