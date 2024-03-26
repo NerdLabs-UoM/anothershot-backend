@@ -54,3 +54,8 @@ export class UpdateUserDto {
         tiktok?: string;
     };
 }
+
+export class passwordResetDto {
+    @IsString()
+    password: string;
+}
