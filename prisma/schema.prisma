@@ -165,7 +165,7 @@ model Event {
 
 model BankDetails {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer      Photographer @relation(fields: [photographerId], references: [id])
+  photographer      Photographer @relation(fields: [photographerId], references: [userId])
   photographerId    String       @unique @db.ObjectId
   bankName          String
   accountName       String
@@ -279,7 +279,7 @@ model FeedImage {
 
 model Album {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
   name           String
   description    String
@@ -293,7 +293,6 @@ model AlbumImage {
   album   Album  @relation(fields: [albumId], references: [id])
   albumId String @db.ObjectId
   image   String
-  caption String
 }
 
 enum UserRole {
