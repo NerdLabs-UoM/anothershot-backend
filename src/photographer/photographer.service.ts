@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { TestimonialVisibility } from '@prisma/client';
+import { Client,Package, TestimonialVisibility, Album } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -15,6 +15,13 @@ import { FeedLikeDto } from './dto/feedLike.dto';
 import { FeedSaveDto } from './dto/feedSave.dto';
 import { DeleteFeedDto } from './dto/deleteFeed.dto';
 import { CaptionDto } from './dto/caption.dto';
+import { bankDetailsDto } from './dto/bankDetails.dto';
+import { ReportDto } from './dto/report.dto';
+import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
+import { updatePackageDto } from './dto/updatePackage.dto';
+import { createPackageDto } from './dto/createPackage.dto';
+import { deletePackageDto } from './dto/deletePackage.dto';
+
 @Injectable()
 export class PhotographerService {
   constructor(private prisma: PrismaService) {}
@@ -212,7 +219,7 @@ export class PhotographerService {
     });
   }
 
-  async updateProfilePicture(
+ async updateProfilePicture(
     userId: string,
     data: Partial<Photographer & { image: string }>,
   ) {
@@ -242,6 +249,270 @@ export class PhotographerService {
       data,
     });
   }
+
+async updateCategory(userId: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId,
+      },
+      include: {
+        user: true,
+      },
+      data: {
+        category: {
+          set: data.category,
+        },
+      },
+    });
+  }
+
+  async getBankDetails(photographerId: string) {
+    return await this.prisma.bankDetails.findUnique({
+      where: {
+        photographerId: photographerId,
+      },
+      select: {
+        id: true,
+        bankName: true,
+        accountNumber: true,
+        accountName: true,
+        accountBranch: true,
+        accountBranchCode: true,
+      },
+    });
+  }
+
+  async updateBankDetails(dto: bankDetailsDto) {
+    const excistingBankDetails = await this.prisma.bankDetails.findUnique({
+      where: { photographerId: dto.userId },
+    });
+
+    if (excistingBankDetails) {
+      await this.prisma.bankDetails.update({
+        where: { photographerId: dto.userId },
+        data: {
+          bankName: dto.bankName,
+          accountNumber: dto.accountNumber,
+          accountName: dto.accountName,
+          accountBranch: dto.accountBranch,
+          accountBranchCode: dto.accountBranchCode
+            ? dto.accountBranchCode
+            : undefined,
+        },
+      });
+    } else {
+      await this.prisma.bankDetails.create({
+        data: {
+          photographer: {
+            connect: {
+              userId: dto.userId,
+            },
+          },
+          bankName: dto.bankName,
+          accountNumber: dto.accountNumber,
+          accountName: dto.accountName,
+          accountBranch: dto.accountBranch,
+          accountBranchCode: dto.accountBranchCode? dto.accountBranchCode : undefined,
+        },
+      });
+    }
+    return await this.prisma.bankDetails.findUnique({
+      where: { photographerId: dto.userId }
+    });
+  }
+
+  async createReport(id:string,dto:Partial<ReportDto>){
+    return await this.prisma.report.create({
+      data: {
+        photographerId: id,
+        subject:dto.subject,
+        description: dto.description, 
+      },
+      include: {
+        photographer: true,
+      },
+    });
+  }
+
+
+  async createAlbum(dto: AlbumsDto) {
+    return await this.prisma.album.create({
+      data: {
+        name: dto.name,
+        description: dto.description,
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          },
+        },
+      },
+      include:{
+        images:true,
+      }
+    });
+  }
+
+  async editAlbum(dto: updateAlbumDto) {
+    return await this.prisma.album.update({
+      where: {
+        id: dto.albumId,
+      },
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+    });
+  }
+
+  async deleteAlbum(id: string) {
+    return await this.prisma.album.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+
+  async getAlbums(id: string) {
+    return this.prisma.album.findMany({
+      where: {
+        photographerId: id,
+      },
+      include: {
+        images: true,
+      },
+    });
+  }
+
+  async getImages(id:string){
+    return this.prisma.albumImage.findMany({
+      where:{
+        albumId:id,
+      }
+    });
+  }
+
+  async addImages(dto: AlbumImagesDto) {
+    const album = await this.prisma.album.findUnique({
+      where: {
+        id: dto.albumId,
+      },
+    });
+
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+
+    const images = await Promise.all(dto.images.map((imageUrl) =>
+      this.prisma.albumImage.create({
+        data: {
+          image: imageUrl,
+          album: {
+            connect: {
+              id: dto.albumId,
+            },
+          },
+        },
+      }),
+    ));
+
+    return images;
+  }
+
+  async deleteImage(id: string) {
+    return await this.prisma.albumImage.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async createPackage(dto: createPackageDto) {
+    return await this.prisma.package.create({
+      data: {
+        photographer: {
+          connect: {                    //connect with the photographer id
+            userId: dto.photographerId,
+          }
+        },
+        name: dto.name,
+        description: dto.description,
+        coverPhotos: dto.coverPhotos,
+        price: dto.price,
+      },
+    });
+  }
+
+  async getPackageDetails(photographerId: string) {
+    return await this.prisma.package.findMany({
+      where: {
+        photographerId: photographerId,
+      },
+      include: {
+        booking: false
+      },
+    });
+  }
+
+  async getPackageById(packageId: string) {
+    return await this.prisma.package.findUnique({
+      where: {
+        id: packageId,
+      }
+    });
+  }
+
+
+  async updatePackageDetails(dto: updatePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
+      where: {
+        userId: dto.photographerId,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
+
+    return await this.prisma.package.update({
+      where: {
+        id: dto.packageId,
+      },
+      data: {
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          }
+        },
+        name: dto.name,
+        description: dto.description,
+        coverPhotos: dto.coverPhotos,
+        price: dto.price,
+      },
+    });
+  }
+
+  async deletePackageDetails(dto: deletePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
+      where: {
+        userId: dto.photographerId,
+      }
+    });
+
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
+
+    return await this.prisma.package.delete({
+      where: {
+        id: dto.packageId,
+      },
+    });
+  }
+
   async getFeed(id: string) {
     return await this.prisma.feedImage.findMany({
       where: {
@@ -434,6 +705,7 @@ export class PhotographerService {
       },
     });
   }
+
   async updateCaption(dto: CaptionDto) {
     return await this.prisma.feedImage.update({
       where: {
@@ -442,6 +714,13 @@ export class PhotographerService {
       data: {
         caption: dto.caption,
       },
+    })
+  }
+
+  async saveCoverPhotos(packageId: string, data: Partial<Package>) {
+    await this.prisma.package.update({
+      where: { id: packageId },
+      data
     });
   }
 }
