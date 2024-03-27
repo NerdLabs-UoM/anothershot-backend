@@ -10,6 +10,11 @@ import {
 import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+import { FeedDto } from './dto/feed.dto';
+import { FeedLikeDto } from './dto/feedLike.dto';
+import { FeedSaveDto } from './dto/feedSave.dto';
+import { DeleteFeedDto } from './dto/deleteFeed.dto';
+import { CaptionDto } from './dto/caption.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ReportDto } from './dto/report.dto';
 import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
@@ -214,7 +219,7 @@ export class PhotographerService {
     });
   }
 
-  async updateProfilePicture(
+ async updateProfilePicture(
     userId: string,
     data: Partial<Photographer & { image: string }>,
   ) {
@@ -245,7 +250,7 @@ export class PhotographerService {
     });
   }
 
-  async updateCategory(userId: string, data: Partial<Photographer>) {
+async updateCategory(userId: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
         userId: userId,
@@ -329,7 +334,6 @@ export class PhotographerService {
     });
   }
 
-  
 
   async createAlbum(dto: AlbumsDto) {
     return await this.prisma.album.create({
@@ -459,7 +463,6 @@ export class PhotographerService {
   }
 
 
-
   async updatePackageDetails(dto: updatePackageDto) {
     const photographer = await this.prisma.photographer.findUnique({
       where: {
@@ -508,6 +511,210 @@ export class PhotographerService {
         id: dto.packageId,
       },
     });
+  }
+
+  async getFeed(id: string) {
+    return await this.prisma.feedImage.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: {
+        id: true,
+        imageUrl: true,
+        likeCount: true,
+        saveCount: true,
+        caption: true,
+        photographer: {
+          select: {
+            name: true,
+            user: {
+              select: {
+                image: true,
+              },
+            },
+          },
+        },
+        likedUserIds: true,
+        savedUserIds: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
+  async createFeedComponent(dto: FeedDto) {
+    return await this.prisma.feedImage.create({
+      data: {
+        imageUrl: dto.image,
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          },
+        },
+      },
+    });
+  }
+  async feedLike(dto: FeedLikeDto) {
+    const existingLike = await this.prisma.feedImage.findFirst({
+      where: {
+        id: dto.feedId,
+        likedUserIds: {
+          has: dto.userId,
+        },
+      },
+    });
+    const feed = await this.prisma.feedImage.findUnique({
+      where: {
+        id: dto.feedId,
+      },
+      select: {
+        id: true,
+        likeCount: true,
+      },
+    });
+    let likeCount = feed.likeCount;
+
+    if (dto.like) {
+      if (!existingLike) {
+        await this.prisma.feedImage.update({
+          where: {
+            id: dto.feedId,
+          },
+          data: {
+            likedUserIds: {
+              push: dto.userId,
+            },
+            likes: {
+              connect: { id: dto.userId },
+            },
+          },
+        });
+        likeCount++;
+      }
+    } else {
+      if (existingLike) {
+        await this.prisma.feedImage.update({
+          where: {
+            id: dto.feedId,
+          },
+          data: {
+            likedUserIds: {
+              set: existingLike.likedUserIds.filter((id) => id !== dto.userId),
+            },
+          },
+        });
+        likeCount--;
+        await this.prisma.user.update({
+          where: { id: dto.userId },
+          data: {
+            likedFeedImages: {
+              disconnect: { id: dto.feedId },
+            },
+          },
+        }
+          )
+      }
+    }
+    return await this.prisma.feedImage.update({
+      where: {
+        id: dto.feedId,
+      },
+      data: {
+        likeCount: likeCount,
+      },
+    });
+  }
+  async feedSave(dto: FeedSaveDto) {
+    const existingSave = await this.prisma.feedImage.findFirst({
+      where: {
+        id: dto.feedId,
+        savedUserIds: {
+          has: dto.userId,
+        },
+      },
+    });
+
+    const feed = await this.prisma.feedImage.findUnique({
+      where: {
+        id: dto.feedId,
+      },
+      select: {
+        id: true,
+        saveCount: true,
+      },
+    });
+    let saveCount = feed.saveCount;
+
+    if (dto.save) {
+      if (!existingSave) {
+        await this.prisma.feedImage.update({
+          where: {
+            id: dto.feedId,
+          },
+          data: {
+            savedUserIds: {
+              push: dto.userId,
+            },
+          },
+        });
+        saveCount++;
+      }
+    } else {
+      if (existingSave) {
+        await this.prisma.feedImage.update({
+          where: {
+            id: existingSave.id,
+          },
+          data: {
+            savedUserIds: {
+              set: existingSave.savedUserIds.filter((id) => id !== dto.userId),
+            },
+          },
+        });
+        saveCount--;
+      }
+    }
+    return await this.prisma.feedImage.update({
+      where: {
+        id: dto.feedId,
+      },
+      data: {
+        saveCount: saveCount,
+      },
+    });
+  }
+  async deleteFeed(dto: DeleteFeedDto) {
+    return await this.prisma.feedImage.delete({
+      where: {
+        id: dto.feedId,
+      },
+    });
+  }
+  async getFeedHeader(id: string) {
+    return await this.prisma.photographer.findUnique({
+      where: {
+        userId: id,
+      },
+      select: {
+        name: true,
+        user: {
+          select: {
+            image: true,
+          },
+        },
+      },
+    });
+  }
+
+  async updateCaption(dto: CaptionDto) {
+    return await this.prisma.feedImage.update({
+      where: {
+        id: dto.feedId,
+      },
+      data: {
+        caption: dto.caption,
+      },
+    })
   }
 
   async saveCoverPhotos(packageId: string, data: Partial<Package>) {

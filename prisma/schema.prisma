@@ -56,6 +56,10 @@ model User {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   suspended        Suspended     @default(NOT_SUSPENDED)
+   likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
+  likedFeedImagesIds String[]      @db.ObjectId
+  savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
+  savedFeedImagesIds String[]      @db.ObjectId
 }
 
 model Photographer {
@@ -269,10 +273,16 @@ model Testimonial {
 
 model FeedImage {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
-  image          String
-  caption        String
+  imageUrl       String
+  likes          User[]       @relation("LikedImages", fields: [likedUserIds], references: [id])
+  likedUserIds   String[]     @db.ObjectId
+  saves          User[]       @relation("SavedImages", fields: [savedUserIds], references: [id])
+  savedUserIds   String[]     @db.ObjectId
+  likeCount      Int          @default(0)
+  saveCount      Int          @default(0)
+  caption        String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
