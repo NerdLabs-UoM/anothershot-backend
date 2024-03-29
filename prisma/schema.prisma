@@ -289,8 +289,8 @@ model Album {
 }
 
 model AlbumImage {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  album   Album  @relation(fields: [albumId], references: [id])
+  id      String @id @default(auto()) @map("_id") @db.ObjectId 
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId String @db.ObjectId
   image   String
 }

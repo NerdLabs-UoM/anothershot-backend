@@ -278,14 +278,14 @@ export class PhotographerService {
     });
   }
 
-  async updateBankDetails(dto: bankDetailsDto) {
+  async updateBankDetails(userId:string,dto: bankDetailsDto) {
     const excistingBankDetails = await this.prisma.bankDetails.findUnique({
-      where: { photographerId: dto.userId },
+      where: { photographerId: userId },
     });
 
     if (excistingBankDetails) {
       await this.prisma.bankDetails.update({
-        where: { photographerId: dto.userId },
+        where: { photographerId: userId },
         data: {
           bankName: dto.bankName,
           accountNumber: dto.accountNumber,
@@ -293,7 +293,7 @@ export class PhotographerService {
           accountBranch: dto.accountBranch,
           accountBranchCode: dto.accountBranchCode
             ? dto.accountBranchCode
-            : undefined,
+            : null,
         },
       });
     } else {
@@ -301,7 +301,7 @@ export class PhotographerService {
         data: {
           photographer: {
             connect: {
-              userId: dto.userId,
+              userId: userId,
             },
           },
           bankName: dto.bankName,
@@ -313,7 +313,7 @@ export class PhotographerService {
       });
     }
     return await this.prisma.bankDetails.findUnique({
-      where: { photographerId: dto.userId }
+      where: { photographerId: userId }
     });
   }
 
@@ -520,5 +520,15 @@ export class PhotographerService {
 
   async getAllCategories() {
     return PhotographerCategory;
+  }
+  async getCategoryById(id:string) {
+    return this.prisma.photographer.findUnique({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
+      },
+    });
   }
 }
