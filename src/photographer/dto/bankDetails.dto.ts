@@ -1,9 +1,6 @@
 import { IsString, IsEnum, IsOptional } from 'class-validator';
 export class bankDetailsDto {
   @IsString()
-  userId: string;
-
-  @IsString()
   bankName: string;
 
   @IsString()

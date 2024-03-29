@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Client,Package, TestimonialVisibility, Album } from '@prisma/client';
+import { Client,Package, TestimonialVisibility, Album, PhotographerCategory } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -24,6 +24,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 
 @Injectable()
 export class PhotographerService {
+
   constructor(private prisma: PrismaService) {}
 
   async createTestimonial(dto: CreateTestimonialDto) {
@@ -282,14 +283,14 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-  async updateBankDetails(dto: bankDetailsDto) {
+  async updateBankDetails(userId:string,dto: bankDetailsDto) {
     const excistingBankDetails = await this.prisma.bankDetails.findUnique({
-      where: { photographerId: dto.userId },
+      where: { photographerId: userId },
     });
 
     if (excistingBankDetails) {
       await this.prisma.bankDetails.update({
-        where: { photographerId: dto.userId },
+        where: { photographerId: userId },
         data: {
           bankName: dto.bankName,
           accountNumber: dto.accountNumber,
@@ -297,7 +298,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
           accountBranch: dto.accountBranch,
           accountBranchCode: dto.accountBranchCode
             ? dto.accountBranchCode
-            : undefined,
+            : null,
         },
       });
     } else {
@@ -305,7 +306,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
         data: {
           photographer: {
             connect: {
-              userId: dto.userId,
+              userId: userId,
             },
           },
           bankName: dto.bankName,
@@ -317,7 +318,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
       });
     }
     return await this.prisma.bankDetails.findUnique({
-      where: { photographerId: dto.userId }
+      where: { photographerId: userId }
     });
   }
 
@@ -721,6 +722,20 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     await this.prisma.package.update({
       where: { id: packageId },
       data
+    });
+  }
+
+  async getAllCategories() {
+    return PhotographerCategory;
+  }
+  async getCategoryById(id:string) {
+    return this.prisma.photographer.findUnique({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
+      },
     });
   }
 }
