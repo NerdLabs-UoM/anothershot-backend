@@ -27,35 +27,39 @@ import { CaptionDto } from './dto/caption.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
+import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
+import { ReportDto } from './dto/report.dto';
+import { bankDetailsDto } from './dto/bankDetails.dto';
+
 
 @Controller('api/photographer')
 export class PhotographerController {
-    constructor(private photographerService: PhotographerService) { }
+  constructor(private photographerService: PhotographerService) { }
 
-    @Post(':id/profile/testimonial')
-    async createTestimonial(@Body() dto: CreateTestimonialDto) {
-        return await this.photographerService.createTestimonial(dto);
-    }
+  @Post(':id/profile/testimonial')
+  async createTestimonial(@Body() dto: CreateTestimonialDto) {
+    return await this.photographerService.createTestimonial(dto);
+  }
 
-    @Get(':id/profile/testimonials')
-    async getTestimonials(@Param('id') photographerId: string) {
-        return await this.photographerService.getTestimonials(photographerId);
-    }
+  @Get(':id/profile/testimonials')
+  async getTestimonials(@Param('id') photographerId: string) {
+    return await this.photographerService.getTestimonials(photographerId);
+  }
 
-    //@UseGuards(JwtGuard)
-    @Patch(':id/profile/testimonials/visibility')
-    async updateTestimonialVisibility(
-        @Body() dto: VisibilityDto,
-    ) {
-        try {
-            await this.photographerService.updateTestimonialVisibility(
-                dto
-            );
-            return { message: 'Testimonials updated successfully' };
-        } catch (error) {
-            throw new HttpException('Failed to update testimonials', HttpStatus.BAD_REQUEST);
-        }
+  //@UseGuards(JwtGuard)
+  @Patch(':id/profile/testimonials/visibility')
+  async updateTestimonialVisibility(
+    @Body() dto: VisibilityDto,
+  ) {
+    try {
+      await this.photographerService.updateTestimonialVisibility(
+        dto
+      );
+      return { message: 'Testimonials updated successfully' };
+    } catch (error) {
+      throw new HttpException('Failed to update testimonials', HttpStatus.BAD_REQUEST);
     }
+  }
 
   @Get('get/all')
   async getAllPhotographers() {
@@ -64,7 +68,11 @@ export class PhotographerController {
 
   @Get('getallcategories')
   async getAllCategories() {
-    return PhotographerCategory;
+    return await this.photographerService.getAllCategories();
+  }
+  @Get(':id/getcategory')
+  async getCategoryById(@Param('id') id: string) {
+    return await this.photographerService.getCategoryById(id);
   }
 
   @Put(':id/categories')
@@ -75,21 +83,21 @@ export class PhotographerController {
     return await this.photographerService.updateCategory(id, data);
   }
 
-    @Put(':id/cover-photo')
-    async updateCoverPhoto(
-        @Param('id') id: string,
-        @Body() data: Partial<Photographer>,
-    ) {
-        return await this.photographerService.updateCoverPhoto(id, data);
-    }
-  
-    @Put(':id')
-    async updateUser(
-        @Param('id') id: string,
-        @Body() data: Partial<Photographer>,
-    ) {
-        return await this.photographerService.updateUser(id, data);
-    }
+  @Put(':id/cover-photo')
+  async updateCoverPhoto(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateCoverPhoto(id, data);
+  }
+
+  @Put(':id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateUser(id, data);
+  }
 
   @Put(':id/profile-picture')
   async updateProfilePicture(
@@ -114,9 +122,12 @@ export class PhotographerController {
     return await this.photographerService.getBankDetails(id);
   }
 
-  @Put('bankdetails')
-  async updateBankDetails(@Body() dto: bankDetailsDto) {
-    return await this.photographerService.updateBankDetails(dto);
+  @Put('bankdetails/:id')
+  async updateBankDetails(
+    @Param('id') id:string,
+    @Body() dto: bankDetailsDto) 
+    {
+    return await this.photographerService.updateBankDetails(id,dto);
   }
 
   @Post(':id/createalbum')
@@ -125,7 +136,7 @@ export class PhotographerController {
   }
 
   @Put(':id/editalbum')
-  async editAlbum(@Body() dto:updateAlbumDto) {
+  async editAlbum(@Body() dto: updateAlbumDto) {
     return await this.photographerService.editAlbum(dto);
   }
 
@@ -188,37 +199,37 @@ export class PhotographerController {
       return await this.photographerService.updateCaption(dto);
     }
 
-    @Post('packages/create')
-    async createPackage(
-        @Body() dto: createPackageDto,
-    ) {
-        return await this.photographerService.createPackage(dto);
-    }
+  @Post('packages/create')
+  async createPackage(
+    @Body() dto: createPackageDto,
+  ) {
+    return await this.photographerService.createPackage(dto);
+  }
 
-    @Put('packages/edit')
-    async updatePackageDetails(
-        @Body() dto: updatePackageDto,
-    ) {
-        return await this.photographerService.updatePackageDetails(dto);
-    }
+  @Put('packages/edit')
+  async updatePackageDetails(
+    @Body() dto: updatePackageDto,
+  ) {
+    return await this.photographerService.updatePackageDetails(dto);
+  }
 
-    @Get('packages/:photographerId')
-    async getPackageDetails(@Param('photographerId') photographerId: string) {
-        return await this.photographerService.getPackageDetails(photographerId);
-    }
+  @Get('packages/:photographerId')
+  async getPackageDetails(@Param('photographerId') photographerId: string) {
+    return await this.photographerService.getPackageDetails(photographerId);
+  }
 
-    @Get(':packageId/package')
-    async getPackageById(@Param('packageId') packageId: string) {
-        return await this.photographerService.getPackageById(packageId);
-    }
+  @Get(':packageId/package')
+  async getPackageById(@Param('packageId') packageId: string) {
+    return await this.photographerService.getPackageById(packageId);
+  }
 
-    @Delete('packages/delete')
-    async deletePackage(@Body() dto: deletePackageDto) {
-        return await this.photographerService.deletePackageDetails(dto);
-    }
+  @Delete('packages/delete')
+  async deletePackage(@Body() dto: deletePackageDto) {
+    return await this.photographerService.deletePackageDetails(dto);
+  }
 
-    @Put(':packageId/coverphotos')
-    async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
-        await this.photographerService.saveCoverPhotos(packageId, coverPhotos);
-    }
+  @Put(':packageId/coverphotos')
+  async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
+    await this.photographerService.saveCoverPhotos(packageId, coverPhotos);
+  }
 }
