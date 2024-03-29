@@ -65,6 +65,10 @@ export class PhotographerController {
   async getAllCategories() {
     return await this.photographerService.getAllCategories();
   }
+  @Get(':id/getcategory')
+  async getCategoryById(@Param('id') id: string) {
+    return await this.photographerService.getCategoryById(id);
+  }
 
   @Put(':id/categories')
   async updateCategory(
@@ -113,9 +117,12 @@ export class PhotographerController {
     return await this.photographerService.getBankDetails(id);
   }
 
-  @Put('bankdetails')
-  async updateBankDetails(@Body() dto: bankDetailsDto) {
-    return await this.photographerService.updateBankDetails(dto);
+  @Put('bankdetails/:id')
+  async updateBankDetails(
+    @Param('id') id:string,
+    @Body() dto: bankDetailsDto) 
+    {
+    return await this.photographerService.updateBankDetails(id,dto);
   }
 
   @Post(':id/createalbum')
