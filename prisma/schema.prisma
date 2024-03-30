@@ -12,6 +12,7 @@ datasource db {
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  user              User    @relation("AccountToUser", fields: [userId], references: [id], onDelete: Cascade)
   userId            String  @db.ObjectId
   type              String
   provider          String
@@ -23,7 +24,6 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -40,11 +40,11 @@ model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   userName         String        @default("UserName")
   email            String        @unique
-  emailVerified    DateTime?
+  emailVerified    Boolean       @default(false)
   password         String
   userRole         UserRole      @default(CLIENT)
   image            String?
-  accounts         Account[]
+  accounts         Account[]     @relation("AccountToUser")
   sessions         Session[]
   photographer     Photographer? @relation(name: "PhotographerToUser")
   client           Client?
@@ -56,6 +56,10 @@ model User {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   suspended        Suspended     @default(NOT_SUSPENDED)
+   likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
+  likedFeedImagesIds String[]      @db.ObjectId
+  savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
+  savedFeedImagesIds String[]      @db.ObjectId
 }
 
 model Photographer {
@@ -165,7 +169,7 @@ model Event {
 
 model BankDetails {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer      Photographer @relation(fields: [photographerId], references: [id])
+  photographer      Photographer @relation(fields: [photographerId], references: [userId])
   photographerId    String       @unique @db.ObjectId
   bankName          String
   accountName       String
@@ -269,17 +273,23 @@ model Testimonial {
 
 model FeedImage {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
-  image          String
-  caption        String
+  imageUrl       String
+  likes          User[]       @relation("LikedImages", fields: [likedUserIds], references: [id])
+  likedUserIds   String[]     @db.ObjectId
+  saves          User[]       @relation("SavedImages", fields: [savedUserIds], references: [id])
+  savedUserIds   String[]     @db.ObjectId
+  likeCount      Int          @default(0)
+  saveCount      Int          @default(0)
+  caption        String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
 
 model Album {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
   name           String
   description    String
@@ -289,11 +299,10 @@ model Album {
 }
 
 model AlbumImage {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  album   Album  @relation(fields: [albumId], references: [id])
+  id      String @id @default(auto()) @map("_id") @db.ObjectId 
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId String @db.ObjectId
   image   String
-  caption String
 }
 
 enum UserRole {
