@@ -1,6 +1,7 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
 import { Client,Package, TestimonialVisibility ,Album, PhotographerCategory } from '@prisma/client';
+import { Client,Package, TestimonialVisibility, Album, PhotographerCategory } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -227,6 +228,7 @@ export class PhotographerService {
     return await this.prisma.photographer.update({
       where: {
         userId: userId // Use the userId parameter passed to the method
+        userId: userId, // Use the userId parameter passed to the method
       },
       include: {
         user: true,
@@ -239,6 +241,11 @@ export class PhotographerService {
           }
         }
       }
+=======
+            image: data.image, // Set the image property to the value provided in the data parameter
+          },
+        },
+      },
     });
   }
 
@@ -753,6 +760,17 @@ async getCategoryById(id:string) {
         userId: id
       },
       data
+  async getAllCategories() {
+    return PhotographerCategory;
+  }
+  async getCategoryById(id:string) {
+    return this.prisma.photographer.findUnique({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
+      },
     });
   }
 }
