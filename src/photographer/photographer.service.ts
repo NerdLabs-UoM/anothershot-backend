@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Client,Package, TestimonialVisibility, Album, PhotographerCategory } from '@prisma/client';
+import { Client, Package, TestimonialVisibility, Album, PhotographerCategory } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   ConflictException,
@@ -25,7 +25,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 @Injectable()
 export class PhotographerService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createTestimonial(dto: CreateTestimonialDto) {
     const existingTestimonial = await this.prisma.testimonial.findFirst({
@@ -147,21 +147,21 @@ export class PhotographerService {
           email: dto.email,
           address: dto.address
             ? {
-                upsert: {
-                  where: { contactDetailsId: existingContactDetails.id },
-                  create: { ...dto.address },
-                  update: { ...dto.address },
-                },
-              }
+              upsert: {
+                where: { contactDetailsId: existingContactDetails.id },
+                create: { ...dto.address },
+                update: { ...dto.address },
+              },
+            }
             : undefined,
           socialMedia: dto.socialMedia
             ? {
-                upsert: {
-                  where: { contactDetailsId: existingContactDetails.id },
-                  create: { ...dto.socialMedia },
-                  update: { ...dto.socialMedia },
-                },
-              }
+              upsert: {
+                where: { contactDetailsId: existingContactDetails.id },
+                create: { ...dto.socialMedia },
+                update: { ...dto.socialMedia },
+              },
+            }
             : undefined,
         },
       });
@@ -220,13 +220,13 @@ export class PhotographerService {
     });
   }
 
- async updateProfilePicture(
+  async updateProfilePicture(
     userId: string,
     data: Partial<Photographer & { image: string }>,
   ) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId, // Use the userId parameter passed to the method
+        userId: userId // Use the userId parameter passed to the method
       },
       include: {
         user: true,
@@ -235,11 +235,12 @@ export class PhotographerService {
         user: {
           // Since image is a property of the user object, you need to update it within the user object
           update: {
-            image: data.image, // Set the image property to the value provided in the data parameter
-          },
-        },
-      },
+            image: data.image // Set the image property to the value provided in the data parametery
+          }
+        }
+      }
     });
+     
   }
 
   async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
@@ -327,7 +328,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
       data: {
         photographerId: id,
         subject:dto.subject,
-        description: dto.description, 
+        description: dto.description,
       },
       include: {
         photographer: true,
@@ -707,6 +708,20 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
+async getAllCategories() {
+  return PhotographerCategory;
+}
+async getCategoryById(id:string) {
+  return this.prisma.photographer.findUnique({
+    where: {
+      userId: id,
+    },
+    select: {
+      category: true,
+    },
+  });
+}
+
   async updateCaption(dto: CaptionDto) {
     return await this.prisma.feedImage.update({
       where: {
@@ -725,17 +740,20 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-  async getAllCategories() {
-    return PhotographerCategory;
-  }
-  async getCategoryById(id:string) {
-    return this.prisma.photographer.findUnique({
+  async getFeatured(userId: string) {
+    return await this.prisma.photographer.findUnique({
       where: {
-        userId: id,
-      },
-      select: {
-        category: true,
-      },
+        userId: userId
+      }
     });
   }
+
+  async updateFeatured(id: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: id
+      },
+      data
+    });}
+  
 }
