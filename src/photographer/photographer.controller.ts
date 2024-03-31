@@ -83,21 +83,22 @@ export class PhotographerController {
     return await this.photographerService.updateCategory(id, data);
   }
 
-  @Put(':id/cover-photo')
-  async updateCoverPhoto(
-    @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
-  ) {
-    return await this.photographerService.updateCoverPhoto(id, data);
-  }
+    @Put(':id/cover-photo')
+    async updateCoverPhoto(
+        @Param('id') id: string,
+        @Body() data: Partial<Photographer>,
+    ) {
+        return await this.photographerService.updateCoverPhoto(id, data);
+    }
 
-  @Put(':id')
-  async updateUser(
-    @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
-  ) {
-    return await this.photographerService.updateUser(id, data);
-  }
+    @Put(':id')
+    async updateUser(
+        @Param('id') id: string,
+        @Body() data: Partial<Photographer>,
+    ) {
+        return await this.photographerService.updateUser(id, data);
+    }
+ 
 
   @Put(':id/profile-picture')
   async updateProfilePicture(
@@ -227,6 +228,16 @@ export class PhotographerController {
   async deletePackage(@Body() dto: deletePackageDto) {
     return await this.photographerService.deletePackageDetails(dto);
   }
+
+    @Get('featured/:photographerId')
+    async getFeatured(@Param('photographerId') id: string) {
+        return await this.photographerService.getFeatured(id);
+    }
+
+    @Put(':id/featured')
+    async updateFeatured(@Param('id') id: string, @Body() featured: Partial<Photographer>) {
+        await this.photographerService.updateFeatured(id, featured);
+    }
 
   @Put(':packageId/coverphotos')
   async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
