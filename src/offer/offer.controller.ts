@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { OfferService } from './offer.service';
-import { CreateOfferDto } from './dto/create-offer.dto';
+import { CreateOfferDto} from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
+import { CreateBookingDto } from './dto/create-booking';
+import { Booking } from '@prisma/client';
 
 @Controller('api/offer')
 export class OfferController {
@@ -12,23 +14,46 @@ export class OfferController {
     return await this.offerService.createOffer(dto);
   }
 
-  @Get()
-  findAll() {
-    return this.offerService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.offerService.findOne(+id);
+  async get(@Param('id') bookingId:string){
+    return this.offerService.getOfferbyBookingId(bookingId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
-    return this.offerService.update(+id, updateOfferDto);
+  @Delete(':id/delete')
+  async delete(@Param('id') id:string){
+    return this.offerService.deleteOfferbyBookingId(id)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.offerService.remove(+id);
+  @Post('create-booking')
+  async createBooking(@Body() dto:Booking){
+    return this.offerService.createBooking(dto)
   }
+
+  @Get(':id/all')
+  async getOffers(@Param('id') id:string) {
+    console.log(id);
+    return this.offerService.findAll(id);
+  }
+
+  @Get(':id/photographer')
+  async getOfferbyPhotographer(@Param('id') id:string) {
+    console.log(id);
+    return this.offerService.getOfferbyPhotographer(id);
+  }
+
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.offerService.findOne(+id);
+  // }
+
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
+  //   return this.offerService.update(+id, updateOfferDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.offerService.remove(+id);
+  // }
 }

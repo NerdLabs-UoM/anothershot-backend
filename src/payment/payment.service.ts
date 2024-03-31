@@ -19,41 +19,59 @@ export class PaymentService {
     return booking;
   }
 
-  //Ceate a Checkout Session
-  async createCheckoutSession(bookingId: string) {
-    const session = await this.stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
+  //Create an Endpoint for Creating Payment Links
+  async purchaseBooking(bookingId: string){
+    const paymentLink = await this.stripe.paymentLinks.create({
+      line_items:[
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: "t-shirt",
-            },
-            unit_amount: 2000,
-          },
+          price: '{{PRICE_ID}}',
           quantity: 1,
         },
       ],
-      mode: 'payment',
-      success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:3000/cancel`,
-    });
-    return session;
+      after_completion:{
+        type:'redirect',
+        redirect:{
+          url:'https://example.com',
+        }
+      }     
+    })
   }
 
-  //Create session as responce to frontend
-  async createCheckoutSessionResponse(bookingId: string) {
-    const session = await this.createCheckoutSession(bookingId);
-    return {
-      sessionId: session.id,
-    };
-  }
+  //Ceate a Checkout Session
+  // async createCheckoutSession(bookingId: string) {
+  //   const session = await this.stripe.checkout.sessions.create({
+  //     payment_method_types: ['card'],
+  //     line_items: [
+  //       {
+  //         price_data: {
+  //           currency: 'usd',
+  //           product_data: {
+  //             name: "t-shirt",
+  //           },
+  //           unit_amount: 2000,
+  //         },
+  //         quantity: 1,
+  //       },
+  //     ],
+  //     mode: 'payment',
+  //     success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
+  //     cancel_url: `http://localhost:3000/cancel`,
+  //   });
+  //   return session;
+  // }
+
+  // //Create session as responce to frontend
+  // async createCheckoutSessionResponse(bookingId: string) {
+  //   const session = await this.createCheckoutSession(bookingId);
+  //   return {
+  //     sessionId: session.id,
+  //   };
+  // }
 
 
   async createPaymentIntent(items:CreatePaymentDto){
     const amount = this.calculateOrderAmount(items);
-
+    console.log(items);
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: amount,
       currency: 'usd',

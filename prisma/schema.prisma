@@ -40,7 +40,7 @@ model User {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   userName         String        @default("UserName")
   email            String        @unique
-  emailVerified    DateTime?
+  emailVerified    Boolean       @default(false)
   password         String
   userRole         UserRole      @default(CLIENT)
   image            String?
@@ -161,13 +161,15 @@ model Offer {
   clientId       String               @db.ObjectId
   photographer   Photographer         @relation(fields: [photographerId], references: [id],onDelete: Cascade)
   photographerId String               @db.ObjectId
-  booking        Booking?             @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
-  bookingsId     String?              @db.ObjectId @unique
+  booking        Booking              @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
+  bookingsId     String               @unique @db.ObjectId 
   description    String
   packageName    String
   clientName     String
   price          Float
   date           DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 }
 
 model BankDetails {

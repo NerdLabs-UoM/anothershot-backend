@@ -2,32 +2,33 @@ import { UserRole } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsDate, IsEmail, IsNumber, IsString } from "class-validator";
 
-export class CreateOfferDto {
+
+export class CreateBookingDto{
+    @IsString()
+    id: string;
 
     @IsString()
-    clientId:string                      
-               
-    @IsString()
-    photographerId:string          
-                 
-    @IsString()
-    bookingsId:string 
+    clientId: string;
 
     @IsString()
-    description:string
+    photographerId: string;
 
     @IsString()
-    packageName :string
+    bookingsId: string;
 
     @IsString()
-    clientName:string
+    description: string;
 
-    @IsNumber()
-    price:number
+    @IsString()
+    packageName: string;
+
+    @IsString()
+    clientName: string;
+
+    @IsString()
+    price: number;
 
     @IsDate()
     @Type(() => Date)
     date: Date;
 }
-
-
