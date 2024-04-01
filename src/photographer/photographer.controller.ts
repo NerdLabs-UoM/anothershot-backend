@@ -21,7 +21,7 @@ import { Package, Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
 import { FeedLikeDto } from './dto/feedLike.dto';
-import { FeedSaveDto} from './dto/feedSave.dto';
+import { FeedSaveDto } from './dto/feedSave.dto';
 import { DeleteFeedDto } from './dto/deleteFeed.dto';
 import { CaptionDto } from './dto/caption.dto';
 import { createPackageDto } from './dto/createPackage.dto';
@@ -83,22 +83,22 @@ export class PhotographerController {
     return await this.photographerService.updateCategory(id, data);
   }
 
-    @Put(':id/cover-photo')
-    async updateCoverPhoto(
-        @Param('id') id: string,
-        @Body() data: Partial<Photographer>,
-    ) {
-        return await this.photographerService.updateCoverPhoto(id, data);
-    }
+  @Put(':id/cover-photo')
+  async updateCoverPhoto(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateCoverPhoto(id, data);
+  }
 
-    @Put(':id')
-    async updateUser(
-        @Param('id') id: string,
-        @Body() data: Partial<Photographer>,
-    ) {
-        return await this.photographerService.updateUser(id, data);
-    }
- 
+  @Put(':id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateUser(id, data);
+  }
+
 
   @Put(':id/profile-picture')
   async updateProfilePicture(
@@ -125,10 +125,9 @@ export class PhotographerController {
 
   @Put('bankdetails/:id')
   async updateBankDetails(
-    @Param('id') id:string,
-    @Body() dto: bankDetailsDto) 
-    {
-    return await this.photographerService.updateBankDetails(id,dto);
+    @Param('id') id: string,
+    @Body() dto: bankDetailsDto) {
+    return await this.photographerService.updateBankDetails(id, dto);
   }
 
   @Post(':id/createalbum')
@@ -166,39 +165,39 @@ export class PhotographerController {
     return await this.photographerService.deleteImage(id);
   }
 
-    @Get('contactdetails/:id')
-    async getContactDetails(@Param('id') id: string) {
-        return await this.photographerService.getContactDetails(id);
-    }
-  
-    @Get(':id/feed')
-    async getFeed(@Param('id') id: string, clientid: string) {
-        return await this.photographerService.getFeed(id);
-    }
-    @Post(':id/feed/createFeed')
-      async createFeedComponent(@Body() dto: FeedDto) {
-        return await this.photographerService.createFeedComponent(dto);
-      }
-    @Patch(':id/feed/like')
-    async feedLike(@Body() dto: FeedLikeDto) {
-      return await this.photographerService.feedLike(dto);
-    }
-    @Patch(`:id/feed/createSave`)
-    async feedSave(@Body() dto: FeedSaveDto){
-      return await this.photographerService.feedSave(dto);
-    }
-    @Delete(':id/feed/delete')
-    async deleteFeed(@Body() dto: DeleteFeedDto) {
-      return await this.photographerService.deleteFeed(dto);
-    }
-    @Get(':id/feed/header')
-    async getFeedHeader(@Param('id') id: string) {
-      return await this.photographerService.getFeedHeader(id);
-    }
-    @Patch(':id/feed/caption')
-    async updateCaption(@Body() dto: CaptionDto) {
-      return await this.photographerService.updateCaption(dto);
-    }
+  @Get('contactdetails/:id')
+  async getContactDetails(@Param('id') id: string) {
+    return await this.photographerService.getContactDetails(id);
+  }
+
+  @Get(':id/feed')
+  async getFeed(@Param('id') id: string, clientid: string) {
+    return await this.photographerService.getFeed(id);
+  }
+  @Post(':id/feed/createFeed')
+  async createFeedComponent(@Body() dto: FeedDto) {
+    return await this.photographerService.createFeedComponent(dto);
+  }
+  @Patch(':id/feed/like')
+  async feedLike(@Body() dto: FeedLikeDto) {
+    return await this.photographerService.feedLike(dto);
+  }
+  @Patch(`:id/feed/createSave`)
+  async feedSave(@Body() dto: FeedSaveDto) {
+    return await this.photographerService.feedSave(dto);
+  }
+  @Delete(':id/feed/delete')
+  async deleteFeed(@Body() dto: DeleteFeedDto) {
+    return await this.photographerService.deleteFeed(dto);
+  }
+  @Get(':id/feed/header')
+  async getFeedHeader(@Param('id') id: string) {
+    return await this.photographerService.getFeedHeader(id);
+  }
+  @Patch(':id/feed/caption')
+  async updateCaption(@Body() dto: CaptionDto) {
+    return await this.photographerService.updateCaption(dto);
+  }
 
   @Post('packages/create')
   async createPackage(
@@ -229,15 +228,15 @@ export class PhotographerController {
     return await this.photographerService.deletePackageDetails(dto);
   }
 
-    @Get('featured/:photographerId')
-    async getFeatured(@Param('photographerId') id: string) {
-        return await this.photographerService.getFeatured(id);
-    }
+  @Get('featured/:photographerId')
+  async getFeatured(@Param('photographerId') id: string) {
+    return await this.photographerService.getFeatured(id);
+  }
 
-    @Put(':id/featured')
-    async updateFeatured(@Param('id') id: string, @Body() featured: Partial<Photographer>) {
-        await this.photographerService.updateFeatured(id, featured);
-    }
+  @Put(':id/featured')
+  async updateFeatured(@Param('id') id: string, @Body() featured: Partial<Photographer>) {
+    await this.photographerService.updateFeatured(id, featured);
+  }
 
   @Put(':packageId/coverphotos')
   async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
