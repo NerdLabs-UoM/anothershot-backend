@@ -10,9 +10,10 @@ import { PhotographerModule } from './photographer/photographer.module';
 import { ClientModule } from './client/client.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatGateway } from './chat/chat.gateway';
+import { HomeModule } from './home/home.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule, PhotographerModule, ClientModule, ChatModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule, PhotographerModule, ClientModule, ChatModule, HomeModule],
   controllers: [AppController],
   providers: [AppService, PrismaService, ChatGateway],
 })
