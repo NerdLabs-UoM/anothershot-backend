@@ -322,15 +322,29 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-  async createReport(id:string,dto:Partial<ReportDto>){
+  // async createReport(id:string,dto:Partial<ReportDto>){
+  //   return await this.prisma.report.create({
+  //     data: {
+  //       photographerId: id,
+  //       subject:dto.subject,
+  //       description: dto.description, 
+  //     },
+  //     include: {
+  //       photographer: true,
+  //     },
+  //   });
+  // }
+
+  async createReport(id: string, dto: ReportDto) {
     return await this.prisma.report.create({
-      data: {
-        photographerId: id,
-        subject:dto.subject,
-        description: dto.description, 
-      },
-      include: {
-        photographer: true,
+      data:{
+        subject: dto.subject,
+        description: dto.description,
+        user:{
+          connect:{
+            id:id,
+          }
+        }
       },
     });
   }
