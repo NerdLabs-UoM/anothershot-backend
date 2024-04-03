@@ -25,7 +25,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 @Injectable()
 export class PhotographerService {
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async createTestimonial(dto: CreateTestimonialDto) {
     const existingTestimonial = await this.prisma.testimonial.findFirst({
@@ -323,19 +323,19 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-  async createReport(id:string,dto:Partial<ReportDto>){
+  async createReport(id: string, dto: ReportDto) {
     return await this.prisma.report.create({
-      data: {
-        photographerId: id,
-        subject:dto.subject,
+      data:{
+        subject: dto.subject,
         description: dto.description,
-      },
-      include: {
-        photographer: true,
+        user:{
+          connect:{
+            id:id,
+          }
+        }
       },
     });
   }
-
 
   async createAlbum(dto: AlbumsDto) {
     return await this.prisma.album.create({
@@ -740,6 +740,20 @@ async getCategoryById(id:string) {
     });
   }
 
+  async getAllCategories() {
+    return PhotographerCategory;
+  }
+  async getCategoryById(id:string) {
+    return this.prisma.photographer.findUnique({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
+      },
+    });
+  }
+
   async getFeatured(userId: string) {
     return await this.prisma.photographer.findUnique({
       where: {
@@ -754,6 +768,6 @@ async getCategoryById(id:string) {
         userId: id
       },
       data
-    });}
-  
+    });
+  }
 }

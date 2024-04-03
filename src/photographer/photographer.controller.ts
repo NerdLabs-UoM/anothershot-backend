@@ -99,7 +99,6 @@ export class PhotographerController {
     return await this.photographerService.updateUser(id, data);
   }
 
-
   @Put(':id/profile-picture')
   async updateProfilePicture(
     @Param('id') id: string,
@@ -125,9 +124,10 @@ export class PhotographerController {
 
   @Put('bankdetails/:id')
   async updateBankDetails(
-    @Param('id') id: string,
-    @Body() dto: bankDetailsDto) {
-    return await this.photographerService.updateBankDetails(id, dto);
+    @Param('id') id:string,
+    @Body() dto: bankDetailsDto) 
+    {
+    return await this.photographerService.updateBankDetails(id,dto);
   }
 
   @Post(':id/createalbum')
