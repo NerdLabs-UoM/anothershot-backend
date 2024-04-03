@@ -9,7 +9,13 @@ export class AdminService {
     const pageSize = 3;
     const skip = (page - 1) * pageSize;
     const take = pageSize;
-    const values = await this.prisma.user.findMany({skip,take});
+    const values = await this.prisma.user.findMany({
+      skip,
+      take,
+      include:{
+      reports:true
+    }
+    });
     return values;
   } 
 
