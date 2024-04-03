@@ -4,20 +4,23 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { CreateUserDto, UpdateUserDto, passwordResetDto } from './dto/user.dto';
 import { hash } from 'bcrypt';
 import {
   Client,
-  Photographer,
-  User,
   UserRole,
   Suspended,
   Admin,
+  Account,
 } from '@prisma/client';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  createToken(data: any) {
+      throw new Error("Method not implemented.");
+  }
+
+  constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateUserDto) {
     const user = await this.prisma.user.findUnique({
@@ -68,13 +71,62 @@ export class UserService {
     }
   }
 
+  async activateUser(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { emailVerified: true },
+    });
+  }
+
+  async resetPassword(userId: string, password: passwordResetDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const hashedPassword = await hash(password.password, 10);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+  }
+
+  async linkAccount(userId: string, data: Account) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        accounts: {
+          create: {
+            ...data,
+          },
+        },
+      },
+    });
+  }
+
   async findByEmail(email: string) {
     return await this.prisma.user.findUnique({
       where: {
         email: email,
       },
+      include: {
+        accounts: true,
+      }
     });
   }
+
 
   async findById(id: string) {
     return await this.prisma.user.findUnique({
@@ -151,21 +203,21 @@ export class UserService {
             email: data.email,
             address: data.address
               ? {
-                  upsert: {
-                    where: { contactDetailsId: contactDetails.id },
-                    create: { ...data.address },
-                    update: { ...data.address },
-                  },
-                }
+                upsert: {
+                  where: { contactDetailsId: contactDetails.id },
+                  create: { ...data.address },
+                  update: { ...data.address },
+                },
+              }
               : undefined,
             socialMedia: data.socialMedia
               ? {
-                  upsert: {
-                    where: { contactDetailsId: contactDetails.id },
-                    create: { ...data.socialMedia },
-                    update: { ...data.socialMedia },
-                  },
-                }
+                upsert: {
+                  where: { contactDetailsId: contactDetails.id },
+                  create: { ...data.socialMedia },
+                  update: { ...data.socialMedia },
+                },
+              }
               : undefined,
           },
         });
@@ -198,7 +250,7 @@ export class UserService {
       await this.prisma.photographer.update({
         where: { userId: userId },
         data: {
-          name:data.userName,
+          name: data.userName,
         },
       });
 
@@ -215,13 +267,13 @@ export class UserService {
 
   async updateClient(userId: string, data: Partial<Client>) {
     await this.prisma.client.update({
-      where: { userId: userId },data
+      where: { userId: userId }, data
     });
   }
 
   async updateAdmin(userId: string, data: Partial<Admin>) {
     await this.prisma.admin.update({
-      where: { userId: userId },data
+      where: { userId: userId }, data
     });
   }
 

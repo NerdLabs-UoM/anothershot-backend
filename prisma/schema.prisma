@@ -12,6 +12,7 @@ datasource db {
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  user              User    @relation("AccountToUser", fields: [userId], references: [id], onDelete: Cascade)
   userId            String  @db.ObjectId
   type              String
   provider          String
@@ -23,7 +24,6 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -44,7 +44,7 @@ model User {
   password         String
   userRole         UserRole      @default(CLIENT)
   image            String?
-  accounts         Account[]
+  accounts         Account[]     @relation("AccountToUser")
   sessions         Session[]
   photographer     Photographer? @relation(name: "PhotographerToUser")
   client           Client?
@@ -56,6 +56,11 @@ model User {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   suspended        Suspended     @default(NOT_SUSPENDED)
+   likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
+  likedFeedImagesIds String[]      @db.ObjectId
+  savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
+  savedFeedImagesIds String[]      @db.ObjectId
+  reports          Report[]
 }
 
 model Photographer {
@@ -65,7 +70,7 @@ model Photographer {
   name           String?                @default("Photographer Name")
   coverPhoto     String?
   bio            String?
-  featured       String[]
+  featured       String[] 
   category       PhotographerCategory[]
   contactDetails ContactDetails?
   testimonial    Testimonial[]
@@ -107,7 +112,7 @@ model Chat {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   users       User[]    @relation(fields: [userIds], references: [id])
   userIds     String[]  @db.ObjectId
-  messages    Message[]
+  messages    Message[] @relation("ChatToMessage")
   messagesIds String[]  @db.ObjectId
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -115,21 +120,21 @@ model Chat {
 
 model Message {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  chat        Chat         @relation(fields: [chatId], references: [id])
+  chat        Chat         @relation("ChatToMessage", fields: [chatId], references: [id], onDelete: Cascade)
   chatId      String       @db.ObjectId
   sender      User         @relation(name: "senderUser", fields: [senderId], references: [id], onDelete: Cascade)
   senderId    String       @db.ObjectId
-  receiver    User         @relation(name: "receiverUser", fields: [receiverId], references: [id],onDelete: Cascade)
+  receiver    User         @relation(name: "receiverUser", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId  String       @db.ObjectId
   message     String
-  attachments Attachment[]
+  attachments Attachment[] @relation("MessageToAttachment")
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
 model Attachment {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  message   Message @relation(fields: [messageId], references: [id])
+  message   Message @relation("MessageToAttachment", fields: [messageId], references: [id], onDelete: Cascade)
   messageId String  @db.ObjectId
   type      String
   url       String
@@ -150,10 +155,12 @@ model Booking {
   date           DateTime
   start          DateTime?
   end            DateTime?
+  event          Event?
   status         BookingStatus        @default(PENDING)
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 }
+
 
 model Offer {
   id             String               @id @default(auto()) @map("_id") @db.ObjectId
@@ -171,10 +178,22 @@ model Offer {
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 }
+model Event {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  Booking     Booking   @relation(fields: [bookingId], references: [id])
+  bookingId   String    @unique @db.ObjectId
+  description String?
+  start       DateTime?
+  end         DateTime?
+  allDay      Boolean?  @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
 
 model BankDetails {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer      Photographer @relation(fields: [photographerId], references: [id])
+  photographer      Photographer @relation(fields: [photographerId], references: [userId])
   photographerId    String       @unique @db.ObjectId
   bankName          String
   accountName       String
@@ -203,6 +222,8 @@ model Report {
   clientId       String?       @db.ObjectId
   photographer   Photographer? @relation(fields: [photographerId], references: [userId])
   photographerId String?       @db.ObjectId
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
   subject        String
   description    String
   status         ReportStatus  @default(PENDING)
@@ -217,8 +238,8 @@ model Package {
   name           String
   description    String
   coverPhotos    String[]
-  price          Float
-  Booking        Booking[]
+  price          String?
+  booking        Booking[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -265,9 +286,9 @@ model SocialMedia {
 
 model Testimonial {
   id             String                @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client                @relation(fields: [clientId], references: [userId],onDelete: Cascade)
+  client         Client                @relation(fields: [clientId], references: [userId], onDelete: Cascade)
   clientId       String                @db.ObjectId
-  photographer   Photographer          @relation(fields: [photographerId], references: [userId],onDelete: Cascade)
+  photographer   Photographer          @relation(fields: [photographerId], references: [userId], onDelete: Cascade)
   photographerId String                @db.ObjectId
   visibility     TestimonialVisibility @default(PUBLIC)
   rating         Int
@@ -278,17 +299,23 @@ model Testimonial {
 
 model FeedImage {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
-  image          String
-  caption        String
+  imageUrl       String
+  likes          User[]       @relation("LikedImages", fields: [likedUserIds], references: [id])
+  likedUserIds   String[]     @db.ObjectId
+  saves          User[]       @relation("SavedImages", fields: [savedUserIds], references: [id])
+  savedUserIds   String[]     @db.ObjectId
+  likeCount      Int          @default(0)
+  saveCount      Int          @default(0)
+  caption        String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
 
 model Album {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @db.ObjectId
   name           String
   description    String
@@ -298,11 +325,10 @@ model Album {
 }
 
 model AlbumImage {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  album   Album  @relation(fields: [albumId], references: [id])
+  id      String @id @default(auto()) @map("_id") @db.ObjectId 
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId String @db.ObjectId
   image   String
-  caption String
 }
 
 enum UserRole {

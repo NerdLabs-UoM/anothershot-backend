@@ -1,3 +1,4 @@
+import { Attachment } from "@prisma/client";
 import { IsArray, IsOptional, IsString } from "class-validator";
 
 export class MessageSendDto {
@@ -15,6 +16,5 @@ export class MessageSendDto {
 
     @IsOptional()
     @IsArray()
-    @IsString({ each: true })
-    attachments?: string[];
+    attachments?: Attachment[];
 }
