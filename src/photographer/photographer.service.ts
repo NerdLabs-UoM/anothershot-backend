@@ -25,7 +25,18 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 @Injectable()
 export class PhotographerService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
+
+  async getPhotographer(userId: string) {
+    return await this.prisma.photographer.findUnique({
+      where: {
+        userId: userId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
 
   async createTestimonial(dto: CreateTestimonialDto) {
     const existingTestimonial = await this.prisma.testimonial.findFirst({
@@ -133,6 +144,7 @@ export class PhotographerService {
     });
   }
   async updateContactDetails(dto: contactDetailsDto) {
+    console.log(dto);
     const tempUserId = dto.userId;
     const existingContactDetails = await this.prisma.contactDetails.findUnique({
       where: { photographerId: dto.userId },
@@ -240,7 +252,7 @@ export class PhotographerService {
         }
       }
     });
-     
+
   }
 
   async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
@@ -252,7 +264,7 @@ export class PhotographerService {
     });
   }
 
-async updateCategory(userId: string, data: Partial<Photographer>) {
+  async updateCategory(userId: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
         userId: userId,
@@ -284,7 +296,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-  async updateBankDetails(userId:string,dto: bankDetailsDto) {
+  async updateBankDetails(userId: string, dto: bankDetailsDto) {
     const excistingBankDetails = await this.prisma.bankDetails.findUnique({
       where: { photographerId: userId },
     });
@@ -314,7 +326,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
           accountNumber: dto.accountNumber,
           accountName: dto.accountName,
           accountBranch: dto.accountBranch,
-          accountBranchCode: dto.accountBranchCode? dto.accountBranchCode : undefined,
+          accountBranchCode: dto.accountBranchCode ? dto.accountBranchCode : undefined,
         },
       });
     }
@@ -325,12 +337,12 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
 
   async createReport(id: string, dto: ReportDto) {
     return await this.prisma.report.create({
-      data:{
+      data: {
         subject: dto.subject,
         description: dto.description,
-        user:{
-          connect:{
-            id:id,
+        user: {
+          connect: {
+            id: id,
           }
         }
       },
@@ -348,8 +360,8 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
           },
         },
       },
-      include:{
-        images:true,
+      include: {
+        images: true,
       }
     });
   }
@@ -386,10 +398,10 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-  async getImages(id:string){
+  async getImages(id: string) {
     return this.prisma.albumImage.findMany({
-      where:{
-        albumId:id,
+      where: {
+        albumId: id,
       }
     });
   }
@@ -614,7 +626,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
             },
           },
         }
-          )
+        )
       }
     }
     return await this.prisma.feedImage.update({
@@ -708,20 +720,6 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-async getAllCategories() {
-  return PhotographerCategory;
-}
-async getCategoryById(id:string) {
-  return this.prisma.photographer.findUnique({
-    where: {
-      userId: id,
-    },
-    select: {
-      category: true,
-    },
-  });
-}
-
   async updateCaption(dto: CaptionDto) {
     return await this.prisma.feedImage.update({
       where: {
@@ -743,7 +741,7 @@ async getCategoryById(id:string) {
   async getAllCategories() {
     return PhotographerCategory;
   }
-  async getCategoryById(id:string) {
+  async getCategoryById(id: string) {
     return this.prisma.photographer.findUnique({
       where: {
         userId: id,
