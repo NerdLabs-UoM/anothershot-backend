@@ -17,7 +17,7 @@ import {
 @Injectable()
 export class UserService {
   createToken(data: any) {
-      throw new Error("Method not implemented.");
+    throw new Error("Method not implemented.");
   }
 
   constructor(private prisma: PrismaService) { }

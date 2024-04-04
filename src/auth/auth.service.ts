@@ -13,6 +13,7 @@ export class AuthService {
     ) { }
 
     async login(dto: LoginDto) {
+
         const user = await this.validateUser(dto);
 
         const payload = {
@@ -39,12 +40,15 @@ export class AuthService {
     async validateUser(dto: LoginDto) {
         const user = await this.userService.findByEmail(dto.email);
 
+        if (!user) {
+            throw new UnauthorizedException('Incorrect email or password');
+        }
+
         if (user && (await compare(dto.password, user.password))) {
             const { password, ...result } = user;
             return result;
         }
 
-        throw new UnauthorizedException('Incorrect email or password');
     }
 
     async refreshToken(user: any) {
