@@ -1,13 +1,11 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Client, Package, TestimonialVisibility, Album, PhotographerCategory } from '@prisma/client';
+import { Package, TestimonialVisibility, PhotographerCategory } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UpdatePhotographerDto } from './dto/photographer.dto';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -27,6 +25,8 @@ export class PhotographerService {
 
   constructor(private prisma: PrismaService) { }
 
+  //------ photographer services -----------
+
   async getPhotographer(userId: string) {
     return await this.prisma.photographer.findUnique({
       where: {
@@ -38,92 +38,6 @@ export class PhotographerService {
     });
   }
 
-  async createTestimonial(dto: CreateTestimonialDto) {
-    const existingTestimonial = await this.prisma.testimonial.findFirst({
-      where: {
-        photographerId: dto.photographerId,
-        clientId: dto.clientId,
-      },
-    });
-
-    if (existingTestimonial) {
-      return await this.updateTestimonial(existingTestimonial.id, dto);
-    } else {
-      return await this.prisma.testimonial.create({
-        data: {
-          review: dto.review,
-          rating: dto.rating,
-          photographer: { connect: { userId: dto.photographerId } },
-          client: { connect: { userId: dto.clientId } },
-        },
-      });
-    }
-  }
-
-  async updateTestimonial(id: string, dto: CreateTestimonialDto) {
-    return await this.prisma.testimonial.update({
-      where: {
-        id: id,
-      },
-      data: {
-        ...dto,
-      },
-    });
-  }
-
-  async getTestimonials(photographerId: string) {
-    return await this.prisma.testimonial.findMany({
-      where: {
-        photographerId: photographerId,
-      },
-      select: {
-        id: true,
-        review: true,
-        rating: true,
-        visibility: true,
-        client: {
-          select: {
-            id: true,
-            name: true,
-            user: {
-              select: {
-                image: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        id: 'desc',
-      },
-    });
-  }
-
-  async updateTestimonialVisibility(dto: VisibilityDto) {
-    const testimonials = await this.prisma.testimonial.findMany({
-      where: {
-        id: { in: dto.testimonialId },
-      },
-      select: {
-        id: true,
-        visibility: true,
-      },
-    });
-    const updatePromises = testimonials.map((testimonial) => {
-      return this.prisma.testimonial.update({
-        where: { id: testimonial.id },
-        data: {
-          visibility:
-            testimonial.visibility === TestimonialVisibility.PUBLIC
-              ? TestimonialVisibility.PRIVATE
-              : TestimonialVisibility.PUBLIC,
-        },
-      });
-    });
-
-    await Promise.all(updatePromises);
-  }
-
   async findAll() {
     return await this.prisma.photographer.findMany({
       include: {
@@ -132,19 +46,48 @@ export class PhotographerService {
     });
   }
 
-  async getContactDetails(id: string) {
-    return this.prisma.contactDetails.findUnique({
-      where: {
-        photographerId: id,
-      },
-      include: {
-        address: true,
-        socialMedia: true,
-      },
+  // ------hero section services ------
+
+  async updateUser(userId: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: { userId: userId },
+      data,
     });
   }
+
+  async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId,
+      },
+      data,
+    });
+  }
+
+  async updateProfilePicture(
+    userId: string,
+    data: Partial<Photographer & { image: string }>,
+  ) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId
+      },
+      include: {
+        user: true,
+      },
+      data: {
+        user: {
+          update: {
+            image: data.image
+          }
+        }
+      }
+    });
+  }
+
+  // ------- contact section services ---------
+
   async updateContactDetails(dto: contactDetailsDto) {
-    console.log(dto);
     const tempUserId = dto.userId;
     const existingContactDetails = await this.prisma.contactDetails.findUnique({
       where: { photographerId: dto.userId },
@@ -206,75 +149,231 @@ export class PhotographerService {
     });
   }
 
-  async findByEmail(email: string) {
-    return await this.prisma.user.findUnique({
+  async getContactDetails(id: string) {
+    return this.prisma.contactDetails.findUnique({
       where: {
-        email: email,
+        photographerId: id,
+      },
+      include: {
+        address: true,
+        socialMedia: true,
       },
     });
   }
 
-  async findById(id: string) {
-    return await this.prisma.photographer.findUnique({
+  // ------- package section services ---------
+
+  async createPackage(dto: createPackageDto) {
+    return await this.prisma.package.create({
+      data: {
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          }
+        },
+        name: dto.name,
+        description: dto.description,
+        coverPhotos: dto.coverPhotos,
+        price: dto.price,
+      },
+    });
+  }
+
+  async updatePackageDetails(dto: updatePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
       where: {
-        userId: id,
+        userId: dto.photographerId,
       },
       include: {
         user: true,
       },
     });
-  }
 
-  async updateUser(userId: string, data: Partial<Photographer>) {
-    return await this.prisma.photographer.update({
-      where: { userId: userId },
-      data,
-    });
-  }
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
 
-  async updateProfilePicture(
-    userId: string,
-    data: Partial<Photographer & { image: string }>,
-  ) {
-    return await this.prisma.photographer.update({
+    return await this.prisma.package.update({
       where: {
-        userId: userId 
-      },
-      include: {
-        user: true,
+        id: dto.packageId,
       },
       data: {
-        user: {
-          update: {
-            image: data.image 
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
           }
-        }
+        },
+        name: dto.name,
+        description: dto.description,
+        coverPhotos: dto.coverPhotos,
+        price: dto.price,
+      },
+    });
+  }
+
+  async getPackageDetails(photographerId: string) {
+    return await this.prisma.package.findMany({
+      where: {
+        photographerId: photographerId,
+      },
+      include: {
+        booking: false
+      },
+    });
+  }
+
+  async getPackageById(packageId: string) {
+    return await this.prisma.package.findUnique({
+      where: {
+        id: packageId,
+      }
+    });
+  }
+
+  async deletePackageDetails(dto: deletePackageDto) {
+    const photographer = await this.prisma.photographer.findUnique({
+      where: {
+        userId: dto.photographerId,
       }
     });
 
-  }
+    if (!photographer) {
+      throw new NotFoundException('Photographer not found');
+    }
 
-  async updateCoverPhoto(userId: string, data: Partial<Photographer>) {
-    return await this.prisma.photographer.update({
+    return await this.prisma.package.delete({
       where: {
-        userId: userId, // Use the userId parameter passed to the method
+        id: dto.packageId,
       },
-      data,
     });
   }
 
-  async updateCategory(userId: string, data: Partial<Photographer>) {
+  async saveCoverPhotos(packageId: string, data: Partial<Package>) {
+    await this.prisma.package.update({
+      where: { id: packageId },
+      data
+    });
+  }
+
+  // ------- featured section services ---------
+
+  async getFeatured(userId: string) {
+    return await this.prisma.photographer.findUnique({
+      where: {
+        userId: userId
+      }
+    });
+  }
+
+  async updateFeatured(id: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId,
+        userId: id
       },
-      include: {
-        user: true,
+      data
+    });
+  }
+
+  // ------- testmonial services ---------
+
+  async createTestimonial(dto: CreateTestimonialDto) {
+    const existingTestimonial = await this.prisma.testimonial.findFirst({
+      where: {
+        photographerId: dto.photographerId,
+        clientId: dto.clientId,
+      },
+    });
+
+    if (existingTestimonial) {
+      return await this.updateTestimonial(existingTestimonial.id, dto);
+    } else {
+      return await this.prisma.testimonial.create({
+        data: {
+          review: dto.review,
+          rating: dto.rating,
+          photographer: { connect: { userId: dto.photographerId } },
+          client: { connect: { userId: dto.clientId } },
+        },
+      });
+    }
+  }
+
+  async getTestimonials(photographerId: string) {
+    return await this.prisma.testimonial.findMany({
+      where: {
+        photographerId: photographerId,
+      },
+      select: {
+        id: true,
+        review: true,
+        rating: true,
+        visibility: true,
+        client: {
+          select: {
+            id: true,
+            name: true,
+            user: {
+              select: {
+                image: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    });
+  }
+
+  async updateTestimonial(id: string, dto: CreateTestimonialDto) {
+    return await this.prisma.testimonial.update({
+      where: {
+        id: id,
       },
       data: {
-        category: {
-          set: data.category,
+        ...dto,
+      },
+    });
+  }
+
+  async updateTestimonialVisibility(dto: VisibilityDto) {
+    const testimonials = await this.prisma.testimonial.findMany({
+      where: {
+        id: { in: dto.testimonialId },
+      },
+      select: {
+        id: true,
+        visibility: true,
+      },
+    });
+    const updatePromises = testimonials.map((testimonial) => {
+      return this.prisma.testimonial.update({
+        where: { id: testimonial.id },
+        data: {
+          visibility:
+            testimonial.visibility === TestimonialVisibility.PUBLIC
+              ? TestimonialVisibility.PRIVATE
+              : TestimonialVisibility.PUBLIC,
         },
+      });
+    });
+
+    await Promise.all(updatePromises);
+  }
+
+  // ------- settings services ---------
+
+  async createReport(id: string, dto: ReportDto) {
+    return await this.prisma.report.create({
+      data: {
+        subject: dto.subject,
+        description: dto.description,
+        user: {
+          connect: {
+            id: id,
+          }
+        }
       },
     });
   }
@@ -334,19 +433,38 @@ export class PhotographerService {
     });
   }
 
-  async createReport(id: string, dto: ReportDto) {
-    return await this.prisma.report.create({
-      data: {
-        subject: dto.subject,
-        description: dto.description,
-        user: {
-          connect: {
-            id: id,
-          }
-        }
+  async getAllCategories() {
+    return PhotographerCategory;
+  }
+
+  async getCategoryById(id: string) {
+    return this.prisma.photographer.findUnique({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
       },
     });
   }
+
+  async updateCategory(userId: string, data: Partial<Photographer>) {
+    return await this.prisma.photographer.update({
+      where: {
+        userId: userId,
+      },
+      include: {
+        user: true,
+      },
+      data: {
+        category: {
+          set: data.category,
+        },
+      },
+    });
+  }
+
+  // ------- album services ---------
 
   async createAlbum(dto: AlbumsDto) {
     return await this.prisma.album.create({
@@ -377,15 +495,6 @@ export class PhotographerService {
     });
   }
 
-  async deleteAlbum(id: string) {
-    return await this.prisma.album.delete({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-
   async getAlbums(id: string) {
     return this.prisma.album.findMany({
       where: {
@@ -402,6 +511,14 @@ export class PhotographerService {
       where: {
         albumId: id,
       }
+    });
+  }
+
+  async deleteAlbum(id: string) {
+    return await this.prisma.album.delete({
+      where: {
+        id: id,
+      },
     });
   }
 
@@ -440,91 +557,7 @@ export class PhotographerService {
     });
   }
 
-  async createPackage(dto: createPackageDto) {
-    return await this.prisma.package.create({
-      data: {
-        photographer: {
-          connect: {  //connect with the photographer id
-            userId: dto.photographerId,
-          }
-        },
-        name: dto.name,
-        description: dto.description,
-        coverPhotos: dto.coverPhotos,
-        price: dto.price,
-      },
-    });
-  }
-
-  async getPackageDetails(photographerId: string) {
-    return await this.prisma.package.findMany({
-      where: {
-        photographerId: photographerId,
-      },
-      include: {
-        booking: false
-      },
-    });
-  }
-
-  async getPackageById(packageId: string) {
-    return await this.prisma.package.findUnique({
-      where: {
-        id: packageId,
-      }
-    });
-  }
-
-
-  async updatePackageDetails(dto: updatePackageDto) {
-    const photographer = await this.prisma.photographer.findUnique({
-      where: {
-        userId: dto.photographerId,
-      },
-      include: {
-        user: true,
-      },
-    });
-
-    if (!photographer) {
-      throw new NotFoundException('Photographer not found');
-    }
-
-    return await this.prisma.package.update({
-      where: {
-        id: dto.packageId,
-      },
-      data: {
-        photographer: {
-          connect: {
-            userId: dto.photographerId,
-          }
-        },
-        name: dto.name,
-        description: dto.description,
-        coverPhotos: dto.coverPhotos,
-        price: dto.price,
-      },
-    });
-  }
-
-  async deletePackageDetails(dto: deletePackageDto) {
-    const photographer = await this.prisma.photographer.findUnique({
-      where: {
-        userId: dto.photographerId,
-      }
-    });
-
-    if (!photographer) {
-      throw new NotFoundException('Photographer not found');
-    }
-
-    return await this.prisma.package.delete({
-      where: {
-        id: dto.packageId,
-      },
-    });
-  }
+  // ------- feed services ---------
 
   async getFeed(id: string) {
     return await this.prisma.feedImage.findMany({
@@ -555,6 +588,7 @@ export class PhotographerService {
       },
     });
   }
+
   async createFeedComponent(dto: FeedDto) {
     return await this.prisma.feedImage.create({
       data: {
@@ -567,6 +601,7 @@ export class PhotographerService {
       },
     });
   }
+
   async feedLike(dto: FeedLikeDto) {
     const existingLike = await this.prisma.feedImage.findFirst({
       where: {
@@ -637,6 +672,7 @@ export class PhotographerService {
       },
     });
   }
+
   async feedSave(dto: FeedSaveDto) {
     const existingSave = await this.prisma.feedImage.findFirst({
       where: {
@@ -696,6 +732,7 @@ export class PhotographerService {
       },
     });
   }
+
   async deleteFeed(dto: DeleteFeedDto) {
     return await this.prisma.feedImage.delete({
       where: {
@@ -703,6 +740,7 @@ export class PhotographerService {
       },
     });
   }
+
   async getFeedHeader(id: string) {
     return await this.prisma.photographer.findUnique({
       where: {
@@ -719,17 +757,6 @@ export class PhotographerService {
     });
   }
 
-async getCategoryById(id:string) {
-  return this.prisma.photographer.findUnique({
-    where: {
-      userId: id,
-    },
-    select: {
-      category: true,
-    },
-  });
-}
-
   async updateCaption(dto: CaptionDto) {
     return await this.prisma.feedImage.update({
       where: {
@@ -739,44 +766,5 @@ async getCategoryById(id:string) {
         caption: dto.caption,
       },
     })
-  }
-
-  async saveCoverPhotos(packageId: string, data: Partial<Package>) {
-    await this.prisma.package.update({
-      where: { id: packageId },
-      data
-    });
-  }
-
-  async getAllCategories() {
-    return PhotographerCategory;
-  }
-
-  async getCategoryById(id: string) {
-    return this.prisma.photographer.findUnique({
-      where: {
-        userId: id,
-      },
-      select: {
-        category: true,
-      },
-    });
-  }
-
-  async getFeatured(userId: string) {
-    return await this.prisma.photographer.findUnique({
-      where: {
-        userId: userId
-      }
-    });
-  }
-
-  async updateFeatured(id: string, data: Partial<Photographer>) {
-    return await this.prisma.photographer.update({
-      where: {
-        userId: id
-      },
-      data
-    });
   }
 }
