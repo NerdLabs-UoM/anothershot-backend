@@ -226,16 +226,15 @@ export class PhotographerService {
   ) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId // Use the userId parameter passed to the method
+        userId: userId 
       },
       include: {
         user: true,
       },
       data: {
         user: {
-          // Since image is a property of the user object, you need to update it within the user object
           update: {
-            image: data.image // Set the image property to the value provided in the data parametery
+            image: data.image 
           }
         }
       }
@@ -433,7 +432,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     return await this.prisma.package.create({
       data: {
         photographer: {
-          connect: {                    //connect with the photographer id
+          connect: {  //connect with the photographer id
             userId: dto.photographerId,
           }
         },
@@ -708,9 +707,7 @@ async updateCategory(userId: string, data: Partial<Photographer>) {
     });
   }
 
-async getAllCategories() {
-  return PhotographerCategory;
-}
+
 async getCategoryById(id:string) {
   return this.prisma.photographer.findUnique({
     where: {
@@ -742,16 +739,6 @@ async getCategoryById(id:string) {
 
   async getAllCategories() {
     return PhotographerCategory;
-  }
-  async getCategoryById(id:string) {
-    return this.prisma.photographer.findUnique({
-      where: {
-        userId: id,
-      },
-      select: {
-        category: true,
-      },
-    });
   }
 
   async getFeatured(userId: string) {
