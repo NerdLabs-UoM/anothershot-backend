@@ -34,7 +34,13 @@ import { bankDetailsDto } from './dto/bankDetails.dto';
 
 @Controller('api/photographer')
 export class PhotographerController {
+
   constructor(private photographerService: PhotographerService) { }
+
+  @Get(':id')
+  async getPhotographer(@Param('id') userId: string) {
+    return await this.photographerService.getPhotographer(userId);
+  }
 
   @Post(':id/profile/testimonial')
   async createTestimonial(@Body() dto: CreateTestimonialDto) {
@@ -91,7 +97,7 @@ export class PhotographerController {
     return await this.photographerService.updateCoverPhoto(id, data);
   }
 
-  @Put(':id')
+  @Put(':id/updateuser')
   async updateUser(
     @Param('id') id: string,
     @Body() data: Partial<Photographer>,
@@ -124,10 +130,9 @@ export class PhotographerController {
 
   @Put('bankdetails/:id')
   async updateBankDetails(
-    @Param('id') id:string,
-    @Body() dto: bankDetailsDto) 
-    {
-    return await this.photographerService.updateBankDetails(id,dto);
+    @Param('id') id: string,
+    @Body() dto: bankDetailsDto) {
+    return await this.photographerService.updateBankDetails(id, dto);
   }
 
   @Post(':id/createalbum')
