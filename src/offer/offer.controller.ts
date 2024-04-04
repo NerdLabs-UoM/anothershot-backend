@@ -35,10 +35,15 @@ export class OfferController {
     return this.offerService.findAll(id);
   }
 
-  @Get(':id/photographer')
+  @Get(':id/photographer/offers')
   async getOfferbyPhotographer(@Param('id') id:string) {
     console.log(id);
     return this.offerService.getOfferbyPhotographer(id);
+  }
+
+  @Get(':id/client/offers')
+  async getOfferbyClient(@Param('id') id:string){
+    return this.offerService.getOffersbyClientId(id)
   }
 
 

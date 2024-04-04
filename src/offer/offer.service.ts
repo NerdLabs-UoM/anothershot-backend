@@ -66,20 +66,20 @@ export class OfferService {
   }
 
   async getOfferbyPhotographer(id: string) {
-    try{
       const offer = await this.prisma.offer.findMany({
         where: {
           photographerId: id,
-        }
+        },
       });
-      if (!offer) {
-        throw new NotFoundException(`Offer not found`);
+      return offer
+    }
+
+  async getOffersbyClientId(id: string) {
+    return await this.prisma.offer.findMany({
+      where:{
+        clientId:id
       }
-      return offer;
-    }
-       catch(err) {
-        return err
-    }
+    })
   }
 
   async deleteOfferbyBookingId(bookingId: string){
