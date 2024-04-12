@@ -19,6 +19,7 @@ import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
+import { updateBookingDto } from './dto/updateBooking.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -767,4 +768,34 @@ export class PhotographerService {
       },
     })
   }
+
+    //------- booking services ---------
+    async updateBookings(dto:updateBookingDto){
+      return await this.prisma.booking.update({
+        where:{
+          id:dto.bookingId
+        },
+        data:{
+          photographer:{
+            connect:{
+              userId:dto.photographerId
+            }
+          },
+          client:{
+            connect:{
+              userId:dto.clientId
+            }
+          },
+          subject:dto.subject,
+          category:dto.category,
+          package:{
+            connect:{
+              id:dto.packageId
+            }
+          },
+          status:dto.status
+        }
+      })
+    }
 }
+

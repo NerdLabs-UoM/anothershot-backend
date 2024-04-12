@@ -156,7 +156,7 @@ model Booking {
   start          DateTime?
   end            DateTime?
   event          Event?
-  status         BookingStatus        @default(PENDING)
+  status         BookingStatus       @default(PENDING)
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 }
@@ -180,7 +180,7 @@ model Offer {
 }
 model Event {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
+  name        String
   Booking     Booking   @relation(fields: [bookingId], references: [id])
   bookingId   String    @unique @db.ObjectId
   description String?

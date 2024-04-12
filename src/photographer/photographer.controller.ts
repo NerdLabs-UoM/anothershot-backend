@@ -28,6 +28,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
 import { ReportDto } from './dto/report.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
+import { updateBookingDto } from './dto/updateBooking.dto';
 
 
 @Controller('api/photographer')
@@ -37,7 +38,7 @@ export class PhotographerController {
 
   //------ photographer controllers -----------
 
-  @Get(':id')
+  @Get(':id/get')
   async getPhotographer(@Param('id') userId: string) {
     return await this.photographerService.getPhotographer(userId);
   }
@@ -268,5 +269,12 @@ export class PhotographerController {
   @Patch(':id/feed/caption')
   async updateCaption(@Body() dto: CaptionDto) {
     return await this.photographerService.updateCaption(dto);
+  }
+
+      //------- booking controllers ---------
+
+  @Put(':id/booking')
+  async updateBookings(@Body() dto: updateBookingDto) {
+    return await this.photographerService.updateBookings(dto);
   }
 }
