@@ -28,7 +28,10 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
 import { ReportDto } from './dto/report.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
-import { updateBookingDto } from './dto/updateBooking.dto';
+import { createBookingDto } from './dto/createBooking.dto';
+import { createEventDto } from './dto/createEvent.dto';
+import { updateEventDto } from './dto/updateEvent.dto';
+import { deleteEventDto } from './dto/deleteEvent.dto';
 
 
 @Controller('api/photographer')
@@ -271,10 +274,37 @@ export class PhotographerController {
     return await this.photographerService.updateCaption(dto);
   }
 
-      //------- booking controllers ---------
+  //------- booking controllers ---------
 
-  @Put(':id/booking')
-  async updateBookings(@Body() dto: updateBookingDto) {
-    return await this.photographerService.updateBookings(dto);
+  @Post(':id/booking')
+  async createBookings(@Body() dto: createBookingDto) {
+    return await this.photographerService.createBookings(dto);
+  }
+
+  //------- event controllers ---------
+
+  @Post(':id/event/create')
+  async createEvents(@Body() dto: createEventDto) {
+    return await this.photographerService.createEvents(dto);
+  }
+
+  @Get(':id/event/get')
+  async getEvents(@Param('id') id: string) {
+    return await this.photographerService.getEvents(id);
+  }
+
+  @Get(':id/event/getEventById')
+  async getEventById(@Param('eventId') eventId: string){
+    return await this.photographerService.getEventById(eventId);
+  }
+
+  @Put(':id/event/update')
+  async updateEvents(@Body() dto: updateEventDto) {
+    return await this.photographerService.updateEvents(dto);
+  }
+
+  @Delete(':id/event/delete')
+  async deleteEvents(@Body() dto: deleteEventDto) {
+    return await this.photographerService.deleteEvents(dto);
   }
 }

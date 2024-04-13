@@ -19,7 +19,10 @@ import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-import { updateBookingDto } from './dto/updateBooking.dto';
+import { createBookingDto } from './dto/createBooking.dto';
+import { createEventDto } from './dto/createEvent.dto';
+import { updateEventDto } from './dto/updateEvent.dto';
+import { deleteEventDto } from './dto/deleteEvent.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -770,32 +773,96 @@ export class PhotographerService {
   }
 
     //------- booking services ---------
-    async updateBookings(dto:updateBookingDto){
-      return await this.prisma.booking.update({
+    async createBookings(dto: createBookingDto) {
+      return await this.prisma.booking.create({
+        data: {
+          id: dto.bookingId,
+          photographer: {
+            connect: {
+              userId: dto.photographerId,
+            }
+          },
+          client: {
+            connect: {
+              userId: dto.clientId,
+            }
+          },
+          subject: dto.subject,
+          category: dto.category,
+          package: {
+            connect: {
+              id: dto.packageId,
+            }
+          },
+          status: dto.status,
+        },
+      });
+    }
+    
+        //------- event services ---------
+
+    async createEvents(dto:createEventDto){
+      return await this.prisma.event.create({
+        data:{
+          
+          name:dto.eventName,
+          Booking:{
+            connect:{
+              id:dto.bookingId,
+            }
+          },
+          start:dto.start,
+          end:dto.end,
+          allDay:dto.allDay,
+        },
+      });
+    }
+
+    async getEvents(id:string){
+      return await this.prisma.event.findMany({
         where:{
-          id:dto.bookingId
+          Booking:{
+            photographerId:id,
+          },
+        },
+      });
+    }
+
+    async getEventById(eventId: string) {
+      return await this.prisma.package.findUnique({
+        where: {
+          id: eventId,
+        }
+      });
+    }
+
+    async updateEvents(dto:updateEventDto){
+      return await this.prisma.event.update({
+        where:{
+          id:dto.eventId,
         },
         data:{
-          photographer:{
+          name:dto.eventName,
+          Booking:{
             connect:{
-              userId:dto.photographerId
+              id:dto.bookingId,
             }
           },
-          client:{
-            connect:{
-              userId:dto.clientId
-            }
-          },
-          subject:dto.subject,
-          category:dto.category,
-          package:{
-            connect:{
-              id:dto.packageId
-            }
-          },
-          status:dto.status
-        }
-      })
+          start:dto.start,
+          end:dto.end,
+          allDay:dto.allDay,
+        },
+      });
     }
+    
+    async deleteEvents(dto:deleteEventDto){
+      return await this.prisma.event.delete({
+        where:{
+          id:dto.eventId,
+        },
+      });
+    }
+
+    
 }
 

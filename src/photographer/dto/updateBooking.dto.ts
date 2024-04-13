@@ -1,25 +1,45 @@
-import { BookingStatus, PhotographerCategory } from "@prisma/client";
-import {  IsEnum, IsOptional, IsString } from "class-validator";
+// import { IsOptional, IsString, IsEnum } from 'class-validator';
+// import { PhotographerCategory, BookingStatus } from '@prisma/client';
 
-export class updateBookingDto {
-    @IsString()
-    bookingId: string;
+// export class createBookingDto {
+//   @IsString()
+//   clientId: string;
 
-    @IsString()
-    photographerId: string;
+//   @IsString()
+//   photographerId: string;
 
-    @IsString()
-    clientId: string;
+//   @IsString()
+//   subject: string;
 
-    @IsString()
-    subject: string;
+//   @IsEnum(PhotographerCategory)
+//   category: PhotographerCategory;
 
-    @IsEnum(PhotographerCategory)
-    category: PhotographerCategory;
+//   @IsString()
+//   packageId: string;
 
-    @IsString()
-    packageId: string;
+//   @IsString()
+//   @IsOptional()
+//   payment?: string;
 
-    @IsEnum(BookingStatus)
-    status: BookingStatus;
-}
+//   @IsString()
+//   @IsOptional()
+//   offerId?: string;
+
+//   @IsString()
+//   date: Date;
+
+//   @IsString()
+//   @IsOptional()
+//   start?: Date;
+
+//   @IsString()
+//   @IsOptional()
+//   end?: Date;
+
+//   @IsString()
+//   @IsOptional()
+//   eventId?: string;
+
+//   @IsEnum(BookingStatus)
+//   status: BookingStatus;
+// }

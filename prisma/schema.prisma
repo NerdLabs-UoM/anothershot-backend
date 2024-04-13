@@ -152,7 +152,7 @@ model Booking {
   packageId      String               @db.ObjectId
   payment        String?
   offer          Offer?
-  date           DateTime
+  date           DateTime?
   start          DateTime?
   end            DateTime?
   event          Event?
