@@ -90,7 +90,8 @@ model Client {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String        @unique @db.ObjectId
-  name        String        @default("Client Name")
+  name        String?       @default("Client Name")
+  bio         String?
   testimonial Testimonial[]
   Booking     Booking[]
   Report      Report[]
