@@ -1,4 +1,34 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Patch } from '@nestjs/common';
+import { ClientService } from './client.service';
+import { ClientImageDto } from './dto/client.dto';
+import { ClientDto } from './dto/client.dto';
+import { Body, Param } from '@nestjs/common';
+@Controller('api/client')
+export class ClientController {
+    constructor(private clientService: ClientService) { }
 
-@Controller('client')
-export class ClientController {}
+    @Patch(':id/profile/image')
+    async updateImage(@Body() dto: ClientImageDto) {
+        return await this.clientService.updateImage(dto);
+    }
+
+    @Patch(':id/profile')
+    async updateProfile(@Body() dto: ClientDto) {
+        return await this.clientService.updateProfile(dto);
+    }
+
+    @Get(':id/clientDetails')
+    async getClientDetails(@Param('id') id: string) {
+        return await this.clientService.getClientDetails(id);
+    }
+
+    @Get(':id/likeImages')
+    async getLikedImages(@Param('id') id: string) {
+        return await this.clientService.getLikedImages(id);
+    }
+
+    @Get(':id/savedImages')
+    async getSavedImages(@Param('id') id:string){
+        return await this.clientService.getSavedImages(id);
+    }
+}

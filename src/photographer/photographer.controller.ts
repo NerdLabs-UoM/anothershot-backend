@@ -37,7 +37,7 @@ export class PhotographerController {
 
   //------ photographer controllers -----------
 
-  @Get(':id')
+  @Get(':id/get')
   async getPhotographer(@Param('id') userId: string) {
     return await this.photographerService.getPhotographer(userId);
   }

@@ -704,6 +704,9 @@ export class PhotographerService {
             savedUserIds: {
               push: dto.userId,
             },
+            saves: {
+              connect: { id: dto.userId },
+            },
           },
         });
         saveCount++;
@@ -721,6 +724,15 @@ export class PhotographerService {
           },
         });
         saveCount--;
+        await this.prisma.user.update({
+          where: { id: dto.userId },
+          data: {
+            savedFeedImages: {
+              disconnect: { id: dto.feedId },
+            },
+          },
+        }
+          )
       }
     }
     return await this.prisma.feedImage.update({
