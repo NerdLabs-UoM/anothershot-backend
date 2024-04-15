@@ -4,11 +4,14 @@ export class createEventDto{
    
     
     @IsString()
-    eventName: string;
+    name: string;
 
     @IsString()
     bookingId: string;
 
+    @IsString()
+    description:string;
+    
     @IsDate()
     @IsOptional()
     start: Date;

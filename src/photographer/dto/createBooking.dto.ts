@@ -2,17 +2,16 @@ import { BookingStatus, PhotographerCategory } from "@prisma/client";
 import {  IsEnum, IsOptional, IsString } from "class-validator";
 
 export class createBookingDto {
-    @IsString()
-    bookingId: string;
-
+   
     @IsString()
     photographerId: string;
 
     @IsString()
     clientId: string;
 
-    @IsString()
-    subject: string;
+    // @IsString()
+    // @IsOptional()
+    // subject: string;
 
     @IsEnum(PhotographerCategory)
     category: PhotographerCategory;
