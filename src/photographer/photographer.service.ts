@@ -19,7 +19,7 @@ import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-import { createBookingDto } from './dto/createBooking.dto';
+import { ClientBookingDto } from './dto/clientBooking.dto';
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';
@@ -773,27 +773,38 @@ export class PhotographerService {
   }
 
   //------- booking services ---------
-  async createBookings(dto: createBookingDto) {
+  async clientBooking(dto: ClientBookingDto) {
+    const startDate = new Date(dto.startDate);
+    const endDate = new Date(dto.endDate);
+
+    startDate.setDate(startDate.getDate() + 1);
+    endDate.setDate(endDate.getDate() + 1);
+
     return await this.prisma.booking.create({
       data: {
-        photographer: {
-          connect: {
-            userId: dto.photographerId,
-          }
-        },
         client: {
           connect: {
             userId: dto.clientId,
           }
         },
-        // subject: dto.subject,
-        category: dto.category,
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          }
+        },
+        subject:dto.eventName,
+        startDate:startDate.toISOString(),
+        endDate:endDate.toISOString(),
+        start:dto.startTime,
+        end:dto.endTime,
+        location:dto.eventLocation,
+        category:
+        PhotographerCategory[dto.category.toUpperCase() as keyof typeof PhotographerCategory],
         package: {
           connect: {
             id: dto.packageId,
           }
         },
-        status: dto.status,
       },
     });
   }
@@ -810,6 +821,8 @@ export class PhotographerService {
           }
         },
         description: dto.description,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
         start: dto.start,
         end: dto.end,
         allDay: dto.allDay,
@@ -838,15 +851,18 @@ export class PhotographerService {
   async updateEvents(dto: updateEventDto) {
     return await this.prisma.event.update({
       where: {
-        id: dto.eventId,
+        id: dto.id,
       },
       data: {
-        name: dto.eventName,
+        name: dto.name,
+        description: dto.description,
         Booking: {
           connect: {
             id: dto.bookingId,
           }
         },
+        startDate: dto.startDate,
+        endDate: dto.endDate,
         start: dto.start,
         end: dto.end,
         allDay: dto.allDay,
@@ -857,11 +873,10 @@ export class PhotographerService {
   async deleteEvents(dto: deleteEventDto) {
     return await this.prisma.event.delete({
       where: {
-        id: dto.eventId,
+        id: dto.id,
       },
     });
   }
-
-
+  
 }
 

@@ -1,8 +1,7 @@
-import {  IsBoolean, IsDate,  IsOptional, IsString } from "class-validator";
+import {  IsBoolean, IsDate,  IsDateString,  IsOptional, IsString } from "class-validator";
 
 export class createEventDto{
-   
-    
+       
     @IsString()
     name: string;
 
@@ -11,15 +10,19 @@ export class createEventDto{
 
     @IsString()
     description:string;
-    
-    @IsDate()
-    @IsOptional()
-    start: Date;
 
-    @IsDate()
-    @IsOptional()
-    end: Date;
+    @IsDateString()
+    startDate: string;
 
+    @IsDateString()
+    endDate: string;
+
+    @IsString()
+    start: string;
+
+    @IsString()
+    end: string;
+        
     @IsBoolean()
     @IsOptional()
     allDay: boolean;

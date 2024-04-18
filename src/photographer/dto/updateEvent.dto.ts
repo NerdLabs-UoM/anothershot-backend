@@ -1,25 +1,31 @@
-import {  IsBoolean, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsOptional, IsString } from "class-validator";
 
-export class updateEventDto{
+export class updateEventDto {
     @IsString()
-    eventId: string;
-  
+    id: string;
+
     @IsString()
-    eventName: string;
+    name: string;
 
     @IsString()
     bookingId: string;
 
     @IsString()
-    @IsOptional()
+    description: string;
+    
+    @IsDateString()
+    startDate: string;
+
+    @IsDateString()
+    endDate: string;
+
+    @IsString()
     start: string;
 
     @IsString()
-    @IsOptional()
     end: string;
 
     @IsBoolean()
     @IsOptional()
-    allDay: boolean
-    ;
+    allDay: boolean;
 }

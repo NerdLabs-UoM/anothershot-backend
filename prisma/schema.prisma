@@ -37,30 +37,30 @@ model Session {
 }
 
 model User {
-  id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  userName         String        @default("UserName")
-  email            String        @unique
-  emailVerified    Boolean       @default(false)
-  password         String
-  userRole         UserRole      @default(CLIENT)
-  image            String?
-  accounts         Account[]     @relation("AccountToUser")
-  sessions         Session[]
-  photographer     Photographer? @relation(name: "PhotographerToUser")
-  client           Client?
-  admin            Admin?
-  chats            Chat[]        @relation(fields: [chatIds], references: [id])
-  chatIds          String[]      @db.ObjectId
-  messagesSent     Message[]     @relation("senderUser")
-  messagesReceived Message[]     @relation("receiverUser")
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  suspended        Suspended     @default(NOT_SUSPENDED)
-   likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  userName           String        @default("UserName")
+  email              String        @unique
+  emailVerified      Boolean       @default(false)
+  password           String
+  userRole           UserRole      @default(CLIENT)
+  image              String?
+  accounts           Account[]     @relation("AccountToUser")
+  sessions           Session[]
+  photographer       Photographer? @relation(name: "PhotographerToUser")
+  client             Client?
+  admin              Admin?
+  chats              Chat[]        @relation(fields: [chatIds], references: [id])
+  chatIds            String[]      @db.ObjectId
+  messagesSent       Message[]     @relation("senderUser")
+  messagesReceived   Message[]     @relation("receiverUser")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  suspended          Suspended     @default(NOT_SUSPENDED)
+  likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
   likedFeedImagesIds String[]      @db.ObjectId
   savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
   savedFeedImagesIds String[]      @db.ObjectId
-  reports          Report[]
+  reports            Report[]
 }
 
 model Photographer {
@@ -70,7 +70,7 @@ model Photographer {
   name           String?                @default("Photographer Name")
   coverPhoto     String?
   bio            String?
-  featured       String[] 
+  featured       String[]
   category       PhotographerCategory[]
   contactDetails ContactDetails?
   testimonial    Testimonial[]
@@ -146,46 +146,50 @@ model Booking {
   clientId       String               @db.ObjectId
   photographer   Photographer         @relation(fields: [photographerId], references: [userId])
   photographerId String               @db.ObjectId
-  subject        String?               @db.ObjectId
+  subject        String?              
   category       PhotographerCategory
   package        Package              @relation(fields: [packageId], references: [id])
   packageId      String               @db.ObjectId
   payment        String?
   offer          Offer?
-  date           DateTime?
-  start          DateTime?
-  end            DateTime?
+  startDate      DateTime?
+  endDate        DateTime?
+  start          String?
+  end            String?
+  location       String?
   event          Event?
-  status         BookingStatus       @default(PENDING)
+  status         BookingStatus        @default(PENDING)
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 }
 
-
 model Offer {
-  id             String               @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client               @relation(fields: [clientId], references: [id],onDelete: Cascade)
-  clientId       String               @db.ObjectId
-  photographer   Photographer         @relation(fields: [photographerId], references: [id],onDelete: Cascade)
-  photographerId String               @db.ObjectId
-  booking        Booking              @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
-  bookingsId     String               @unique @db.ObjectId 
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId       String       @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  photographerId String       @db.ObjectId
+  booking        Booking      @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
+  bookingsId     String       @unique @db.ObjectId
   description    String
   packageName    String
   clientName     String
   price          Float
   date           DateTime?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
+
 model Event {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   Booking     Booking   @relation(fields: [bookingId], references: [id])
   bookingId   String    @unique @db.ObjectId
   description String?
-  start       DateTime?
-  end         DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  start       String?
+  end         String?
   allDay      Boolean?  @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -325,7 +329,7 @@ model Album {
 }
 
 model AlbumImage {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId 
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId String @db.ObjectId
   image   String

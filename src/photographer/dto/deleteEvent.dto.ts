@@ -2,12 +2,12 @@ import { IsOptional, IsString } from "class-validator";
 
 export class deleteEventDto{
     @IsString()
-    eventId: string;
+    id: string;
   
     @IsString()
     bookingId: string;
 
-    @IsString()
-    @IsOptional()
-    photographerId: string;
+    // @IsString()
+    // @IsOptional()
+    // photographerId: string;
 }

@@ -28,7 +28,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
 import { ReportDto } from './dto/report.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
-import { createBookingDto } from './dto/createBooking.dto';
+import { ClientBookingDto } from './dto/clientBooking.dto';
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';
@@ -276,9 +276,9 @@ export class PhotographerController {
 
   //------- booking controllers ---------
 
-  @Post(':id/booking')
-  async createBookings(@Body() dto: createBookingDto) {
-    return await this.photographerService.createBookings(dto);
+  @Post(':id/clientBooking')
+  async createBookings(@Body() dto: ClientBookingDto) {
+    return await this.photographerService.clientBooking(dto);
   }
 
   //------- event controllers ---------
