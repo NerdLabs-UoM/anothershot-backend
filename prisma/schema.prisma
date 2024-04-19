@@ -143,19 +143,21 @@ model Attachment {
 
 model Booking {
   id             String               @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client               @relation(fields: [clientId], references: [id])
+  client         Client               @relation(fields: [clientId], references: [userId])
   clientId       String               @db.ObjectId
-  photographer   Photographer         @relation(fields: [photographerId], references: [id])
+  photographer   Photographer         @relation(fields: [photographerId], references: [userId])
   photographerId String               @db.ObjectId
-  subject        String               @db.ObjectId
+  subject        String?               
   category       PhotographerCategory
   package        Package              @relation(fields: [packageId], references: [id])
   packageId      String               @db.ObjectId
   payment        String?
   offer          Offer?
-  date           DateTime
-  start          DateTime?
-  end            DateTime?
+  startdate      DateTime?
+  enddate        DateTime?
+  start          String?
+  end            String?
+  location       String?
   event          Event?
   status         BookingStatus        @default(PENDING)
   createdAt      DateTime             @default(now())
