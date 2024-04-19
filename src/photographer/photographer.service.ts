@@ -471,6 +471,7 @@ export class PhotographerService {
       data: {
         name: dto.name,
         description: dto.description,
+        visibility: dto.visibility,
         photographer: {
           connect: {
             userId: dto.photographerId,
@@ -491,6 +492,7 @@ export class PhotographerService {
       data: {
         name: dto.name,
         description: dto.description,
+        visibility: dto.visibility,
       },
     });
   }
@@ -502,6 +504,14 @@ export class PhotographerService {
       },
       include: {
         images: true,
+      },
+    });
+  }
+
+  async getAlbum(id: string) {
+    return this.prisma.album.findMany({
+      where: {
+        id: id,
       },
     });
   }

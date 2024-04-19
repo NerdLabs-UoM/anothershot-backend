@@ -208,6 +208,11 @@ export class PhotographerController {
     return await this.photographerService.editAlbum(dto);
   }
 
+  @Get(':id/getalbum')
+  async getAlbum(@Param('id') id: string) {
+    return await this.photographerService.getAlbum(id);
+  }
+  
   @Get(':id/getalbums')
   async getAlbums(@Param('id') id: string) {
     return await this.photographerService.getAlbums(id);

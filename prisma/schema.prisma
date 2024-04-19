@@ -320,6 +320,7 @@ model Album {
   name           String
   description    String
   images         AlbumImage[]
+  visibility     AlbumVisibility  @default(PRIVATE)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -351,6 +352,11 @@ enum ReportStatus {
 }
 
 enum TestimonialVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum AlbumVisibility {
   PUBLIC
   PRIVATE
 }
