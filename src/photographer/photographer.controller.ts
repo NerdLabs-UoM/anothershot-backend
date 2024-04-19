@@ -28,7 +28,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
 import { ReportDto } from './dto/report.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
-
+import { ClientBookingDto } from './dto/clientBooking.dto';
 
 @Controller('api/photographer')
 export class PhotographerController {
@@ -268,5 +268,20 @@ export class PhotographerController {
   @Patch(':id/feed/caption')
   async updateCaption(@Body() dto: CaptionDto) {
     return await this.photographerService.updateCaption(dto);
+  }
+  
+  @Get(':id/bookingsCategory')
+  async getBookingsCategory(@Param('id') id: string) {
+    return await this.photographerService.getBookingsCategory(id);
+  }
+
+  @Get(':id/bookingsPackage')
+  async getBookingsPackage(@Param('id') id: string) {
+    return await this.photographerService.getBookingsPackage(id);
+  }
+  
+  @Post(':id/clientBooking')
+  async clientBooking(@Body() dto: ClientBookingDto){
+    return await this.photographerService.clientBooking(dto);
   }
 }

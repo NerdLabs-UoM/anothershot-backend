@@ -31,4 +31,9 @@ export class ClientController {
     async getSavedImages(@Param('id') id:string){
         return await this.clientService.getSavedImages(id);
     }
+
+    @Get(':id/clientBookings')
+    async getBookings(@Param('id') clientId: string) {
+      return await this.clientService.getBookings(clientId);
+    }
 }

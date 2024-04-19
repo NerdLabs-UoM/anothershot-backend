@@ -82,4 +82,41 @@ export class ClientService {
         })
     }
 
+    async getBookings(clientId: string) {
+        return await this.prisma.booking.findMany({
+            where: {
+                clientId: clientId,
+            },
+            select: {
+                id: true,
+                subject: true,
+                category: true,
+                startdate: true,
+                status: true,
+                location: true,
+                client: {
+                    select: {
+                        name: true,
+                    },
+                },
+                photographer: {
+                    select: {
+                       name: true,
+                    },
+                },
+                offer: {
+                    select: {
+                        price: true,
+                    },
+                },
+                package: {
+                    select: {
+                        name: true,
+                    },
+                },
+        },
+        });
+        
+    }
+
 }
