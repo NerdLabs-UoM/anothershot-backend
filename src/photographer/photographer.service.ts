@@ -792,14 +792,14 @@ export class PhotographerService {
             userId: dto.photographerId,
           }
         },
-        subject:dto.eventName,
-        startDate:startDate.toISOString(),
-        endDate:endDate.toISOString(),
-        start:dto.startTime,
-        end:dto.endTime,
-        location:dto.eventLocation,
+        subject: dto.eventName,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        start: dto.startTime,
+        end: dto.endTime,
+        location: dto.eventLocation,
         category:
-        PhotographerCategory[dto.category.toUpperCase() as keyof typeof PhotographerCategory],
+          PhotographerCategory[dto.category.toUpperCase() as keyof typeof PhotographerCategory],
         package: {
           connect: {
             id: dto.packageId,
@@ -808,75 +808,125 @@ export class PhotographerService {
       },
     });
   }
+  async getBookings(photographerId: string) {
+    return await this.prisma.booking.findMany({
+      where: {
+        photographerId: photographerId
+      },
+      select: {
+        id: true,
+        subject: true,
+        startDate: true,
+        status: true,
+        location: true,
+        category: true,
+        client: {
+          select: {
+            name: true,
+
+          },
+        },
+        photographer: {
+          select: {
+            name: true,
+
+          },
+        },
+        offer: {
+          select: {
+            price: true,
+          },
+        },
+        package: {
+          select: {
+            name: true,
+          },
+        },
+      }
+    })
+  }
+       
+
 
   //------- event services ---------
 
   async createEvents(dto: createEventDto) {
-    return await this.prisma.event.create({
-      data: {
-        name: dto.name,
-        Booking: {
-          connect: {
-            id: dto.bookingId,
-          }
-        },
-        description: dto.description,
-        startDate: dto.startDate,
-        endDate: dto.endDate,
-        start: dto.start,
-        end: dto.end,
-        allDay: dto.allDay,
+  const startDate = new Date(dto.startDate);
+  const endDate = new Date(dto.endDate);
+
+  startDate.setDate(startDate.getDate() + 1);
+  endDate.setDate(endDate.getDate() + 1);
+  return await this.prisma.event.create({
+    data: {
+      name: dto.name,
+      Booking: {
+        connect: {
+          id: dto.bookingId,
+        }
       },
-    });
-  }
+      description: dto.description,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      start: dto.start,
+      end: dto.end,
+      allDay: dto.allDay,
+    },
+  });
+}
 
   async getEvents(id: string) {
-    return await this.prisma.event.findMany({
-      where: {
-        Booking: {
-          photographerId: id,
-        },
+  return await this.prisma.event.findMany({
+    where: {
+      Booking: {
+        photographerId: id,
       },
-    });
-  }
+    },
+  });
+}
+
 
   async getEventById(eventId: string) {
-    return await this.prisma.package.findUnique({
-      where: {
-        id: eventId,
-      }
-    });
-  }
+  return await this.prisma.package.findUnique({
+    where: {
+      id: eventId,
+    }
+  });
+}
 
   async updateEvents(dto: updateEventDto) {
-    return await this.prisma.event.update({
-      where: {
-        id: dto.id,
+  const startDate = new Date(dto.startDate);
+  const endDate = new Date(dto.endDate);
+
+  startDate.setDate(startDate.getDate() + 1);
+  endDate.setDate(endDate.getDate() + 1);
+  return await this.prisma.event.update({
+    where: {
+      id: dto.id,
+    },
+    data: {
+      name: dto.name,
+      description: dto.description,
+      Booking: {
+        connect: {
+          id: dto.bookingId,
+        }
       },
-      data: {
-        name: dto.name,
-        description: dto.description,
-        Booking: {
-          connect: {
-            id: dto.bookingId,
-          }
-        },
-        startDate: dto.startDate,
-        endDate: dto.endDate,
-        start: dto.start,
-        end: dto.end,
-        allDay: dto.allDay,
-      },
-    });
-  }
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      start: dto.start,
+      end: dto.end,
+      allDay: dto.allDay,
+    },
+  });
+}
 
   async deleteEvents(dto: deleteEventDto) {
-    return await this.prisma.event.delete({
-      where: {
-        id: dto.id,
-      },
-    });
-  }
-  
+  return await this.prisma.event.delete({
+    where: {
+      id: dto.id,
+    },
+  });
+}
+
 }
 

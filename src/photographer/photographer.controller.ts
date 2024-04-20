@@ -281,6 +281,11 @@ export class PhotographerController {
     return await this.photographerService.clientBooking(dto);
   }
 
+  @Get(':id/clientBookings')
+  async getBookings(@Param('id') photographerId: string) {
+    return await this.photographerService.getBookings(photographerId);
+    }
+
   //------- event controllers ---------
 
   @Post(':id/event/create')
@@ -289,8 +294,8 @@ export class PhotographerController {
   }
 
   @Get(':id/event/get')
-  async getEvents(@Param('id') id: string) {
-    return await this.photographerService.getEvents(id);
+  async getEvents(@Param('id') eventId: string) {
+    return await this.photographerService.getEvents(eventId);
   }
 
   @Get(':id/event/getEventById')
