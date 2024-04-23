@@ -37,28 +37,28 @@ export class PaymentService {
     })
   }
 
-  //Ceate a Checkout Session
-  // async createCheckoutSession(bookingId: string) {
-  //   const session = await this.stripe.checkout.sessions.create({
-  //     payment_method_types: ['card'],
-  //     line_items: [
-  //       {
-  //         price_data: {
-  //           currency: 'usd',
-  //           product_data: {
-  //             name: "t-shirt",
-  //           },
-  //           unit_amount: 2000,
-  //         },
-  //         quantity: 1,
-  //       },
-  //     ],
-  //     mode: 'payment',
-  //     success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-  //     cancel_url: `http://localhost:3000/cancel`,
-  //   });
-  //   return session;
-  // }
+  // Ceate a Checkout Session
+  async createCheckoutSession(data:any) {
+
+    const session = await this.stripe.checkout.sessions.create({
+      mode:"payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "wedding",
+            },
+            unit_amount: data.price*100,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:3000/cancel`,
+    });
+    return session.url;
+  }
 
   // //Create session as responce to frontend
   // async createCheckoutSessionResponse(bookingId: string) {
