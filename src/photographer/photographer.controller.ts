@@ -246,8 +246,8 @@ export class PhotographerController {
   }
 
   @Patch(':id/feed/like')
-  async feedLike(@Body() dto: FeedLikeDto) {
-    return await this.photographerService.feedLike(dto);
+  async feedLike(@Param('id') photographerId:string, @Body() dto: FeedLikeDto) {
+    return await this.photographerService.feedLike(photographerId,dto);
   }
 
   @Patch(`:id/feed/createSave`)
