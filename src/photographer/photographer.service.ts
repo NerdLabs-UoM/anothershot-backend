@@ -19,11 +19,12 @@ import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-
+import { NotifyService } from '../notification/notify.service';
+import { CreateNotifyDto } from 'src/notification/dto/create-notify.dto';
 @Injectable()
 export class PhotographerService {
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService, private NotifyService: NotifyService) { }
 
   //------ photographer services -----------
 
@@ -602,7 +603,8 @@ export class PhotographerService {
     });
   }
 
-  async feedLike(dto: FeedLikeDto) {
+
+  async feedLike(photographerId:string,dto: FeedLikeDto) {
     const existingLike = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -623,6 +625,19 @@ export class PhotographerService {
     let likeCount = feed.likeCount;
 
     if (dto.like) {
+      const userName = await this.prisma.user.findUnique({
+        where: {
+          id: dto.userId,
+        },
+        select: {
+          userName: true,
+        },
+      })
+      const createNotifyDtoData = new CreateNotifyDto();
+      createNotifyDtoData.receiverId = photographerId;
+      createNotifyDtoData.type = "liked";
+      createNotifyDtoData.title =`${userName.userName} likes your photo`;
+      await this.NotifyService.createNotification(createNotifyDtoData);
       if (!existingLike) {
         await this.prisma.feedImage.update({
           where: {
