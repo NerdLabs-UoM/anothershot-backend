@@ -12,6 +12,11 @@ export class PaymentController {
     return this.paymentService.createPaymentIntent(createPaymentDto);
   }
 
+  @Post('create-checkout-session')
+  async createCheckoutSession(@Body() createPaymentDto: any) {
+    return this.paymentService.createCheckoutSession(createPaymentDto);
+  }
+
   @Get()
   findAll() {
     return this.paymentService.findAll();
