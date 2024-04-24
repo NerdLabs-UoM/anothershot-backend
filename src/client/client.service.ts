@@ -102,6 +102,12 @@ export class ClientService {
                 photographer: {
                     select: {
                        name: true,
+                       userId: true,
+                       user: {
+                            select: {
+                                 image: true,
+                            }
+                          },
                     },
                 },
                 offer: {
@@ -115,8 +121,10 @@ export class ClientService {
                     },
                 },
         },
+        orderBy: {
+            id: 'desc',
+          },
         });
-        
     }
 
 }
