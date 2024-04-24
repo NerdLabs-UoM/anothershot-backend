@@ -893,27 +893,3 @@ export class PhotographerService {
     });
   }
 }
-
-
- // ------- Notification services ---------
-
-// async function handleLikeNotification(userId: string, photographerId: string , type:string, title:string) {
-//   // Fetch the user name
-//   const userName = this.prisma.user.findUnique({
-//       where: {
-//           id: userId,
-//       },
-//       select: {
-//           userName: true,
-//       },
-//   });
-
-//   // Create the notification DTO data
-//   const createNotifyDtoData = new CreateNotifyDto();
-//   createNotifyDtoData.receiverId = photographerId;
-//   createNotifyDtoData.type = type;
-//   createNotifyDtoData.title = userName.userName + title;
-
-//   // Create the notification
-//   await this.NotifyService.createNotification(createNotifyDtoData);
-// }
