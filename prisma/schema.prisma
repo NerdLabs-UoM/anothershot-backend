@@ -56,11 +56,13 @@ model User {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   suspended        Suspended     @default(NOT_SUSPENDED)
-   likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
+  likedFeedImages    FeedImage[]   @relation("LikedImages", fields: [likedFeedImagesIds], references: [id])
   likedFeedImagesIds String[]      @db.ObjectId
   savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
   savedFeedImagesIds String[]      @db.ObjectId
   reports          Report[]
+  notifications    Notification[]
+
 }
 
 model Photographer {
@@ -333,6 +335,17 @@ model AlbumImage {
   album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId String @db.ObjectId
   image   String
+}
+
+model Notification {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  receiver        User @relation(fields:[receiverId],references:[id])
+  receiverId      String @db.ObjectId
+  type            String
+  title           String
+  description     String?
+  read            Boolean @default(false)
+  createdAt       DateTime @default(now())
 }
 
 enum UserRole {
