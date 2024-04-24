@@ -21,6 +21,8 @@ import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
 import { NotifyService } from '../notification/notify.service';
 import { CreateNotifyDto } from 'src/notification/dto/create-notify.dto';
+import { ClientBookingDto } from './dto/clientBooking.dto';
+
 @Injectable()
 export class PhotographerService {
 
@@ -472,6 +474,7 @@ export class PhotographerService {
       data: {
         name: dto.name,
         description: dto.description,
+        visibility: dto.visibility,
         photographer: {
           connect: {
             userId: dto.photographerId,
@@ -492,6 +495,7 @@ export class PhotographerService {
       data: {
         name: dto.name,
         description: dto.description,
+        visibility: dto.visibility,
       },
     });
   }
@@ -503,6 +507,14 @@ export class PhotographerService {
       },
       include: {
         images: true,
+      },
+    });
+  }
+
+  async getAlbum(id: string) {
+    return this.prisma.album.findMany({
+      where: {
+        id: id,
       },
     });
   }
@@ -739,6 +751,9 @@ export class PhotographerService {
             savedUserIds: {
               push: dto.userId,
             },
+            saves: {
+              connect: { id: dto.userId },
+            },
           },
         });
         saveCount++;
@@ -756,6 +771,15 @@ export class PhotographerService {
           },
         });
         saveCount--;
+        await this.prisma.user.update({
+          where: { id: dto.userId },
+          data: {
+            savedFeedImages: {
+              disconnect: { id: dto.feedId },
+            },
+          },
+        }
+          )
       }
     }
     return await this.prisma.feedImage.update({
@@ -800,7 +824,73 @@ export class PhotographerService {
       data: {
         caption: dto.caption,
       },
-    })
+    });
+  }
+
+  async getBookingsCategory(id: string) {
+    const bookings = await this.prisma.photographer.findMany({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
+      },
+    });
+    const lowercaseCategories = bookings.map((booking) => ({
+      category: booking.category.map((category) => category.toLowerCase()),
+    }));
+
+    return lowercaseCategories;
+  }
+
+  async getBookingsPackage(id: string) {
+    return await this.prisma.package.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
+  async clientBooking(dto: ClientBookingDto) {
+    const startDate = new Date(dto.startDate);
+    const endDate = new Date(dto.endDate);
+
+    startDate.setDate(startDate.getDate() + 1);
+    endDate.setDate(endDate.getDate() + 1);
+    
+    return await this.prisma.booking.create({
+      data: {
+        client: {
+          connect: {
+            userId: dto.clientId,
+          },
+        },
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          },
+        },
+        subject: dto.eventName,
+        startdate: startDate.toISOString(),
+        enddate: endDate.toISOString(),
+        start: dto.startTime,
+        end: dto.endTime,
+        location: dto.eventLocation,
+        category:
+          PhotographerCategory[
+            dto.category.toUpperCase() as keyof typeof PhotographerCategory
+          ],
+        package: {
+          connect: {
+            id: dto.packageId,
+          },
+        },
+      },
+    });
   }
 }
 

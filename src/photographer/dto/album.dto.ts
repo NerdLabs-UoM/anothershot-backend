@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsArray } from 'class-validator';
+import { AlbumVisibility } from '@prisma/client';
+import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
 
 export class AlbumsDto {
   @IsString()
@@ -12,6 +13,10 @@ export class AlbumsDto {
   @IsString()
   @IsNotEmpty()
   photographerId: string;
+
+  @IsString()
+  @IsOptional()
+  visibility:AlbumVisibility;
 
 }
 
@@ -27,8 +32,11 @@ export class updateAlbumDto {
   @IsString()
   @IsNotEmpty()
   description:string;
-}
 
+  @IsString()
+  @IsOptional()
+  visibility:AlbumVisibility;
+}
 
 export class AlbumImagesDto {
   @IsString()
