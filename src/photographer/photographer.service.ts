@@ -625,6 +625,7 @@ export class PhotographerService {
     let likeCount = feed.likeCount;
 
     if (dto.like) {
+      // Fetch the user name for the notification
       const userName = await this.prisma.user.findUnique({
         where: {
           id: dto.userId,
@@ -633,11 +634,13 @@ export class PhotographerService {
           userName: true,
         },
       })
+      // Create the notification DTO data
       const createNotifyDtoData = new CreateNotifyDto();
       createNotifyDtoData.receiverId = photographerId;
       createNotifyDtoData.type = "liked";
       createNotifyDtoData.title =`${userName.userName} likes your photo`;
-      await this.NotifyService.createNotification(createNotifyDtoData);
+      await this.NotifyService.createNotification(createNotifyDtoData);   
+
       if (!existingLike) {
         await this.prisma.feedImage.update({
           where: {
@@ -688,7 +691,7 @@ export class PhotographerService {
     });
   }
 
-  async feedSave(dto: FeedSaveDto) {
+  async feedSave(photographerId:string ,dto: FeedSaveDto) {
     const existingSave = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -710,6 +713,23 @@ export class PhotographerService {
     let saveCount = feed.saveCount;
 
     if (dto.save) {
+
+            // Fetch the user name for the notification
+            const userName = await this.prisma.user.findUnique({
+              where: {
+                id: dto.userId,
+              },
+              select: {
+                userName: true,
+              },
+            })
+            // Create the notification DTO data
+            const createNotifyDtoData = new CreateNotifyDto();
+            createNotifyDtoData.receiverId = photographerId;
+            createNotifyDtoData.type = "saved";
+            createNotifyDtoData.title =`${userName.userName} saved your photo`;
+            await this.NotifyService.createNotification(createNotifyDtoData);  
+
       if (!existingSave) {
         await this.prisma.feedImage.update({
           where: {
@@ -783,3 +803,27 @@ export class PhotographerService {
     })
   }
 }
+
+
+ // ------- Notification services ---------
+
+// async function handleLikeNotification(userId: string, photographerId: string , type:string, title:string) {
+//   // Fetch the user name
+//   const userName = this.prisma.user.findUnique({
+//       where: {
+//           id: userId,
+//       },
+//       select: {
+//           userName: true,
+//       },
+//   });
+
+//   // Create the notification DTO data
+//   const createNotifyDtoData = new CreateNotifyDto();
+//   createNotifyDtoData.receiverId = photographerId;
+//   createNotifyDtoData.type = type;
+//   createNotifyDtoData.title = userName.userName + title;
+
+//   // Create the notification
+//   await this.NotifyService.createNotification(createNotifyDtoData);
+// }

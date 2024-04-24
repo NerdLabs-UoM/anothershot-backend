@@ -251,8 +251,8 @@ export class PhotographerController {
   }
 
   @Patch(`:id/feed/createSave`)
-  async feedSave(@Body() dto: FeedSaveDto) {
-    return await this.photographerService.feedSave(dto);
+  async feedSave(@Param('id') photographerId:string, @Body() dto: FeedSaveDto) {
+    return await this.photographerService.feedSave(photographerId,dto);
   }
 
   @Delete(':id/feed/delete')
