@@ -284,7 +284,7 @@ export class PhotographerController {
   @Get(':id/clientBookings')
   async getBookings(@Param('id') photographerId: string) {
     return await this.photographerService.getBookings(photographerId);
-    }
+  }
 
   //------- event controllers ---------
 
