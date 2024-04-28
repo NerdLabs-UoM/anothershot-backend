@@ -1,7 +1,8 @@
-import { Controller, Get, Patch } from '@nestjs/common';
+import { Controller, Delete, Get, Patch } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { ClientImageDto } from './dto/client.dto';
 import { ClientDto } from './dto/client.dto';
+import { DeleteBookingDto } from './dto/deleteBooking.dto';
 import { Body, Param } from '@nestjs/common';
 @Controller('api/client')
 export class ClientController {
@@ -35,5 +36,10 @@ export class ClientController {
     @Get(':id/clientBookings')
     async getBookings(@Param('id') clientId: string) {
       return await this.clientService.getBookings(clientId);
+    }
+
+    @Delete(':id/deleteBooking')
+    async deleteBooking(@Body() dto: DeleteBookingDto) {
+        return await this.clientService.deleteBooking(dto);
     }
 }
