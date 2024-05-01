@@ -19,28 +19,13 @@ export class PaymentService {
     return booking;
   }
 
-  //Create an Endpoint for Creating Payment Links
-  async purchaseBooking(bookingId: string){
-    const paymentLink = await this.stripe.paymentLinks.create({
-      line_items:[
-        {
-          price: '{{PRICE_ID}}',
-          quantity: 1,
-        },
-      ],
-      after_completion:{
-        type:'redirect',
-        redirect:{
-          url:'https://example.com',
-        }
-      }     
-    })
-  }
-
   // Ceate a Checkout Session
   async createCheckoutSession(data:any) {
-
+    console.log(data);
     const session = await this.stripe.checkout.sessions.create({
+      metadata:{
+        bookingId: data.bookingId,
+      },
       mode:"payment",
       line_items: [
         {
@@ -57,17 +42,13 @@ export class PaymentService {
       success_url: `http://localhost:3000/success`,
       cancel_url: `http://localhost:3000/error`,
     });
+
     return session.url;
   }
 
-  // //Create session as responce to frontend
-  // async createCheckoutSessionResponse(bookingId: string) {
-  //   const session = await this.createCheckoutSession(bookingId);
-  //   return {
-  //     sessionId: session.id,
-  //   };
-  // }
-
+  async SuccessSession(Session){
+    console.log(Session)
+  }
 
   async createPaymentIntent(items:CreatePaymentDto){
     const amount = this.calculateOrderAmount(items);
@@ -90,23 +71,5 @@ export class PaymentService {
     return 1400;
   }
   
-  create(createPaymentDto: CreatePaymentDto) {
-    return 'This action adds a new payment';
-  }
-
-  findAll() {
-    return `This action returns all payment`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
-
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
-  }
+ 
 }
