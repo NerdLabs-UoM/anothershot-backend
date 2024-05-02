@@ -1,41 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { Package } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+
 
 @Injectable()
 export class StripeService {
-  private readonly stripeClient: Stripe;
-  stripe: Stripe;
+  constructor(private prisma: PrismaService) {}
 
-  constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16',
-    });
-  }
-
-  getStripeClient(): Stripe {
-    return this.stripeClient;
-  }
-
-  async checkoutSession(data: any): Promise<any> {
-    const session = await this.stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price_data: {
-            currency: data.currency,
-            product_data: {
-              name: data.name,
-            },
-            unit_amount: data.amount,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: 'https://stripe.com/',
-      cancel_url: 'https://stripe.com/',
+  async getBookingbyId(id: string,data:any) {
+    const boooking =  await this.prisma.booking.findUnique({
+      where: {
+        id: id,
+      },
     });
 
-    return session.url;
+    return boooking;
   }
+
+  async CreatePayment(data:any){
+    return await this.prisma.payment.create({
+      data,
+    })
+
+  }
+
 }
+
