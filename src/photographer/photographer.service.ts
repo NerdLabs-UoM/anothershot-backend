@@ -851,28 +851,43 @@ export class PhotographerService {
   //------- event services ---------
 
   async createEvents(dto: createEventDto) {
-  const startDate = new Date(dto.startDate);
-  const endDate = new Date(dto.endDate);
+    console.log(dto)
+    const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });
+    console.log(booking)
+    
+    
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+  
+    const startDate =new Date( dto.startDate);
+    const endDate =new Date( dto.endDate);
+  
+    console.log(startDate,endDate)
+    startDate.setDate(startDate.getDate() + 1);
+    endDate.setDate(endDate.getDate() + 1);
+    console.log(startDate,endDate)
 
-  startDate.setDate(startDate.getDate() + 1);
-  endDate.setDate(endDate.getDate() + 1);
-  return await this.prisma.event.create({
-    data: {
-      name: dto.name,
-      Booking: {
-        connect: {
-          id: dto.bookingId,
-        }
+    return await this.prisma.event.create({
+      data: {
+        name: dto.name,
+        Booking: {
+          connect: {
+            id: dto.bookingId,
+          }
+        },
+        description: dto.description,
+      
+        
+        startDate: startDate.toISOString(),
+      
+        endDate: endDate.toISOString(),
+        start: dto.start,
+        end: dto.end,
+        allDay: dto.allDay,
       },
-      description: dto.description,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      start: dto.start,
-      end: dto.end,
-      allDay: dto.allDay,
-    },
-  });
-}
+    });
+  }
 
   async getEvents(id: string) {
   return await this.prisma.event.findMany({
