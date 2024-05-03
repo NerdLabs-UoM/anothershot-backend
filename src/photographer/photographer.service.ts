@@ -892,4 +892,48 @@ export class PhotographerService {
       },
     });
   }
-}
+
+    // ------- payment services ---------
+
+  async getPayments(id: string) {
+    return await this.prisma.payment.findMany({
+      where:{
+        photographerId:id
+      },
+      include:{
+        booking:{
+          select:{
+            id:true,
+            status:true,
+            category:true
+          }
+        },
+        client:{
+          select:{
+            name:true
+          }
+        }
+      }
+    })
+  }
+
+  async getEarnings(id:string){
+    const amounts = await this.prisma.payment.findMany({
+      where:{
+        photographerId:id
+      },
+      select:{
+        amount:true
+      }
+    })
+    let tot = 0;
+    for (const amount of amounts){
+      tot += amount.amount;
+    }
+    return tot;
+
+  }
+
+  }
+  
+

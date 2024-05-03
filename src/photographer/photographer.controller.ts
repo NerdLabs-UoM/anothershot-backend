@@ -289,4 +289,17 @@ export class PhotographerController {
   async clientBooking(@Body() dto: ClientBookingDto){
     return await this.photographerService.clientBooking(dto);
   }
+
+    // ------hero section controllers ------
+
+    @Get(':id/getPayments')
+  async getPayments(@Param('id') id: string){
+    return await this.photographerService.getPayments(id);
+  }
+
+  @Get(':id/getEarnings')
+  async getEarnings(@Param('id') id: string){
+    return await this.photographerService.getEarnings(id);
+  }
+
 }

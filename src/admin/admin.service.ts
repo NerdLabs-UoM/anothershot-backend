@@ -16,7 +16,12 @@ export class AdminService {
     let whereClause = {}; // Define an empty object for the where clause
 
     if (name) {
-      whereClause = { userName: { contains: name } }; // If name is provided, filter by username
+      whereClause = {
+        userName: {
+          contains: name,
+          mode: 'insensitive'
+        }
+      }; // If name is provided, filter by username
     }
     if (roles) {
       whereClause = { ...whereClause, userRole: { in: rolesArray } }; // If roles is provided, filter by role
@@ -32,14 +37,19 @@ export class AdminService {
     return values;
   }
 
-  async findLastPage(name: string,roles: string) {
+  async findLastPage(name: string, roles: string) {
     const pageSize = 3;
     let whereClause = {};
 
     const rolesArray = roles ? roles.split(',') : null;
 
     if (name) {
-      whereClause = { userName: { contains: name } };
+      whereClause = {
+        userName: {
+          contains: name,
+          mode: 'insensitive'
+        }
+      };
     }
     if (roles) {
       whereClause = { ...whereClause, userRole: { in: rolesArray } };
