@@ -8,6 +8,8 @@ import { Body, Param } from '@nestjs/common';
 export class ClientController {
     constructor(private clientService: ClientService) { }
 
+    //------ client controllers -----------
+
     @Patch(':id/profile/image')
     async updateImage(@Body() dto: ClientImageDto) {
         return await this.clientService.updateImage(dto);
@@ -23,6 +25,8 @@ export class ClientController {
         return await this.clientService.getClientDetails(id);
     }
 
+    //------ getting liked and saved images controllers -----------
+
     @Get(':id/likeImages')
     async getLikedImages(@Param('id') id: string) {
         return await this.clientService.getLikedImages(id);
@@ -32,6 +36,8 @@ export class ClientController {
     async getSavedImages(@Param('id') id:string){
         return await this.clientService.getSavedImages(id);
     }
+
+    //------ client bookings controllers -----------
 
     @Get(':id/clientBookings')
     async getBookings(@Param('id') clientId: string) {
