@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Package, TestimonialVisibility, PhotographerCategory } from '@prisma/client';
+import { Package, TestimonialVisibility, PhotographerCategory, BookingStatus, Booking } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
 import {
   Injectable,
@@ -22,6 +22,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 import { NotifyService } from '../notification/notify.service';
 import { CreateNotifyDto } from 'src/notification/dto/create-notify.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
+import { EarningsDto } from './dto/earnings.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -616,7 +617,7 @@ export class PhotographerService {
   }
 
 
-  async feedLike(photographerId:string,dto: FeedLikeDto) {
+  async feedLike(photographerId: string, dto: FeedLikeDto) {
     const existingLike = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -650,8 +651,8 @@ export class PhotographerService {
       const createNotifyDtoData = new CreateNotifyDto();
       createNotifyDtoData.receiverId = photographerId;
       createNotifyDtoData.type = "liked";
-      createNotifyDtoData.title =`${userName.userName} likes your photo`;
-      await this.NotifyService.createNotification(createNotifyDtoData);   
+      createNotifyDtoData.title = `${userName.userName} likes your photo`;
+      await this.NotifyService.createNotification(createNotifyDtoData);
 
       if (!existingLike) {
         await this.prisma.feedImage.update({
@@ -703,7 +704,7 @@ export class PhotographerService {
     });
   }
 
-  async feedSave(photographerId:string ,dto: FeedSaveDto) {
+  async feedSave(photographerId: string, dto: FeedSaveDto) {
     const existingSave = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -726,21 +727,21 @@ export class PhotographerService {
 
     if (dto.save) {
 
-            // Fetch the user name for the notification
-            const userName = await this.prisma.user.findUnique({
-              where: {
-                id: dto.userId,
-              },
-              select: {
-                userName: true,
-              },
-            })
-            // Create the notification DTO data
-            const createNotifyDtoData = new CreateNotifyDto();
-            createNotifyDtoData.receiverId = photographerId;
-            createNotifyDtoData.type = "saved";
-            createNotifyDtoData.title =`${userName.userName} saved your photo`;
-            await this.NotifyService.createNotification(createNotifyDtoData);  
+      // Fetch the user name for the notification
+      const userName = await this.prisma.user.findUnique({
+        where: {
+          id: dto.userId,
+        },
+        select: {
+          userName: true,
+        },
+      })
+      // Create the notification DTO data
+      const createNotifyDtoData = new CreateNotifyDto();
+      createNotifyDtoData.receiverId = photographerId;
+      createNotifyDtoData.type = "saved";
+      createNotifyDtoData.title = `${userName.userName} saved your photo`;
+      await this.NotifyService.createNotification(createNotifyDtoData);
 
       if (!existingSave) {
         await this.prisma.feedImage.update({
@@ -779,7 +780,7 @@ export class PhotographerService {
             },
           },
         }
-          )
+        )
       }
     }
     return await this.prisma.feedImage.update({
@@ -861,7 +862,7 @@ export class PhotographerService {
 
     startDate.setDate(startDate.getDate() + 1);
     endDate.setDate(endDate.getDate() + 1);
-    
+
     return await this.prisma.booking.create({
       data: {
         client: {
@@ -882,7 +883,7 @@ export class PhotographerService {
         location: dto.eventLocation,
         category:
           PhotographerCategory[
-            dto.category.toUpperCase() as keyof typeof PhotographerCategory
+          dto.category.toUpperCase() as keyof typeof PhotographerCategory
           ],
         package: {
           connect: {
@@ -893,47 +894,92 @@ export class PhotographerService {
     });
   }
 
-    // ------- payment services ---------
+  // ------- payment services ---------
 
   async getPayments(id: string) {
     return await this.prisma.payment.findMany({
-      where:{
-        photographerId:id
+      where: {
+        photographerId: id,
       },
-      include:{
-        booking:{
-          select:{
-            id:true,
-            status:true,
-            category:true
+      include: {
+        booking: {
+          select: {
+            id: true,
+            category: true
           }
         },
-        client:{
-          select:{
-            name:true
+        client: {
+          select: {
+            name: true
           }
         }
-      }
-    })
-  }
-
-  async getEarnings(id:string){
-    const amounts = await this.prisma.payment.findMany({
-      where:{
-        photographerId:id
       },
-      select:{
-        amount:true
+    })
+  }
+
+  // async getEarnings(id:string){
+  //   const earningsDtoData = new EarningsDto();
+
+  //   const pendingTot = await this.prisma.payment.groupBy({
+  //     by:['photographerId'],
+  //     where:{
+  //       photographerId:id,
+  //       status:'PENDING'
+  //     },
+  //     _sum:{
+  //       amount:true
+  //     }
+  //   });
+  //   earningsDtoData.pending = pendingTot[0]?pendingTot[0]._sum.amount:0;
+
+  //   const paidTot = await this.prisma.payment.groupBy({
+  //     by:['photographerId'],
+  //     where:{
+  //       photographerId:id,
+  //       status:'PAID'
+  //     },
+  //     _sum:{
+  //       amount:true
+  //     }
+  //   });
+
+  //   earningsDtoData.totalAmount = paidTot[0]?paidTot[0]._sum.amount:0;
+  //   earningsDtoData.fees = 0.1 * earningsDtoData.totalAmount;
+
+  //   return earningsDtoData;
+  // }
+
+  async getEarnings(id: string) {
+    const earningsDtoData = new EarningsDto();
+
+    const payments = await this.prisma.payment.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: {
+        amount: true,
+        status: true
       }
     })
-    let tot = 0;
-    for (const amount of amounts){
-      tot += amount.amount;
-    }
-    return tot;
 
+    let paidTot = 0;
+    let pendingTot = 0;
+
+    payments.map((payment) => {
+      if (payment.status === 'PAID') {
+        paidTot += payment.amount;
+      } else if (payment.status === 'PENDING') {
+        pendingTot += payment.amount;
+      }
+    })
+
+    earningsDtoData.fees = 0.1 * paidTot;
+    earningsDtoData.totalAmount = paidTot - earningsDtoData.fees;
+    earningsDtoData.pending = pendingTot;
+
+    return earningsDtoData;
   }
 
-  }
-  
+}
+
 
