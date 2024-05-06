@@ -6,19 +6,22 @@ export class AdminController {
     constructor(private adminService: AdminService) { }
 
     @Get('getallusers')
-    async getAllUsers(@Query('page') page: number ,@Query('name') name:string) {
-        try{
-            return await this.adminService.findall(page,name);
-        }catch(err){
+    async getAllUsers
+        (@Query('page') page: number,
+            @Query('name') name: string,
+            @Query('roles') roles: string) {
+        try {
+            return await this.adminService.findall(page, name,roles);
+        } catch (err) {
             console.log(err);
         }
     }
 
     @Get('getlastpage')
-    async getLastPage(@Query('name') name: string) {
-        try{
-            return await this.adminService.findLastPage(name);
-        }catch(err){
+    async getLastPage(@Query('name') name: string,@Query('roles') roles: string){
+        try {
+            return await this.adminService.findLastPage(name,roles);
+        } catch (err) {
             console.log(err);
         }
     }
