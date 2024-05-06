@@ -43,11 +43,9 @@ export class StripeController {
           console.log(
             `PaymentIntent for ${paymentIntent.amount} was successful!`,
           );
-          // handlePaymentIntentSucceeded(paymentIntent);
           break;
         case 'payment_method.attached':
-          const paymentMethod = event.data.object;
-          // handlePaymentMethodAttached(paymentMethod);
+          console.log("PaymentMethod")
           break;
         case 'checkout.session.completed':
           const checkoutSession = event.data.object;

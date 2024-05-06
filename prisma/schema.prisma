@@ -195,7 +195,7 @@ model Payment{
   bookingsId     String               @unique @db.ObjectId 
   amount         Float
   currency       String
-  paymentStatus  PaymentStatus        @default(PENDING)  
+  status         PaymentStatus        @default(PENDING)  
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 }

@@ -114,21 +114,49 @@ export class OfferService {
     })
   }
 
-  create(createOfferDto: CreateOfferDto) {
-    return 'This action adds a new offer';
-  }
+  async getBookings(photographerId: string) {
+    return await this.prisma.booking.findMany({
+        where: {
+            photographerId: photographerId,
+        },
+        select: {
+            id: true,
+            subject: true,
+            category: true,
+            startdate: true,
+            status: true,
+            location: true,
+            client: {
+                select: {
+                    name: true,
+                },
+            },
+            photographer: {
+                select: {
+                   name: true,
+                   userId: true,
+                   user: {
+                        select: {
+                             image: true,
+                        }
+                      },
+                },
+            },
+            offer: {
+                select: {
+                    price: true,
+                },
+            },
+            package: {
+                select: {
+                    name: true,
+                },
+            },
+    },
+    orderBy: {
+        id: 'desc',
+      },
+    });
+}
 
-
-
-  findOne(id: number) {
-    return `This action returns a #${id} offer`;
-  }
-
-  update(id: number, updateOfferDto: UpdateOfferDto) {
-    return `This action updates a #${id} offer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} offer`;
-  }
 }
