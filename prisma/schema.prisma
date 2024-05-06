@@ -147,13 +147,13 @@ model Attachment {
 
 model Booking {
   id             String               @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client               @relation(fields: [clientId], references: [userId])
+  client         Client               @relation(fields: [clientId], references: [userId], onDelete: Cascade)
   clientId       String               @db.ObjectId
-  photographer   Photographer         @relation(fields: [photographerId], references: [userId])
+  photographer   Photographer         @relation(fields: [photographerId], references: [userId], onDelete: Cascade)
   photographerId String               @db.ObjectId
   subject        String?               
   category       PhotographerCategory
-  package        Package?              @relation(fields: [packageId], references: [id])
+  package        Package?             @relation(fields: [packageId], references: [id])
   packageId      String               @db.ObjectId
   payment        Payment?
   offer          Offer?
@@ -202,7 +202,7 @@ model Payment{
 model Event {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  Booking     Booking   @relation(fields: [bookingId], references: [id])
+  Booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   bookingId   String    @unique @db.ObjectId
   description String?
   start       DateTime?
@@ -320,7 +320,7 @@ model Testimonial {
 
 model FeedImage {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [userId])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId], onDelete: Cascade)
   photographerId String       @db.ObjectId
   imageUrl       String
   likes          User[]       @relation("LikedImages", fields: [likedUserIds], references: [id])

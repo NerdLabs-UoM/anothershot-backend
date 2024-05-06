@@ -2,6 +2,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { ClientImageDto } from './dto/client.dto';
 import { ClientDto } from './dto/client.dto';
+import { DeleteBookingDto } from './dto/deleteBooking.dto';
 
 @Injectable()
 export class ClientService {
@@ -124,6 +125,14 @@ export class ClientService {
         orderBy: {
             id: 'desc',
           },
+        });
+    }
+
+    async deleteBooking(dto: DeleteBookingDto) {
+        return await this.prisma.booking.delete({
+            where: {
+                id: dto.bookingId,
+            },
         });
     }
 
