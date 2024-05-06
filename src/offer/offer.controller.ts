@@ -1,8 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { OfferService } from './offer.service';
 import { CreateOfferDto} from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
-import { CreateBookingDto } from './dto/create-booking';
 import { Booking } from '@prisma/client';
 
 @Controller('api/offer')
@@ -38,7 +36,6 @@ export class OfferController {
 
   @Get(':id/photographer/offers')
   async getOfferbyPhotographer(@Param('id') id:string) {
-    console.log(id);
     return this.offerService.getOfferbyPhotographer(id);
   }
 
@@ -47,19 +44,9 @@ export class OfferController {
     return this.offerService.getOffersbyClientId(id)
   }
 
+  @Get(':id/photographerBookings')
+    async getBookings(@Param('id') clientId: string) {
+      return await this.offerService.getBookings(clientId);
+    }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.offerService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
-  //   return this.offerService.update(+id, updateOfferDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.offerService.remove(+id);
-  // }
 }

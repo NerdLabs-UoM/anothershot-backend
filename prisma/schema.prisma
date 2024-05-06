@@ -81,6 +81,7 @@ model Photographer {
   albums         Album[]
   Bookings       Booking[]
   Offers         Offer[]
+  payment        Payment[]
   BankDetails    BankDetails?
   Earnings       Earnings?
   Report         Report[]
@@ -98,6 +99,7 @@ model Client {
   Booking     Booking[]
   Report      Report[]
   Offers      Offer[]
+  payment     Payment[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -153,7 +155,7 @@ model Booking {
   category       PhotographerCategory
   package        Package?             @relation(fields: [packageId], references: [id])
   packageId      String               @db.ObjectId
-  payment        String?
+  payment        Payment?
   offer          Offer?
   startdate      DateTime?
   enddate        DateTime?
@@ -180,6 +182,20 @@ model Offer {
   clientName     String
   price          Float
   date           DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+model Payment{
+  id             String               @id @default(auto()) @map("_id") @db.ObjectId
+  client         Client               @relation(fields: [clientId], references: [id],onDelete: Cascade)
+  clientId       String               @db.ObjectId
+  photographer   Photographer         @relation(fields: [photographerId], references: [id],onDelete: Cascade)
+  photographerId String               @db.ObjectId
+  booking        Booking              @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
+  bookingsId     String               @unique @db.ObjectId 
+  amount         Float
+  currency       String
+  status         PaymentStatus        @default(PENDING)  
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
 }
@@ -433,4 +449,10 @@ enum PhotographerCategory {
 enum Suspended {
   SUSPENDED
   NOT_SUSPENDED
+}
+
+
+enum PaymentStatus {
+  PENDING
+  PAID
 }
