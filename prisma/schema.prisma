@@ -187,9 +187,9 @@ model Offer {
 }
 model Payment{
   id             String               @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client               @relation(fields: [clientId], references: [id],onDelete: Cascade)
+  client         Client               @relation(fields: [clientId], references: [userId],onDelete: Cascade)
   clientId       String               @db.ObjectId
-  photographer   Photographer         @relation(fields: [photographerId], references: [id],onDelete: Cascade)
+  photographer   Photographer         @relation(fields: [photographerId], references: [userId],onDelete: Cascade)
   photographerId String               @db.ObjectId
   booking        Booking              @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
   bookingsId     String               @unique @db.ObjectId 
@@ -227,7 +227,7 @@ model BankDetails {
 
 model Earnings {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  photographer   Photographer @relation(fields: [photographerId], references: [id])
+  photographer   Photographer @relation(fields: [photographerId], references: [userId])
   photographerId String       @unique @db.ObjectId
   totalAmount    Float
   pending        Float

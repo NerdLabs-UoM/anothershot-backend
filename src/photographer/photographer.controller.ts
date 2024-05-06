@@ -303,4 +303,17 @@ export class PhotographerController {
   async getSavedImages(@Param('id') id:string){
       return await this.photographerService.getSavedImages(id);
   }
+
+  // ------- getting earnings and payments controllers ---------
+  @Get(':id/getPayments')
+  async getPayments(@Param('id') id: string){
+    return await this.photographerService.getPayments(id);
+  }
+
+  @Get(':id/earnings')
+  async getEarnings(@Param('id') id: string){
+    return await this.photographerService.getEarnings(id);
+  }
+
+
 }

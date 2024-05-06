@@ -23,6 +23,7 @@ import { deletePackageDto } from './dto/deletePackage.dto';
 import { NotifyService } from '../notification/notify.service';
 import { CreateNotifyDto } from 'src/notification/dto/create-notify.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
+import { EarningsDto } from './dto/earnings.dto';
 
 @Injectable()
 export class PhotographerService {
@@ -929,4 +930,60 @@ export class PhotographerService {
       },
     });
   }
+
+  // ------- payment services ---------
+
+  async getPayments(id: string) {
+    return await this.prisma.payment.findMany({
+      where: {
+        photographerId: id,
+      },
+      include: {
+        booking: {
+          select: {
+            id: true,
+            category: true
+          }
+        },
+        client: {
+          select: {
+            name: true
+          }
+        }
+      },
+    })
+  }
+
+  
+  async getEarnings(id: string) {
+    const earningsDtoData = new EarningsDto();
+
+    const payments = await this.prisma.payment.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: {
+        amount: true,
+        status: true
+      }
+    })
+
+    let paidTot = 0;
+    let pendingTot = 0;
+
+    payments.map((payment) => {
+      if (payment.status === 'PAID') {
+        paidTot += payment.amount;
+      } else if (payment.status === 'PENDING') {
+        pendingTot += payment.amount;
+      }
+    })
+
+    earningsDtoData.fees = 0.1 * paidTot;
+    earningsDtoData.totalAmount = paidTot - earningsDtoData.fees;
+    earningsDtoData.pending = pendingTot;
+
+    return earningsDtoData;
+  }
+
 }
