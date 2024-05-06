@@ -274,6 +274,8 @@ export class PhotographerController {
   async updateCaption(@Body() dto: CaptionDto) {
     return await this.photographerService.updateCaption(dto);
   }
+
+  // ------- booking creation controllers ---------
   
   @Get(':id/bookingsCategory')
   async getBookingsCategory(@Param('id') id: string) {
@@ -288,5 +290,17 @@ export class PhotographerController {
   @Post(':id/clientBooking')
   async clientBooking(@Body() dto: ClientBookingDto){
     return await this.photographerService.clientBooking(dto);
+  }
+
+  // ------- getting like and save images controllers ---------
+
+  @Get(':id/likeImages')
+  async getLikedImages(@Param('id') id: string) {
+      return await this.photographerService.getLikedImages(id);
+  }
+
+  @Get(':id/savedImages')
+  async getSavedImages(@Param('id') id:string){
+      return await this.photographerService.getSavedImages(id);
   }
 }

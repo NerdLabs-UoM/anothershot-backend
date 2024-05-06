@@ -1,11 +1,12 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Package, TestimonialVisibility, PhotographerCategory } from '@prisma/client';
-import { VisibilityDto } from './dto/visibility.dto';
 import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  Package,
+  TestimonialVisibility,
+  PhotographerCategory,
+} from '@prisma/client';
+import { VisibilityDto } from './dto/visibility.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -25,8 +26,10 @@ import { ClientBookingDto } from './dto/clientBooking.dto';
 
 @Injectable()
 export class PhotographerService {
-
-  constructor(private prisma: PrismaService, private NotifyService: NotifyService) { }
+  constructor(
+    private prisma: PrismaService,
+    private NotifyService: NotifyService,
+  ) {}
 
   //------ photographer services -----------
 
@@ -73,7 +76,7 @@ export class PhotographerService {
   ) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId
+        userId: userId,
       },
       include: {
         user: true,
@@ -81,10 +84,10 @@ export class PhotographerService {
       data: {
         user: {
           update: {
-            image: data.image
-          }
-        }
-      }
+            image: data.image,
+          },
+        },
+      },
     });
   }
 
@@ -105,21 +108,21 @@ export class PhotographerService {
           email: dto.email,
           address: dto.address
             ? {
-              upsert: {
-                where: { contactDetailsId: existingContactDetails.id },
-                create: { ...dto.address },
-                update: { ...dto.address },
-              },
-            }
+                upsert: {
+                  where: { contactDetailsId: existingContactDetails.id },
+                  create: { ...dto.address },
+                  update: { ...dto.address },
+                },
+              }
             : undefined,
           socialMedia: dto.socialMedia
             ? {
-              upsert: {
-                where: { contactDetailsId: existingContactDetails.id },
-                create: { ...dto.socialMedia },
-                update: { ...dto.socialMedia },
-              },
-            }
+                upsert: {
+                  where: { contactDetailsId: existingContactDetails.id },
+                  create: { ...dto.socialMedia },
+                  update: { ...dto.socialMedia },
+                },
+              }
             : undefined,
         },
       });
@@ -172,7 +175,7 @@ export class PhotographerService {
         photographer: {
           connect: {
             userId: dto.photographerId,
-          }
+          },
         },
         name: dto.name,
         description: dto.description,
@@ -204,7 +207,7 @@ export class PhotographerService {
         photographer: {
           connect: {
             userId: dto.photographerId,
-          }
+          },
         },
         name: dto.name,
         description: dto.description,
@@ -220,7 +223,7 @@ export class PhotographerService {
         photographerId: photographerId,
       },
       include: {
-        booking: false
+        booking: false,
       },
     });
   }
@@ -229,7 +232,7 @@ export class PhotographerService {
     return await this.prisma.package.findUnique({
       where: {
         id: packageId,
-      }
+      },
     });
   }
 
@@ -237,7 +240,7 @@ export class PhotographerService {
     const photographer = await this.prisma.photographer.findUnique({
       where: {
         userId: dto.photographerId,
-      }
+      },
     });
 
     if (!photographer) {
@@ -254,7 +257,7 @@ export class PhotographerService {
   async saveCoverPhotos(packageId: string, data: Partial<Package>) {
     await this.prisma.package.update({
       where: { id: packageId },
-      data
+      data,
     });
   }
 
@@ -263,17 +266,17 @@ export class PhotographerService {
   async getFeatured(userId: string) {
     return await this.prisma.photographer.findUnique({
       where: {
-        userId: userId
-      }
+        userId: userId,
+      },
     });
   }
 
   async updateFeatured(id: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
-        userId: id
+        userId: id,
       },
-      data
+      data,
     });
   }
 
@@ -375,8 +378,8 @@ export class PhotographerService {
         user: {
           connect: {
             id: id,
-          }
-        }
+          },
+        },
       },
     });
   }
@@ -427,12 +430,14 @@ export class PhotographerService {
           accountNumber: dto.accountNumber,
           accountName: dto.accountName,
           accountBranch: dto.accountBranch,
-          accountBranchCode: dto.accountBranchCode ? dto.accountBranchCode : undefined,
+          accountBranchCode: dto.accountBranchCode
+            ? dto.accountBranchCode
+            : undefined,
         },
       });
     }
     return await this.prisma.bankDetails.findUnique({
-      where: { photographerId: userId }
+      where: { photographerId: userId },
     });
   }
 
@@ -483,7 +488,7 @@ export class PhotographerService {
       },
       include: {
         images: true,
-      }
+      },
     });
   }
 
@@ -523,7 +528,7 @@ export class PhotographerService {
     return this.prisma.albumImage.findMany({
       where: {
         albumId: id,
-      }
+      },
     });
   }
 
@@ -546,18 +551,20 @@ export class PhotographerService {
       throw new NotFoundException('Album not found');
     }
 
-    const images = await Promise.all(dto.images.map((imageUrl) =>
-      this.prisma.albumImage.create({
-        data: {
-          image: imageUrl,
-          album: {
-            connect: {
-              id: dto.albumId,
+    const images = await Promise.all(
+      dto.images.map((imageUrl) =>
+        this.prisma.albumImage.create({
+          data: {
+            image: imageUrl,
+            album: {
+              connect: {
+                id: dto.albumId,
+              },
             },
           },
-        },
-      }),
-    ));
+        }),
+      ),
+    );
 
     return images;
   }
@@ -615,8 +622,7 @@ export class PhotographerService {
     });
   }
 
-
-  async feedLike(photographerId:string,dto: FeedLikeDto) {
+  async feedLike(photographerId: string, dto: FeedLikeDto) {
     const existingLike = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -645,13 +651,13 @@ export class PhotographerService {
         select: {
           userName: true,
         },
-      })
+      });
       // Create the notification DTO data
       const createNotifyDtoData = new CreateNotifyDto();
       createNotifyDtoData.receiverId = photographerId;
-      createNotifyDtoData.type = "liked";
-      createNotifyDtoData.title =`${userName.userName} likes your photo`;
-      await this.NotifyService.createNotification(createNotifyDtoData);   
+      createNotifyDtoData.type = 'liked';
+      createNotifyDtoData.title = `${userName.userName} likes your photo`;
+      await this.NotifyService.createNotification(createNotifyDtoData);
 
       if (!existingLike) {
         await this.prisma.feedImage.update({
@@ -689,8 +695,7 @@ export class PhotographerService {
               disconnect: { id: dto.feedId },
             },
           },
-        }
-        )
+        });
       }
     }
     return await this.prisma.feedImage.update({
@@ -703,7 +708,7 @@ export class PhotographerService {
     });
   }
 
-  async feedSave(photographerId:string ,dto: FeedSaveDto) {
+  async feedSave(photographerId: string, dto: FeedSaveDto) {
     const existingSave = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -725,22 +730,21 @@ export class PhotographerService {
     let saveCount = feed.saveCount;
 
     if (dto.save) {
-
-            // Fetch the user name for the notification
-            const userName = await this.prisma.user.findUnique({
-              where: {
-                id: dto.userId,
-              },
-              select: {
-                userName: true,
-              },
-            })
-            // Create the notification DTO data
-            const createNotifyDtoData = new CreateNotifyDto();
-            createNotifyDtoData.receiverId = photographerId;
-            createNotifyDtoData.type = "saved";
-            createNotifyDtoData.title =`${userName.userName} saved your photo`;
-            await this.NotifyService.createNotification(createNotifyDtoData);  
+      // Fetch the user name for the notification
+      const userName = await this.prisma.user.findUnique({
+        where: {
+          id: dto.userId,
+        },
+        select: {
+          userName: true,
+        },
+      });
+      // Create the notification DTO data
+      const createNotifyDtoData = new CreateNotifyDto();
+      createNotifyDtoData.receiverId = photographerId;
+      createNotifyDtoData.type = 'saved';
+      createNotifyDtoData.title = `${userName.userName} saved your photo`;
+      await this.NotifyService.createNotification(createNotifyDtoData);
 
       if (!existingSave) {
         await this.prisma.feedImage.update({
@@ -778,8 +782,7 @@ export class PhotographerService {
               disconnect: { id: dto.feedId },
             },
           },
-        }
-          )
+        });
       }
     }
     return await this.prisma.feedImage.update({
@@ -861,7 +864,7 @@ export class PhotographerService {
 
     startDate.setDate(startDate.getDate() + 1);
     endDate.setDate(endDate.getDate() + 1);
-    
+
     return await this.prisma.booking.create({
       data: {
         client: {
@@ -887,6 +890,40 @@ export class PhotographerService {
         package: {
           connect: {
             id: dto.packageId,
+          },
+        },
+      },
+    });
+  }
+
+  async getLikedImages(id: string) {
+    return await this.prisma.user.findMany({
+      where: {
+        id: id,
+      },
+      select: {
+        likedFeedImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+            photographerId: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getSavedImages(id: string) {
+    return await this.prisma.user.findMany({
+      where: {
+        id: id,
+      },
+      select: {
+        savedFeedImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+            photographerId: true,
           },
         },
       },
