@@ -157,10 +157,8 @@ model Booking {
   packageId      String               @db.ObjectId
   payment        Payment?
   offer          Offer?
-  startdate      DateTime?
-  enddate        DateTime?
-  start          String?
-  end            String?
+  start          DateTime?
+  end            DateTime?
   location       String?
   event          Event?
   status         BookingStatus        @default(PENDING)
