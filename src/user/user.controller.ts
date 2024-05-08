@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Account, Client, User } from '@prisma/client';
 import { UpdateUserDto, passwordResetDto } from './dto/user.dto';
+import { SystemReportDto } from './dto/systemReport.dto';
 
 @Controller('api/user')
 export class UserController {
@@ -79,6 +80,12 @@ export class UserController {
     @Put(':id/unlock')
     async unlockUser(@Param('id') userId: string): Promise<void> {
         return await this.userService.updateUnlock(userId);
+    }
+
+    // --------- user settings controller ------------
+    @Post('report/:id')
+    async createSystemReport(@Param('id') id: string, @Body() dto: SystemReportDto) {
+        return await this.userService.createSystemReport(id, dto);
     }
 
 }

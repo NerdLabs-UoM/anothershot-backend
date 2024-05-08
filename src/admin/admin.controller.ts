@@ -11,6 +11,7 @@ export class AdminController {
             @Query('name') name: string,
             @Query('roles') roles: string) {
         try {
+            console.log("clicked",page, name,roles);
             return await this.adminService.findall(page, name,roles);
         } catch (err) {
             console.log(err);
@@ -20,6 +21,8 @@ export class AdminController {
     @Get('getlastpage')
     async getLastPage(@Query('name') name: string,@Query('roles') roles: string){
         try {
+            console.log("clicked", name,roles);
+
             return await this.adminService.findLastPage(name,roles);
         } catch (err) {
             console.log(err);

@@ -939,12 +939,12 @@ export class PhotographerService {
         photographerId: id,
       },
       include: {
-        booking: {
-          select: {
-            id: true,
-            category: true
-          }
-        },
+        // booking: {
+        //   select: {
+        //     // id: true,
+        //     category: true
+        //   }
+        // },
         client: {
           select: {
             name: true
