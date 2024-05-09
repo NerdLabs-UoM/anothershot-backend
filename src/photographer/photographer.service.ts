@@ -591,6 +591,7 @@ export class PhotographerService {
         likeCount: true,
         saveCount: true,
         caption: true,
+        photographerId: true,
         photographer: {
           select: {
             name: true,
