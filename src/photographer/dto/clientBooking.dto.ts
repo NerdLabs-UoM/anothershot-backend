@@ -15,16 +15,10 @@ export class ClientBookingDto {
     eventLocation: string;
     
     @IsDateString()
-    startDate: string;
+    start: string;
 
     @IsDateString()
-    endDate: string;
-
-    @IsString()
-    startTime: string;
-
-    @IsString()
-    endTime: string;
+    end: string;
 
     @IsString()
     category: string;

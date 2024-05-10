@@ -152,10 +152,8 @@ model Booking {
   packageId      String               @db.ObjectId
   payment        String?
   offer          Offer?
-  startDate      DateTime?
-  endDate        DateTime?
-  start          String?
-  end            String?
+  start          DateTime?
+  end            DateTime?
   location       String?
   event          Event?
   status         BookingStatus        @default(PENDING)
@@ -186,10 +184,8 @@ model Event {
   Booking     Booking   @relation(fields: [bookingId], references: [id] ,onDelete:Cascade)
   bookingId   String    @unique @db.ObjectId
   description String?
-  startDate   DateTime?
-  endDate     DateTime?
-  start       String?
-  end         String?
+  start       DateTime?
+  end         DateTime?
   allDay      Boolean?  @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

@@ -11,12 +11,6 @@ export class createEventDto{
     @IsString()
     description:string;
 
-    @IsDateString()
-    startDate: string;
-
-    @IsDateString()
-    endDate: string;
-
     @IsString()
     start: string;
 
