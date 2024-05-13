@@ -16,7 +16,7 @@ import { DeleteFeedDto } from './dto/deleteFeed.dto';
 import { CaptionDto } from './dto/caption.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ReportDto } from './dto/report.dto';
-import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
+import { AlbumImagesDto, AlbumsDto, UpdateAlbumCoverDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
@@ -578,6 +578,18 @@ export class PhotographerService {
     });
   }
 
+  async updateAlbumCover(dto:UpdateAlbumCoverDto){
+    return await this.prisma.album.update({
+      where: {
+        id: dto.albumId,
+      },
+      data: {
+        coverImage: dto.coverImage,
+      },
+    });
+
+  }
+
   // ------- feed services ---------
 
   async getFeed(id: string) {
@@ -657,7 +669,12 @@ export class PhotographerService {
       const createNotifyDtoData = new CreateNotifyDto();
       createNotifyDtoData.receiverId = photographerId;
       createNotifyDtoData.type = 'liked';
-      createNotifyDtoData.title = `${userName.userName} likes your photo`;
+      if (dto.userId === photographerId) {
+        createNotifyDtoData.title = `You liked your photo`;
+      }else{
+        createNotifyDtoData.title = `${userName.userName} liked your photo`;
+      }
+      
       await this.NotifyService.createNotification(createNotifyDtoData);
 
       if (!existingLike) {

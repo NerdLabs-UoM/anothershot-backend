@@ -25,7 +25,7 @@ import { CaptionDto } from './dto/caption.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
+import { AlbumsDto, updateAlbumDto, AlbumImagesDto, UpdateAlbumCoverDto } from './dto/album.dto';
 import { ReportDto } from './dto/report.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
@@ -238,6 +238,10 @@ export class PhotographerController {
     return await this.photographerService.deleteImage(id);
   }
 
+  @Put('updatecoverImage')
+  async updateAlbumCover(@Body() dto:UpdateAlbumCoverDto) {
+    return await this.photographerService.updateAlbumCover(dto);
+  }
   // ------- feed controllers ---------
 
   @Get(':id/feed')

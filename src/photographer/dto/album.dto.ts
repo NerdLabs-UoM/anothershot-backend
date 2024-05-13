@@ -36,6 +36,7 @@ export class updateAlbumDto {
   @IsString()
   @IsOptional()
   visibility:AlbumVisibility;
+
 }
 
 export class AlbumImagesDto {
@@ -46,4 +47,13 @@ export class AlbumImagesDto {
   @IsArray()
   @IsString({ each: true })
   images: string[];
+}
+
+export class UpdateAlbumCoverDto {
+  @IsString()
+  @IsNotEmpty()
+  albumId: string;
+  
+  @IsString()
+  coverImage:string;
 }
