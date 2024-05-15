@@ -2,17 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import Stripe from 'stripe';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class PaymentService {
-
   private readonly stripe: Stripe;
 
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16', 
+      apiVersion: '2023-10-16',
     });
   }
+
+  //-----Payment Checkout Services ------
+
   //Get the Current Booking
   async getBooking(bookingId: string) {
     const booking = await this.stripe.checkout.sessions.retrieve(bookingId);
@@ -20,21 +24,21 @@ export class PaymentService {
   }
 
   // Ceate a Checkout Session
-  async createCheckoutSession(data:any) {
+  async createCheckoutSession(data: any) {
     console.log(data);
     const session = await this.stripe.checkout.sessions.create({
-      metadata:{
+      metadata: {
         bookingId: data.bookingId,
       },
-      mode:"payment",
+      mode: 'payment',
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: data.currency,
             product_data: {
-              name: "wedding",
+              name: data.name,
             },
-            unit_amount: data.price*100,
+            unit_amount: data.price * 100,
           },
           quantity: 1,
         },
@@ -43,14 +47,16 @@ export class PaymentService {
       cancel_url: `http://localhost:3000/error`,
     });
 
+    console.log(session);
+
     return session.url;
   }
 
-  async SuccessSession(Session){
-    console.log(Session)
+  async SuccessSession(Session) {
+    console.log(Session);
   }
 
-  async createPaymentIntent(items:CreatePaymentDto){
+  async createPaymentIntent(items: CreatePaymentDto) {
     const amount = this.calculateOrderAmount(items);
     console.log(items);
     const paymentIntent = await this.stripe.paymentIntents.create({
@@ -67,9 +73,75 @@ export class PaymentService {
     };
   }
 
-  private calculateOrderAmount(items:CreatePaymentDto):number{
+  private calculateOrderAmount(items: CreatePaymentDto): number {
     return 1400;
   }
-  
- 
+
+
+//------Admin Panel Payment Handling Services --------
+
+  async getAllPayments() {
+    const payments = await this.prisma.payment.findMany({
+      include: {
+        photographer: {
+          include: {
+            user: true,
+          },
+        },
+        client: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return payments;
+  }
+
+  async getPaymentById(id: string) {
+    const payment = await this.prisma.payment.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        photographer: {
+          include: {
+            user: true,
+            BankDetails: true,
+          },
+        },
+        client: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return payment;
+  }
+
+  async updatePaymentStatus(paymentId: string, data:any) {
+    const payment = await this.prisma.payment.findUnique({
+      where: {
+        id: paymentId,
+      },
+    });
+
+    if (!payment) {
+      throw new Error(`payment with id not found`);
+    }
+    
+    else{
+      const paymentUpdate = await this.prisma.payment.update({
+        where: {
+          id: paymentId,
+        },
+        data:{
+          status: data.status,
+        }
+      });
+      return paymentUpdate;
+    
+    }
+  }
 }
