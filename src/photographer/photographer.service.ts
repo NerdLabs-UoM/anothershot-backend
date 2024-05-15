@@ -591,6 +591,7 @@ export class PhotographerService {
         likeCount: true,
         saveCount: true,
         caption: true,
+        photographerId: true,
         photographer: {
           select: {
             name: true,
@@ -860,11 +861,6 @@ export class PhotographerService {
   }
 
   async clientBooking(dto: ClientBookingDto) {
-    const startDate = new Date(dto.startDate);
-    const endDate = new Date(dto.endDate);
-
-    startDate.setDate(startDate.getDate() + 1);
-    endDate.setDate(endDate.getDate() + 1);
 
     return await this.prisma.booking.create({
       data: {
@@ -879,10 +875,8 @@ export class PhotographerService {
           },
         },
         subject: dto.eventName,
-        startdate: startDate.toISOString(),
-        enddate: endDate.toISOString(),
-        start: dto.startTime,
-        end: dto.endTime,
+        start: dto.start,
+        end: dto.end,
         location: dto.eventLocation,
         category:
           PhotographerCategory[
