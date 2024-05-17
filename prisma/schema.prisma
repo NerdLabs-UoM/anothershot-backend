@@ -180,7 +180,7 @@ model Offer {
 
 model Event {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
+  title        String
   Booking     Booking   @relation(fields: [bookingId], references: [id] ,onDelete:Cascade)
   bookingId   String    @unique @db.ObjectId
   description String?

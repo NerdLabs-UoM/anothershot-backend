@@ -5,7 +5,7 @@ export class updateEventDto {
     id: string;
 
     @IsString()
-    name: string;
+    title: string;
 
     @IsString()
     bookingId: string;

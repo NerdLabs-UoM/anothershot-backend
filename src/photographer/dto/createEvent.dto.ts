@@ -3,7 +3,7 @@ import {  IsBoolean, IsDate,  IsDateString,  IsOptional, IsString } from "class-
 export class createEventDto{
        
     @IsString()
-    name: string;
+    title: string;
 
     @IsString()
     bookingId: string;

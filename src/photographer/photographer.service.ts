@@ -843,16 +843,13 @@ export class PhotographerService {
   //------- event services ---------
 
   async createEvents(dto: createEventDto) {
-    console.log(dto)
-    const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });
-    console.log(booking)
-    
+    const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });    
     if (!booking) {
       throw new Error('Booking not found');
     }
     return await this.prisma.event.create({
       data: {
-        name: dto.name,
+        title: dto.title,
         Booking: {
           connect: {
             id: dto.bookingId,
@@ -891,7 +888,7 @@ export class PhotographerService {
       id: dto.id,
     },
     data: {
-      name: dto.name,
+      title: dto.title,
       description: dto.description,
       Booking: {
         connect: {
