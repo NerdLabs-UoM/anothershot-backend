@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Res,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { PaymentStatus } from '@prisma/client';
+import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
+
 
 @Controller('api/payment')
 export class PaymentController {
@@ -19,8 +28,8 @@ export class PaymentController {
   }
 
   @Get('success/checkout-session')
-  paymentSuccess(@Res ({passthrough:true}) res){
-    return this.paymentService.SuccessSession(res)
+  paymentSuccess(@Res({ passthrough: true }) res) {
+    return this.paymentService.SuccessSession(res);
   }
 
   @Get('get-all-payments')
@@ -34,7 +43,29 @@ export class PaymentController {
   }
 
   @Put('update-payment-status/:id')
-  async updatePaymentStatus(@Param('id') id: string, @Body() data: any) {
-      return this.paymentService.updatePaymentStatus(id, data);
+  async updatePaymentStatus(
+    @Param('id') id: string,
+    @Body() data: UpdatePaymentStatusDto,
+  ) {
+    console.log(data);
+    return this.paymentService.updatePaymentStatus(id, data);
   }
+
+  @Get('getallusers')
+  async getAllUsers(@Query('page') page: number, @Query('name') name: string ) {
+    try {
+      return await this.paymentService.findall(page, name);
+    } catch (err) {
+      throw Error("Could not find payments")
+    }
+  }
+
+  @Get('getlastpage')
+    async getLastPage(@Query('name') name: string,@Query('roles') roles: string){
+        try {
+            return await this.paymentService.findLastPage(name,roles);
+        } catch (err) {
+            throw Error("Could not find payments")
+        }
+    }
 }

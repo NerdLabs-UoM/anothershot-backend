@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaymentStatus } from '@prisma/client';
+import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
 
 @Injectable()
 export class PaymentService {
@@ -77,8 +77,7 @@ export class PaymentService {
     return 1400;
   }
 
-
-//------Admin Panel Payment Handling Services --------
+  //------Admin Panel Payment Handling Services --------
 
   async getAllPayments() {
     const payments = await this.prisma.payment.findMany({
@@ -120,7 +119,8 @@ export class PaymentService {
     return payment;
   }
 
-  async updatePaymentStatus(paymentId: string, data:any) {
+  async updatePaymentStatus(paymentId: string, data: UpdatePaymentStatusDto) {
+    //select payment by id
     const payment = await this.prisma.payment.findUnique({
       where: {
         id: paymentId,
@@ -129,19 +129,87 @@ export class PaymentService {
 
     if (!payment) {
       throw new Error(`payment with id not found`);
-    }
-    
-    else{
+    } else {
       const paymentUpdate = await this.prisma.payment.update({
         where: {
           id: paymentId,
         },
-        data:{
+        data: {
           status: data.status,
-        }
+        },
       });
       return paymentUpdate;
-    
     }
+  }
+
+  //-- find all users page by page --
+
+  async findall(page: number, name: string ) {
+    const pageSize = 4;
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    let whereClause = {}; //where to get search results
+
+    if (name) {
+      whereClause = {
+        photographer: {
+          user: {
+            userName: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+        },
+      }; // If name is provided, filter by photographer user-name
+    }
+
+    const values = await this.prisma.payment.findMany({
+      skip, //how many rows to skip
+      take, //how many rows to get /fetch
+      where: whereClause,
+      include: {
+        photographer: {
+          include: {
+            user: true,
+          },
+        },
+        client: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return values;
+  }
+
+  async findLastPage(name: string, roles: string) {
+    const pageSize = 4;
+    let whereClause = {};
+
+    const rolesArray = roles ? roles.split(',') : null;
+
+    if (name) {
+      whereClause = {
+        photographer: {
+          user: {
+            userName: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+        },
+      };
+    }
+    if (roles) {
+      whereClause = { ...whereClause, userRole: { in: rolesArray } };
+    }
+
+    const total = await this.prisma.user.count({
+      where: whereClause,
+    });
+    const lastPage = Math.ceil(total / pageSize);
+    return lastPage;
   }
 }
