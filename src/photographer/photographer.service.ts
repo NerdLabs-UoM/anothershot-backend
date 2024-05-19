@@ -873,7 +873,6 @@ export class PhotographerService {
   });
 }
 
-
   async getEventById(eventId: string) {
   return await this.prisma.package.findUnique({
     where: {

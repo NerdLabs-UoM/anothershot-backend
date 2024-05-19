@@ -11,10 +11,10 @@ export class createEventDto{
     @IsString()
     description:string;
 
-    @IsString()
+    @IsDateString()
     start: string;
 
-    @IsString()
+    @IsDateString()
     end: string;
         
     @IsBoolean()
