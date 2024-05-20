@@ -1,25 +1,25 @@
 import { IsBoolean, IsDateString, IsOptional, IsString } from "class-validator";
 
 export class updateEventDto {
-    @IsString()
-    id: string;
+  @IsString()
+  id: string;
 
-    @IsString()
-    title: string;
+  @IsString()
+  title: string;
 
-    @IsString()
-    bookingId: string;
+  @IsString()
+  bookingId: string;
 
-    @IsString()
-    description: string;
+  @IsString()
+  description: string;
 
-    @IsDateString()
-    start: string;
+  @IsDateString()
+  start: string;
 
-    @IsDateString()
-    end: string;
+  @IsDateString()
+  end: string;
 
-    @IsBoolean()
-    @IsOptional()
-    allDay: boolean;
+  @IsBoolean()
+  @IsOptional()
+  allDay: boolean;
 }

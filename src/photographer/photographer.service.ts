@@ -815,6 +815,8 @@ export class PhotographerService {
         client: {
           select: {
             name: true,
+            id:true,
+
 
           },
         },
