@@ -2,7 +2,7 @@ import { IsBoolean, IsDateString, IsOptional, IsString } from "class-validator";
 
 export class updateEventDto {
   @IsString()
-  id: string;
+  eventId: string;
 
   @IsString()
   title: string;

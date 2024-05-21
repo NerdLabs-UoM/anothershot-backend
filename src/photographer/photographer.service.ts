@@ -886,7 +886,7 @@ export class PhotographerService {
   async updateEvents(dto: updateEventDto) {
   return await this.prisma.event.update({
     where: {
-      id: dto.id,
+      id: dto.eventId,
     },
     data: {
       title: dto.title,
