@@ -183,7 +183,7 @@ export class PhotographerService {
     });
   }
 
-  async updatePackageDetails(dto: updatePackageDto) {
+  async  updatePackageDetails(dto: updatePackageDto) {
     const photographer = await this.prisma.photographer.findUnique({
       where: {
         userId: dto.photographerId,
@@ -891,11 +891,7 @@ export class PhotographerService {
     data: {
       title: dto.title,
       description: dto.description,
-      Booking: {
-        connect: {
-          id: dto.bookingId,
-        }
-      },
+      bookingId: dto.bookingId,
       start: dto.start,
       end: dto.end,
       allDay: dto.allDay,
