@@ -645,22 +645,7 @@ export class PhotographerService {
     let likeCount = feed.likeCount;
 
     if (dto.like) {
-      // Fetch the user name for the notification
-      const userName = await this.prisma.user.findUnique({
-        where: {
-          id: dto.userId,
-        },
-        select: {
-          userName: true,
-        },
-      });
-      // Create the notification DTO data
-      const createNotifyDtoData = new CreateNotifyDto();
-      createNotifyDtoData.receiverId = photographerId;
-      createNotifyDtoData.type = 'liked';
-      createNotifyDtoData.title = `${userName.userName} likes your photo`;
-      await this.NotifyService.createNotification(createNotifyDtoData);
-
+      
       if (!existingLike) {
         await this.prisma.feedImage.update({
           where: {

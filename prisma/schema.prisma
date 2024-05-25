@@ -353,7 +353,7 @@ model AlbumImage {
 
 model Notification {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
-  receiver        User @relation(fields:[receiverId],references:[id])
+  receiver        User @relation(fields:[receiverId],references:[id],onDelete:Cascade,onUpdate:Cascade)
   receiverId      String @db.ObjectId
   type            String
   title           String

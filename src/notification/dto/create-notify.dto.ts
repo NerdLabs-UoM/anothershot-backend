@@ -1,6 +1,9 @@
-import { IsString,IsBoolean } from "class-validator";
+import { IsString,IsBoolean, IsDate } from "class-validator";
 
 export class CreateNotifyDto {
+    @IsString()
+    senderId: string;
+    
     @IsString()
     receiverId: string;
 
@@ -15,9 +18,35 @@ export class CreateNotifyDto {
 
 }
 
-export class UpdateNotifyDto {
+export class SendNotifyDto {
     @IsString()
     id: string;
+
+    @IsString()
+    receiverId: string;
+
+    @IsString()
+    type: string;
+
+    @IsString()
+    title: string;
+
+    @IsString()
+    description: string;
+
+    @IsBoolean()
+    read: boolean;
+
+    @IsDate()
+    createdAt: Date;
+}
+
+export class UpdateNotifyDto {
+    @IsString()
+    notifyId: string;
+
+    // @IsString()
+    // userId: string;
 
     @IsBoolean()
     read: boolean;
