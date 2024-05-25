@@ -13,6 +13,7 @@ export class ClientBookingDto {
     @IsString()
     eventLocation: string;
 
+
     @IsDateString()
     start: string;
 
@@ -24,4 +25,5 @@ export class ClientBookingDto {
 
     @IsString()
     packageId: string;
+
 }
