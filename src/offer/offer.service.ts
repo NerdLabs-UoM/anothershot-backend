@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking, Offer } from '@prisma/client';
+import { Booking, Offer,BookingStatus } from '@prisma/client';
 import { CreateBookingDto } from './dto/create-booking';
 
 @Injectable()
@@ -17,7 +17,15 @@ export class OfferService {
         bookingsId: data.bookingsId,
       },
     })
-
+    await this.prisma.booking.update({
+      where:{
+        id: data.bookingsId
+      },
+      data:{
+        status: BookingStatus.CONFIRMED,
+      }
+    })
+    
     if(existingOffer){
       return await this.updateOffer(existingOffer.id, data);
     }else{
@@ -25,6 +33,8 @@ export class OfferService {
         data
       })
     }
+
+    
   }
 
   async updateOffer(id: string, data: UpdateOfferDto){
@@ -104,21 +114,49 @@ export class OfferService {
     })
   }
 
-  create(createOfferDto: CreateOfferDto) {
-    return 'This action adds a new offer';
-  }
+  async getBookings(photographerId: string) {
+    return await this.prisma.booking.findMany({
+        where: {
+            photographerId: photographerId,
+        },
+        select: {
+            id: true,
+            subject: true,
+            category: true,
+            start: true,
+            status: true,
+            location: true,
+            client: {
+                select: {
+                    name: true,
+                },
+            },
+            photographer: {
+                select: {
+                   name: true,
+                   userId: true,
+                   user: {
+                        select: {
+                             image: true,
+                        }
+                      },
+                },
+            },
+            offer: {
+                select: {
+                    price: true,
+                },
+            },
+            package: {
+                select: {
+                    name: true,
+                },
+            },
+    },
+    orderBy: {
+        id: 'desc',
+      },
+    });
+}
 
-
-
-  findOne(id: number) {
-    return `This action returns a #${id} offer`;
-  }
-
-  update(id: number, updateOfferDto: UpdateOfferDto) {
-    return `This action updates a #${id} offer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} offer`;
-  }
 }

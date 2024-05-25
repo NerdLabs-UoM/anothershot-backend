@@ -34,6 +34,7 @@ import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';
 
 
+
 @Controller('api/photographer')
 export class PhotographerController {
 
@@ -185,7 +186,7 @@ export class PhotographerController {
   @Get('getallcategories')
   async getAllCategories() {
     return await this.photographerService.getAllCategories();
-  }
+  }
 
   @Get(':id/getcategory')
   async getCategoryById(@Param('id') id: string) {
@@ -212,6 +213,11 @@ export class PhotographerController {
     return await this.photographerService.editAlbum(dto);
   }
 
+  @Get(':id/getalbum')
+  async getAlbum(@Param('id') id: string) {
+    return await this.photographerService.getAlbum(id);
+  }
+  
   @Get(':id/getalbums')
   async getAlbums(@Param('id') id: string) {
     return await this.photographerService.getAlbums(id);
@@ -250,13 +256,13 @@ export class PhotographerController {
   }
 
   @Patch(':id/feed/like')
-  async feedLike(@Body() dto: FeedLikeDto) {
-    return await this.photographerService.feedLike(dto);
+  async feedLike(@Param('id') photographerId:string, @Body() dto: FeedLikeDto) {
+    return await this.photographerService.feedLike(photographerId,dto);
   }
 
   @Patch(`:id/feed/createSave`)
-  async feedSave(@Body() dto: FeedSaveDto) {
-    return await this.photographerService.feedSave(dto);
+  async feedSave(@Param('id') photographerId:string, @Body() dto: FeedSaveDto) {
+    return await this.photographerService.feedSave(photographerId,dto);
   }
 
   @Delete(':id/feed/delete')
@@ -276,10 +282,7 @@ export class PhotographerController {
 
   //------- booking controllers ---------
 
-  @Post(':id/clientBooking')
-  async createBookings(@Body() dto: ClientBookingDto) {
-    return await this.photographerService.clientBooking(dto);
-  }
+
 
   @Get(':id/clientBookings')
   async getBookings(@Param('id') photographerId: string) {
@@ -312,4 +315,45 @@ export class PhotographerController {
   async deleteEvents(@Body() dto: deleteEventDto) {
     return await this.photographerService.deleteEvents(dto);
   }
+  // ------- booking creation controllers ---------
+  
+  @Get(':id/bookingsCategory')
+  async getBookingsCategory(@Param('id') id: string) {
+    return await this.photographerService.getBookingsCategory(id);
+  }
+
+  @Get(':id/bookingsPackage')
+  async getBookingsPackage(@Param('id') id: string) {
+    return await this.photographerService.getBookingsPackage(id);
+  }
+  
+  @Post(':id/clientBooking')
+  async clientBooking(@Body() dto: ClientBookingDto){
+    return await this.photographerService.clientBooking(dto);
+  }
+
+  // ------- getting like and save images controllers ---------
+
+  @Get(':id/likeImages')
+  async getLikedImages(@Param('id') id: string) {
+      return await this.photographerService.getLikedImages(id);
+  }
+
+  @Get(':id/savedImages')
+  async getSavedImages(@Param('id') id:string){
+      return await this.photographerService.getSavedImages(id);
+  }
+
+  // ------- getting earnings and payments controllers ---------
+  @Get(':id/getPayments')
+  async getPayments(@Param('id') id: string){
+    return await this.photographerService.getPayments(id);
+  }
+
+  @Get(':id/earnings')
+  async getEarnings(@Param('id') id: string){
+    return await this.photographerService.getEarnings(id);
+  }
+
+
 }

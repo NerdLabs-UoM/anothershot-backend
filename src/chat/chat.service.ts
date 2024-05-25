@@ -2,14 +2,14 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { ChatCreateDto } from './dto/chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MessageSendDto } from './dto/message.dto';
-import { ChatGateway } from './chat.gateway';
+import { AppGateway } from 'src/app.gateway';
 
 @Injectable()
 export class ChatService {
 
     constructor(
         private prisma: PrismaService,
-        private socketGateway: ChatGateway
+        private socketGateway: AppGateway
     ) { }
 
     async getChatsByChatId(chatId: string) {

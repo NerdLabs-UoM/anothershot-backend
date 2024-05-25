@@ -1,75 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 import Stripe from 'stripe';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PaymentStatus } from '@prisma/client';
+import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
 
 @Injectable()
 export class PaymentService {
-
   private readonly stripe: Stripe;
 
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16', 
+      apiVersion: '2023-10-16',
     });
   }
+
+  //-----Payment Checkout Services ------
+
   //Get the Current Booking
   async getBooking(bookingId: string) {
     const booking = await this.stripe.checkout.sessions.retrieve(bookingId);
     return booking;
   }
 
-  //Create an Endpoint for Creating Payment Links
-  async purchaseBooking(bookingId: string){
-    const paymentLink = await this.stripe.paymentLinks.create({
-      line_items:[
+  // Ceate a Checkout Session
+  async createCheckoutSession(data: any) {
+    console.log(data);
+    const session = await this.stripe.checkout.sessions.create({
+      metadata: {
+        bookingId: data.bookingId,
+      },
+      mode: 'payment',
+      line_items: [
         {
-          price: '{{PRICE_ID}}',
+          price_data: {
+            currency: data.currency,
+            product_data: {
+              name: data.name,
+            },
+            unit_amount: data.price * 100,
+          },
           quantity: 1,
         },
       ],
-      after_completion:{
-        type:'redirect',
-        redirect:{
-          url:'https://example.com',
-        }
-      }     
-    })
+      success_url: `http://localhost:3000/success`,
+      cancel_url: `http://localhost:3000/error`,
+    });
+
+    console.log(session);
+
+    return session.url;
   }
 
-  //Ceate a Checkout Session
-  // async createCheckoutSession(bookingId: string) {
-  //   const session = await this.stripe.checkout.sessions.create({
-  //     payment_method_types: ['card'],
-  //     line_items: [
-  //       {
-  //         price_data: {
-  //           currency: 'usd',
-  //           product_data: {
-  //             name: "t-shirt",
-  //           },
-  //           unit_amount: 2000,
-  //         },
-  //         quantity: 1,
-  //       },
-  //     ],
-  //     mode: 'payment',
-  //     success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-  //     cancel_url: `http://localhost:3000/cancel`,
-  //   });
-  //   return session;
-  // }
+  async SuccessSession(Session) {
+    console.log(Session);
+  }
 
-  // //Create session as responce to frontend
-  // async createCheckoutSessionResponse(bookingId: string) {
-  //   const session = await this.createCheckoutSession(bookingId);
-  //   return {
-  //     sessionId: session.id,
-  //   };
-  // }
-
-
-  async createPaymentIntent(items:CreatePaymentDto){
+  async createPaymentIntent(items: CreatePaymentDto) {
     const amount = this.calculateOrderAmount(items);
     console.log(items);
     const paymentIntent = await this.stripe.paymentIntents.create({
@@ -86,27 +73,143 @@ export class PaymentService {
     };
   }
 
-  private calculateOrderAmount(items:CreatePaymentDto):number{
+  private calculateOrderAmount(items: CreatePaymentDto): number {
     return 1400;
   }
-  
-  create(createPaymentDto: CreatePaymentDto) {
-    return 'This action adds a new payment';
+
+  //------Admin Panel Payment Handling Services --------
+
+  async getAllPayments() {
+    const payments = await this.prisma.payment.findMany({
+      include: {
+        photographer: {
+          include: {
+            user: true,
+          },
+        },
+        client: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return payments;
   }
 
-  findAll() {
-    return `This action returns all payment`;
+  async getPaymentById(id: string) {
+    const payment = await this.prisma.payment.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        photographer: {
+          include: {
+            user: true,
+            BankDetails: true,
+          },
+        },
+        client: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return payment;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
+  async updatePaymentStatus(paymentId: string, data: UpdatePaymentStatusDto) {
+    //select payment by id
+    const payment = await this.prisma.payment.findUnique({
+      where: {
+        id: paymentId,
+      },
+    });
+
+    if (!payment) {
+      throw new Error(`payment with id not found`);
+    } else {
+      const paymentUpdate = await this.prisma.payment.update({
+        where: {
+          id: paymentId,
+        },
+        data: {
+          status: data.status,
+        },
+      });
+      return paymentUpdate;
+    }
   }
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
+  //-- find all users page by page --
+
+  async findall(page: number, name: string ) {
+    const pageSize = 4;
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    let whereClause = {}; //where to get search results
+
+    if (name) {
+      whereClause = {
+        photographer: {
+          user: {
+            userName: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+        },
+      }; // If name is provided, filter by photographer user-name
+    }
+
+    const values = await this.prisma.payment.findMany({
+      skip, //how many rows to skip
+      take, //how many rows to get /fetch
+      where: whereClause,
+      include: {
+        photographer: {
+          include: {
+            user: true,
+          },
+        },
+        client: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    return values;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
+  async findLastPage(name: string, roles: string) {
+    const pageSize = 4;
+    let whereClause = {};
+
+    const rolesArray = roles ? roles.split(',') : null;
+
+    if (name) {
+      whereClause = {
+        photographer: {
+          user: {
+            userName: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+        },
+      };
+    }
+    if (roles) {
+      whereClause = { ...whereClause, userRole: { in: rolesArray } };
+    }
+
+    const total = await this.prisma.user.count({
+      where: whereClause,
+    });
+    const lastPage = Math.ceil(total / pageSize);
+    return lastPage;
   }
 }

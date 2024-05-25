@@ -1,19 +1,19 @@
-import {  IsDateString, IsString } from "class-validator";
-
+import { IsDateString, IsString } from 'class-validator';
 export class ClientBookingDto {
-   
-    @IsString()
-    photographerId: string;
 
     @IsString()
     clientId: string;
+    
+    @IsString()
+    photographerId: string;
 
     @IsString()
     eventName: string;
 
     @IsString()
     eventLocation: string;
-    
+
+
     @IsDateString()
     start: string;
 
@@ -26,5 +26,4 @@ export class ClientBookingDto {
     @IsString()
     packageId: string;
 
-   
 }

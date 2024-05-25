@@ -1,10 +1,11 @@
 import { WebSocketServer, WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MessageSendDto } from './dto/message.dto';
+import { MessageSendDto } from './chat/dto/message.dto';
 import { Chat } from '@prisma/client';
+import { CreateNotifyDto, SendNotifyDto, UpdateNotifyDto } from './notification/dto/create-notify.dto';
 
 @WebSocketGateway(8001, { cors: '*' })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
   server: Server;
@@ -28,6 +29,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(@MessageBody() userId: string) {
     this.connectedUsers.delete(userId);
   }
+
+//   ChatGateway
 
   handleSendMessage(dto: MessageSendDto) {
     const receiver = this.connectedUsers.get(dto.receiverId);
@@ -53,4 +56,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       sender.emit('delete-chat', chatId);
     }
   }
+
+//  Notification Gateway
+  
+    handleNewNotification(notify:SendNotifyDto ) {
+      const receiver = this.connectedUsers.get(notify.receiverId);
+      if (receiver) {
+        receiver.emit('receive-notify', notify);
+      }
+    }
+  
+              
 }

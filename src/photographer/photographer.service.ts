@@ -1,11 +1,12 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from './dto/testimonial.dto';
-import { Package, TestimonialVisibility, PhotographerCategory } from '@prisma/client';
-import { VisibilityDto } from './dto/visibility.dto';
 import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+  Package,
+  TestimonialVisibility,
+  PhotographerCategory,
+} from '@prisma/client';
+import { VisibilityDto } from './dto/visibility.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -19,15 +20,21 @@ import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-import { ClientBookingDto } from './dto/clientBooking.dto';
+
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';
+import { NotifyService } from '../notification/notify.service';
+import { CreateNotifyDto } from 'src/notification/dto/create-notify.dto';
+import { ClientBookingDto } from './dto/clientBooking.dto';
+import { EarningsDto } from './dto/earnings.dto';
 
 @Injectable()
 export class PhotographerService {
-
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+    private NotifyService: NotifyService,
+  ) {}
 
   //------ photographer services -----------
 
@@ -74,7 +81,7 @@ export class PhotographerService {
   ) {
     return await this.prisma.photographer.update({
       where: {
-        userId: userId
+        userId: userId,
       },
       include: {
         user: true,
@@ -82,10 +89,10 @@ export class PhotographerService {
       data: {
         user: {
           update: {
-            image: data.image
-          }
-        }
-      }
+            image: data.image,
+          },
+        },
+      },
     });
   }
 
@@ -106,21 +113,21 @@ export class PhotographerService {
           email: dto.email,
           address: dto.address
             ? {
-              upsert: {
-                where: { contactDetailsId: existingContactDetails.id },
-                create: { ...dto.address },
-                update: { ...dto.address },
-              },
-            }
+                upsert: {
+                  where: { contactDetailsId: existingContactDetails.id },
+                  create: { ...dto.address },
+                  update: { ...dto.address },
+                },
+              }
             : undefined,
           socialMedia: dto.socialMedia
             ? {
-              upsert: {
-                where: { contactDetailsId: existingContactDetails.id },
-                create: { ...dto.socialMedia },
-                update: { ...dto.socialMedia },
-              },
-            }
+                upsert: {
+                  where: { contactDetailsId: existingContactDetails.id },
+                  create: { ...dto.socialMedia },
+                  update: { ...dto.socialMedia },
+                },
+              }
             : undefined,
         },
       });
@@ -173,7 +180,7 @@ export class PhotographerService {
         photographer: {
           connect: {
             userId: dto.photographerId,
-          }
+          },
         },
         name: dto.name,
         description: dto.description,
@@ -205,7 +212,7 @@ export class PhotographerService {
         photographer: {
           connect: {
             userId: dto.photographerId,
-          }
+          },
         },
         name: dto.name,
         description: dto.description,
@@ -221,7 +228,7 @@ export class PhotographerService {
         photographerId: photographerId,
       },
       include: {
-        booking: false
+        booking: false,
       },
     });
   }
@@ -230,7 +237,7 @@ export class PhotographerService {
     return await this.prisma.package.findUnique({
       where: {
         id: packageId,
-      }
+      },
     });
   }
 
@@ -238,7 +245,7 @@ export class PhotographerService {
     const photographer = await this.prisma.photographer.findUnique({
       where: {
         userId: dto.photographerId,
-      }
+      },
     });
 
     if (!photographer) {
@@ -255,7 +262,7 @@ export class PhotographerService {
   async saveCoverPhotos(packageId: string, data: Partial<Package>) {
     await this.prisma.package.update({
       where: { id: packageId },
-      data
+      data,
     });
   }
 
@@ -264,17 +271,17 @@ export class PhotographerService {
   async getFeatured(userId: string) {
     return await this.prisma.photographer.findUnique({
       where: {
-        userId: userId
-      }
+        userId: userId,
+      },
     });
   }
 
   async updateFeatured(id: string, data: Partial<Photographer>) {
     return await this.prisma.photographer.update({
       where: {
-        userId: id
+        userId: id,
       },
-      data
+      data,
     });
   }
 
@@ -376,8 +383,8 @@ export class PhotographerService {
         user: {
           connect: {
             id: id,
-          }
-        }
+          },
+        },
       },
     });
   }
@@ -428,12 +435,14 @@ export class PhotographerService {
           accountNumber: dto.accountNumber,
           accountName: dto.accountName,
           accountBranch: dto.accountBranch,
-          accountBranchCode: dto.accountBranchCode ? dto.accountBranchCode : undefined,
+          accountBranchCode: dto.accountBranchCode
+            ? dto.accountBranchCode
+            : undefined,
         },
       });
     }
     return await this.prisma.bankDetails.findUnique({
-      where: { photographerId: userId }
+      where: { photographerId: userId },
     });
   }
 
@@ -475,6 +484,7 @@ export class PhotographerService {
       data: {
         name: dto.name,
         description: dto.description,
+        visibility: dto.visibility,
         photographer: {
           connect: {
             userId: dto.photographerId,
@@ -483,7 +493,7 @@ export class PhotographerService {
       },
       include: {
         images: true,
-      }
+      },
     });
   }
 
@@ -495,6 +505,7 @@ export class PhotographerService {
       data: {
         name: dto.name,
         description: dto.description,
+        visibility: dto.visibility,
       },
     });
   }
@@ -510,11 +521,19 @@ export class PhotographerService {
     });
   }
 
+  async getAlbum(id: string) {
+    return this.prisma.album.findMany({
+      where: {
+        id: id,
+      },
+    });
+  }
+
   async getImages(id: string) {
     return this.prisma.albumImage.findMany({
       where: {
         albumId: id,
-      }
+      },
     });
   }
 
@@ -537,18 +556,20 @@ export class PhotographerService {
       throw new NotFoundException('Album not found');
     }
 
-    const images = await Promise.all(dto.images.map((imageUrl) =>
-      this.prisma.albumImage.create({
-        data: {
-          image: imageUrl,
-          album: {
-            connect: {
-              id: dto.albumId,
+    const images = await Promise.all(
+      dto.images.map((imageUrl) =>
+        this.prisma.albumImage.create({
+          data: {
+            image: imageUrl,
+            album: {
+              connect: {
+                id: dto.albumId,
+              },
             },
           },
-        },
-      }),
-    ));
+        }),
+      ),
+    );
 
     return images;
   }
@@ -574,6 +595,7 @@ export class PhotographerService {
         likeCount: true,
         saveCount: true,
         caption: true,
+        photographerId: true,
         photographer: {
           select: {
             name: true,
@@ -606,7 +628,7 @@ export class PhotographerService {
     });
   }
 
-  async feedLike(dto: FeedLikeDto) {
+  async feedLike(photographerId: string, dto: FeedLikeDto) {
     const existingLike = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -627,6 +649,7 @@ export class PhotographerService {
     let likeCount = feed.likeCount;
 
     if (dto.like) {
+      
       if (!existingLike) {
         await this.prisma.feedImage.update({
           where: {
@@ -663,8 +686,7 @@ export class PhotographerService {
               disconnect: { id: dto.feedId },
             },
           },
-        }
-        )
+        });
       }
     }
     return await this.prisma.feedImage.update({
@@ -677,7 +699,7 @@ export class PhotographerService {
     });
   }
 
-  async feedSave(dto: FeedSaveDto) {
+  async feedSave(photographerId: string, dto: FeedSaveDto) {
     const existingSave = await this.prisma.feedImage.findFirst({
       where: {
         id: dto.feedId,
@@ -699,6 +721,22 @@ export class PhotographerService {
     let saveCount = feed.saveCount;
 
     if (dto.save) {
+      // Fetch the user name for the notification
+      const userName = await this.prisma.user.findUnique({
+        where: {
+          id: dto.userId,
+        },
+        select: {
+          userName: true,
+        },
+      });
+      // Create the notification DTO data
+      const createNotifyDtoData = new CreateNotifyDto();
+      createNotifyDtoData.receiverId = photographerId;
+      createNotifyDtoData.type = 'saved';
+      createNotifyDtoData.title = `${userName.userName} saved your photo`;
+      await this.NotifyService.createNotification(createNotifyDtoData);
+
       if (!existingSave) {
         await this.prisma.feedImage.update({
           where: {
@@ -707,6 +745,9 @@ export class PhotographerService {
           data: {
             savedUserIds: {
               push: dto.userId,
+            },
+            saves: {
+              connect: { id: dto.userId },
             },
           },
         });
@@ -725,6 +766,14 @@ export class PhotographerService {
           },
         });
         saveCount--;
+        await this.prisma.user.update({
+          where: { id: dto.userId },
+          data: {
+            savedFeedImages: {
+              disconnect: { id: dto.feedId },
+            },
+          },
+        });
       }
     }
     return await this.prisma.feedImage.update({
@@ -769,7 +818,155 @@ export class PhotographerService {
       data: {
         caption: dto.caption,
       },
+    });
+  }
+
+  async getBookingsCategory(id: string) {
+    const bookings = await this.prisma.photographer.findMany({
+      where: {
+        userId: id,
+      },
+      select: {
+        category: true,
+      },
+    });
+    const lowercaseCategories = bookings.map((booking) => ({
+      category: booking.category.map((category) => category.toLowerCase()),
+    }));
+
+    return lowercaseCategories;
+  }
+
+  async getBookingsPackage(id: string) {
+    return await this.prisma.package.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }
+
+  async clientBooking(dto: ClientBookingDto) {
+
+    return await this.prisma.booking.create({
+      data: {
+        client: {
+          connect: {
+            userId: dto.clientId,
+          },
+        },
+        photographer: {
+          connect: {
+            userId: dto.photographerId,
+          },
+        },
+        subject: dto.eventName,
+        start: dto.start,
+        end: dto.end,
+        location: dto.eventLocation,
+        category:
+          PhotographerCategory[
+            dto.category.toUpperCase() as keyof typeof PhotographerCategory
+          ],
+        package: {
+          connect: {
+            id: dto.packageId,
+          },
+        },
+      },
+    });
+  }
+
+  async getLikedImages(id: string) {
+    return await this.prisma.user.findMany({
+      where: {
+        id: id,
+      },
+      select: {
+        likedFeedImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+            photographerId: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getSavedImages(id: string) {
+    return await this.prisma.user.findMany({
+      where: {
+        id: id,
+      },
+      select: {
+        savedFeedImages: {
+          select: {
+            id: true,
+            imageUrl: true,
+            photographerId: true,
+          },
+        },
+      },
+    });
+  }
+
+  // ------- payment services ---------
+
+  async getPayments(id: string) {
+    return await this.prisma.payment.findMany({
+      where: {
+        photographerId: id,
+      },
+      include: {
+        booking: {
+          select: {
+            id: true,
+            category: true
+          }
+        },
+        client: {
+          select: {
+            name: true
+          }
+        }
+      },
     })
+  }
+
+  
+  async getEarnings(id: string) {
+    const earningsDtoData = new EarningsDto();
+
+    const payments = await this.prisma.payment.findMany({
+      where: {
+        photographerId: id,
+      },
+      select: {
+        amount: true,
+        status: true
+      }
+    })
+
+    let paidTot = 0;
+    let pendingTot = 0;
+
+    payments.map((payment) => {
+      if (payment.status === 'PAID') {
+        paidTot += payment.amount;
+      } else if (payment.status === 'PENDING') {
+        pendingTot += payment.amount;
+      }
+    })
+
+    earningsDtoData.fees = 0.1 * paidTot;
+    earningsDtoData.totalAmount = paidTot - earningsDtoData.fees;
+    earningsDtoData.pending = pendingTot;
+
+    return earningsDtoData;
   }
 
   //------- booking services ---------
@@ -873,6 +1070,7 @@ export class PhotographerService {
       },
     },
   });
+
 }
 
   async getEventById(eventId: string) {
