@@ -26,7 +26,6 @@ import { createPackageDto } from './dto/createPackage.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
 import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
-import { ReportDto } from './dto/report.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
 
@@ -160,11 +159,6 @@ export class PhotographerController {
   }
 
   // ------- settings controllers ---------
-
-  @Post('report/:id')
-  async createReport(@Param('id') id: string, @Body() dto: ReportDto) {
-    return await this.photographerService.createReport(id, dto);
-  }
 
   @Get('bankdetails/:id')
   async getBankDetails(@Param('id') id: string) {

@@ -15,7 +15,6 @@ import { FeedSaveDto } from './dto/feedSave.dto';
 import { DeleteFeedDto } from './dto/deleteFeed.dto';
 import { CaptionDto } from './dto/caption.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
-import { ReportDto } from './dto/report.dto';
 import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
@@ -370,20 +369,6 @@ export class PhotographerService {
   }
 
   // ------- settings services ---------
-
-  async createReport(id: string, dto: ReportDto) {
-    return await this.prisma.report.create({
-      data: {
-        subject: dto.subject,
-        description: dto.description,
-        user: {
-          connect: {
-            id: id,
-          },
-        },
-      },
-    });
-  }
 
   async getBankDetails(photographerId: string) {
     return await this.prisma.bankDetails.findUnique({
