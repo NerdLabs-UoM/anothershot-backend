@@ -62,7 +62,6 @@ model User {
   savedFeedImagesIds String[]      @db.ObjectId
   reports          Report[]
   notifications    Notification[]
-
 }
 
 model Photographer {
@@ -72,7 +71,7 @@ model Photographer {
   name           String?                @default("Photographer Name")
   coverPhoto     String?
   bio            String?
-  featured       String[] 
+  featured       String[]
   category       PhotographerCategory[]
   contactDetails ContactDetails?
   testimonial    Testimonial[]
@@ -166,23 +165,23 @@ model Booking {
   updatedAt      DateTime             @updatedAt
 }
 
-
 model Offer {
-  id             String               @id @default(auto()) @map("_id") @db.ObjectId
-  client         Client               @relation(fields: [clientId], references: [id],onDelete: Cascade)
-  clientId       String               @db.ObjectId
-  photographer   Photographer         @relation(fields: [photographerId], references: [id],onDelete: Cascade)
-  photographerId String               @db.ObjectId
-  booking        Booking              @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
-  bookingsId     String               @unique @db.ObjectId 
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  client         Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId       String       @db.ObjectId
+  photographer   Photographer @relation(fields: [photographerId], references: [id], onDelete: Cascade)
+  photographerId String       @db.ObjectId
+  booking        Booking      @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
+  bookingsId     String       @unique @db.ObjectId
   description    String
   packageName    String
   clientName     String
   price          Float
   date           DateTime?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
+
 model Payment{
   id             String               @id @default(auto()) @map("_id") @db.ObjectId
   client         Client               @relation(fields: [clientId], references: [userId],onDelete: Cascade)
@@ -345,7 +344,7 @@ model Album {
 }
 
 model AlbumImage {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId 
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId String @db.ObjectId
   image   String
