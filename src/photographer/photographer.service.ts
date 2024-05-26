@@ -466,6 +466,7 @@ export class PhotographerService {
         name: dto.name,
         description: dto.description,
         visibility: dto.visibility,
+        price:dto.price,
         photographer: {
           connect: {
             userId: dto.photographerId,
@@ -487,6 +488,7 @@ export class PhotographerService {
         name: dto.name,
         description: dto.description,
         visibility: dto.visibility,
+        price:dto.price
       },
     });
   }

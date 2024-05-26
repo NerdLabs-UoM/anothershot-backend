@@ -340,6 +340,7 @@ model Album {
   description    String
   images         AlbumImage[]
   visibility     AlbumVisibility  @default(PRIVATE)
+  price          Float?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
