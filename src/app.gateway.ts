@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocketGateway, OnGatewayConnection, OnGatewayDiscon
 import { Server, Socket } from 'socket.io';
 import { MessageSendDto } from './chat/dto/message.dto';
 import { Chat } from '@prisma/client';
+import { CreateNotifyDto, SendNotifyDto, UpdateNotifyDto } from './notification/dto/create-notify.dto';
 
 @WebSocketGateway(8001, { cors: '*' })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -58,19 +59,12 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 //  Notification Gateway
   
-    handleNewNotification(userId: string, notification: any) {
-      const receiver = this.connectedUsers.get(userId);
+    handleNewNotification(notify:SendNotifyDto ) {
+      const receiver = this.connectedUsers.get(notify.receiverId);
       if (receiver) {
-        receiver.emit('new-notification', notification);
+        receiver.emit('receive-notify', notify);
       }
     }
   
-    handleDeleteNotification(userId: string, notificationId: string) {
-      const receiver = this.connectedUsers.get(userId);
-      if (receiver) {
-        receiver.emit('delete-notification', notificationId);
-      }
-    }
-  
-          
+              
 }
