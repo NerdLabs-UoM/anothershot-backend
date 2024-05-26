@@ -1,5 +1,5 @@
 import { AlbumVisibility } from '@prisma/client';
-import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsOptional, IsNumber } from 'class-validator';
 
 export class AlbumsDto {
   @IsString()
@@ -17,6 +17,9 @@ export class AlbumsDto {
   @IsString()
   @IsOptional()
   visibility:AlbumVisibility;
+
+  @IsNumber()
+  price:number;
 
 }
 
@@ -36,6 +39,10 @@ export class updateAlbumDto {
   @IsString()
   @IsOptional()
   visibility:AlbumVisibility;
+
+  @IsNumber()
+  price:number;
+
 }
 
 export class AlbumImagesDto {

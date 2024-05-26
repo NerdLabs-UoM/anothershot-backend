@@ -13,6 +13,7 @@ import {
   Admin,
   Account,
 } from '@prisma/client';
+import { SystemReportDto } from './dto/systemReport.dto';
 
 @Injectable()
 export class UserService {
@@ -305,4 +306,24 @@ export class UserService {
       },
     });
   }
+  
+
+  //  ---------- system report ------------
+
+  async createSystemReport(id:string, dto: SystemReportDto) {
+    return await this.prisma.systemReport.create({
+      data:{
+        subject: dto.subject,
+        description: dto.description,
+        user: {
+          connect:{
+            id: id
+          }
+        }
+      }
+    })
+  }
+      
 }
+
+
