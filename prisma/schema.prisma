@@ -62,6 +62,8 @@ model User {
   savedFeedImagesIds String[]      @db.ObjectId
   reports          Report[]
   notifications    Notification[]
+  systemReports    SystemReport[]
+
 }
 
 model Photographer {
@@ -339,6 +341,7 @@ model Album {
   description    String
   images         AlbumImage[]
   visibility     AlbumVisibility  @default(PRIVATE)
+  price          Float?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -361,6 +364,17 @@ model Notification {
   createdAt       DateTime @default(now())
 }
 
+model SystemReport {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
+  subject        String
+  description    String
+  status         SystemReportStatus  @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
 enum UserRole {
   CLIENT
   PHOTOGRAPHER
@@ -378,6 +392,11 @@ enum ReportStatus {
   PENDING
   RESOLVED
   DISMISSED
+}
+
+enum SystemReportStatus {
+  PENDING
+  RESOLVED
 }
 
 enum TestimonialVisibility {
