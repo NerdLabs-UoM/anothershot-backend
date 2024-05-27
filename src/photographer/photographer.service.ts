@@ -708,22 +708,6 @@ export class PhotographerService {
     let saveCount = feed.saveCount;
 
     if (dto.save) {
-      // Fetch the user name for the notification
-      const userName = await this.prisma.user.findUnique({
-        where: {
-          id: dto.userId,
-        },
-        select: {
-          userName: true,
-        },
-      });
-      // Create the notification DTO data
-      const createNotifyDtoData = new CreateNotifyDto();
-      createNotifyDtoData.receiverId = photographerId;
-      createNotifyDtoData.type = 'saved';
-      createNotifyDtoData.title = `${userName.userName} saved your photo`;
-      await this.NotifyService.createNotification(createNotifyDtoData);
-
       if (!existingSave) {
         await this.prisma.feedImage.update({
           where: {
@@ -957,33 +941,7 @@ export class PhotographerService {
   }
 
   //------- booking services ---------
-  async clientBooking(dto: ClientBookingDto) {
-    return await this.prisma.booking.create({
-      data: {
-        client: {
-          connect: {
-            userId: dto.clientId,
-          }
-        },
-        photographer: {
-          connect: {
-            userId: dto.photographerId,
-          }
-        },
-        subject: dto.eventName,
-        start: dto.start,
-        end: dto.end,
-        location: dto.eventLocation,
-        category:
-          PhotographerCategory[dto.category.toUpperCase() as keyof typeof PhotographerCategory],
-        package: {
-          connect: {
-            id: dto.packageId,
-          }
-        },
-      },
-    });
-  }
+
   async getBookings(photographerId: string) {
     return await this.prisma.booking.findMany({
       where: {
