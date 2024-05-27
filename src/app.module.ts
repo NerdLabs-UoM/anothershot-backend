@@ -15,8 +15,9 @@ import {OfferModule} from './offer/offer.module';
 import {PaymentModule} from './payment/payment.module';
 import {StripeModule} from './stripe/stripe.module';
 import { NotifyModule } from './notification/notify.module';
+import { ReportModule } from './report/report.module';
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule, PhotographerModule, ClientModule, ChatModule, HomeModule ,OfferModule ,PaymentModule, StripeModule,NotifyModule],
+  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule, PhotographerModule, ClientModule, ChatModule, HomeModule ,OfferModule ,PaymentModule, StripeModule,NotifyModule, ReportModule],
   controllers: [AppController],
   providers: [AppService, PrismaService, AppGateway],
 })
