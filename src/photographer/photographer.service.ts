@@ -189,7 +189,7 @@ export class PhotographerService {
     });
   }
 
-  async  updatePackageDetails(dto: updatePackageDto) {
+  async updatePackageDetails(dto: updatePackageDto) {
     const photographer = await this.prisma.photographer.findUnique({
       where: {
         userId: dto.photographerId,
@@ -198,11 +198,9 @@ export class PhotographerService {
         user: true,
       },
     });
-
     if (!photographer) {
       throw new NotFoundException('Photographer not found');
     }
-
     return await this.prisma.package.update({
       where: {
         id: dto.packageId,
@@ -222,7 +220,7 @@ export class PhotographerService {
   }
 
   async getPackageDetails(photographerId: string) {
-    return await this.prisma.package.findMany({
+    const packages = await this.prisma.package.findMany({
       where: {
         photographerId: photographerId,
       },
@@ -230,7 +228,13 @@ export class PhotographerService {
         booking: false,
       },
     });
+    const cleanedPackages = packages.map(pkg => ({
+      ...pkg,
+      price: pkg.price.toString() !== '' ? parseFloat(pkg.price.toString()) : null,
+    }));
+    return cleanedPackages;
   }
+  
 
   async getPackageById(packageId: string) {
     return await this.prisma.package.findUnique({

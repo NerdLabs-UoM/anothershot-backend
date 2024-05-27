@@ -286,7 +286,7 @@ model Package {
   name           String
   description    String
   coverPhotos    String[]
-  price          String?
+  price          Float
   booking        Booking[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
