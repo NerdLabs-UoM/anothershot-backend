@@ -61,6 +61,7 @@ model User {
   savedFeedImages    FeedImage[]   @relation("SavedImages", fields: [savedFeedImagesIds], references: [id])
   savedFeedImagesIds String[]      @db.ObjectId
   reports          Report[]
+  imageReports     Imagereport[]
   notifications    Notification[]
 
 }
@@ -85,6 +86,7 @@ model Photographer {
   BankDetails    BankDetails?
   Earnings       Earnings?
   Report         Report[]
+  Profilereport  Profilereport[] 
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt
 }
@@ -98,6 +100,7 @@ model Client {
   testimonial Testimonial[]
   Booking     Booking[]
   Report      Report[]
+  Profilereport  Profilereport[] 
   Offers      Offer[]
   payment     Payment[]
   createdAt   DateTime      @default(now())
@@ -249,6 +252,31 @@ model Report {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 }
+model Profilereport {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  client         Client        @relation(fields: [clientId], references: [userId],onDelete: Cascade)
+  clientId       String        @db.ObjectId
+  photographer   Photographer  @relation(fields: [photographerId], references: [userId],onDelete: Cascade)
+  photographerId String        @db.ObjectId
+  subject        String
+  description    String
+  status         ReportStatus  @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Imagereport {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
+  feedImage      FeedImage     @relation(fields: [feedImageId], references: [id],onDelete: Cascade)
+  feedImageId    String        @db.ObjectId
+  subject        String
+  description    String
+  status         ReportStatus  @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
 
 model Package {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
@@ -325,6 +353,7 @@ model FeedImage {
   likedUserIds   String[]     @db.ObjectId
   saves          User[]       @relation("SavedImages", fields: [savedUserIds], references: [id])
   savedUserIds   String[]     @db.ObjectId
+  imageReport    Imagereport[]
   likeCount      Int          @default(0)
   saveCount      Int          @default(0)
   caption        String?
