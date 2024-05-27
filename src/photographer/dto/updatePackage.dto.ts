@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class updatePackageDto {
 
@@ -18,8 +18,7 @@ export class updatePackageDto {
     @IsOptional()
     coverPhotos: string[];
 
-    @IsString()
-    @IsOptional()
-    price: string;
+    @IsNumber()
+    price: number;
 
 }
