@@ -8,10 +8,10 @@ export class CreateReportDto {
   description: string;
 
   @IsString()
-  clientId: string;
+  photographerId: string;
 
   @IsString()
-  photographerId: string;
+  userId:string;
 }
 
 
