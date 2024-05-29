@@ -12,7 +12,7 @@ export class ReportService {
   async create(data: CreateReportDto) {
     const existingReport = await this.prisma.profilereport.findFirst({
       where: {
-        clientId: data.clientId,
+        userId: data.userId,
         photographerId: data.photographerId,
       },
     });
@@ -23,9 +23,9 @@ export class ReportService {
           id: existingReport.id,
         },
         data: {
-          client: {
+          user: {
             connect: {
-              userId: data.clientId,
+              id: data.userId,
             },
           },
           photographer: {
@@ -40,9 +40,9 @@ export class ReportService {
     } else {
       return await this.prisma.profilereport.create({
         data: {
-          client: {
+          user: {
             connect: {
-              userId: data.clientId,
+              id: data.userId,
             },
           },
           photographer: {
@@ -190,11 +190,7 @@ export class ReportService {
             user: true,
           },
         },
-        client: {
-          include: {
-            user: true,
-          },
-        },
+        user:true
       },
     });
     return values;
