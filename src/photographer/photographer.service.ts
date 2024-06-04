@@ -980,6 +980,7 @@ export class PhotographerService {
         package: {
           select: {
             name: true,
+            price: true,
           },
         },
       }
