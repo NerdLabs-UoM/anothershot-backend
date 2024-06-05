@@ -4,7 +4,11 @@ import { MessageSendDto } from './chat/dto/message.dto';
 import { Chat } from '@prisma/client';
 import { CreateNotifyDto, SendNotifyDto, UpdateNotifyDto } from './notification/dto/create-notify.dto';
 
-@WebSocketGateway(8001, { cors: '*' })
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
