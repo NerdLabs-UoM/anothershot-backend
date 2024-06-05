@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+// AppModule
+
+import { Module, Logger } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -11,14 +13,35 @@ import { ClientModule } from './client/client.module';
 import { ChatModule } from './chat/chat.module';
 import { AppGateway } from './app.gateway';
 import { HomeModule } from './home/home.module';
-import {OfferModule} from './offer/offer.module';
-import {PaymentModule} from './payment/payment.module';
-import {StripeModule} from './stripe/stripe.module';
+import { OfferModule } from './offer/offer.module';
+import { PaymentModule } from './payment/payment.module';
+import { StripeModule } from './stripe/stripe.module';
 import { NotifyModule } from './notification/notify.module';
 import { ReportModule } from './report/report.module';
+
+const logger = new Logger('AppModule');
+
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, AdminModule, PhotographerModule, ClientModule, ChatModule, HomeModule ,OfferModule ,PaymentModule, StripeModule,NotifyModule, ReportModule],
+  imports: [
+    ConfigModule.forRoot(),
+    UserModule,
+    AuthModule,
+    AdminModule,
+    PhotographerModule,
+    ClientModule,
+    ChatModule,
+    HomeModule,
+    OfferModule,
+    PaymentModule,
+    StripeModule,
+    NotifyModule,
+    ReportModule,
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService, AppGateway],
 })
-export class AppModule { }
+export class AppModule {
+  constructor() {
+    logger.log('AppModule initialized');
+  }
+}
