@@ -27,8 +27,9 @@ export class AuthService {
         const payload = { email: user.email, sub: user.id };
 
         return {
+            user,
             accessToken: await this.jwtService.signAsync(payload, {
-                expiresIn: '20s',
+                expiresIn: '1d',
                 secret: process.env.jwtSecretKey,
             }),
             refreshToken: await this.jwtService.signAsync(payload, {
