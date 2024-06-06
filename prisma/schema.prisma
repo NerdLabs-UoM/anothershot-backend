@@ -89,6 +89,7 @@ model Photographer {
   Earnings       Earnings?
   Report         Report[]
   Profilereport  Profilereport[] 
+  albumPayment   AlbumPayment[]
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt
 }
@@ -104,6 +105,7 @@ model Client {
   Report      Report[]
   Offers      Offer[]
   payment     Payment[]
+  albumPayment AlbumPayment[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -371,8 +373,25 @@ model Album {
   images         AlbumImage[]
   visibility     AlbumVisibility  @default(PRIVATE)
   price          Float?
+  paymentStatus  PaymentStatus?    @default(PENDING)
+  payment        AlbumPayment?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+
+model AlbumPayment{
+  id             String               @id @default(auto()) @map("_id") @db.ObjectId
+  client         Client               @relation(fields: [clientId], references: [userId],onDelete: Cascade)
+  clientId       String               @db.ObjectId
+  photographer   Photographer         @relation(fields: [photographerId], references: [userId],onDelete: Cascade)
+  photographerId String               @db.ObjectId
+  album          Album                @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId     String               @unique @db.ObjectId 
+  amount         Float
+  currency       String
+  status         PaymentStatus        @default(PENDING)  
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 }
 
 model AlbumImage {

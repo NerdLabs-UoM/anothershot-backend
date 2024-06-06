@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PaymentStatus } from '@prisma/client';
 import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
 
 @Injectable()
@@ -25,7 +24,7 @@ export class PaymentService {
 
   // Ceate a Checkout Session
   async createCheckoutSession(data: any) {
-    console.log(data);
+    
     const session = await this.stripe.checkout.sessions.create({
       metadata: {
         bookingId: data.bookingId,
@@ -43,18 +42,46 @@ export class PaymentService {
           quantity: 1,
         },
       ],
-      success_url: `http://localhost:3000/success`,
-      cancel_url: `http://localhost:3000/error`,
+      success_url: `${process.env.BASE_URL}/success`,
+      cancel_url: `${process.env.BASE_URL}/error`,
     });
-
-    console.log(session);
 
     return session.url;
   }
 
+  async createCheckoutSessionAlbum(data: any) {
+
+    const session = await this.stripe.checkout.sessions.create({
+      metadata: {
+        albumId: data.albumId,
+        clientId: data.clientId,
+      },
+      
+      mode: 'payment',
+      line_items: [
+        {
+          price_data: {
+            currency: data.currency,
+            product_data: {
+              name: data.name,
+            },
+            unit_amount: data.price * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${process.env.BASE_URL}/success`,
+      cancel_url: `${process.env.BASE_URL}/error`,
+    });
+
+    return session.url;
+  }
+
+
   async SuccessSession(Session) {
     console.log(Session);
   }
+
 
   async createPaymentIntent(items: CreatePaymentDto) {
     const amount = this.calculateOrderAmount(items);
@@ -74,8 +101,10 @@ export class PaymentService {
   }
 
   private calculateOrderAmount(items: CreatePaymentDto): number {
-    return 1400;
+    return items.amount * 100;
   }
+
+  
 
   //------Admin Panel Payment Handling Services --------
 
