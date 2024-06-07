@@ -266,21 +266,6 @@ export class PhotographerService {
 
   // ------- package section services ---------
 
-  // async createPackage(dto: createPackageDto) {
-  //   return await this.prisma.package.create({
-  //     data: {
-  //       photographer: {
-  //         connect: {
-  //           userId: dto.photographerId,
-  //         },
-  //       },
-  //       name: dto.name,
-  //       description: dto.description,
-  //       coverPhotos: dto.coverPhotos,
-  //       price: dto.price,
-  //     },
-  //   });
-  // }
   async createPackage(dto: createPackageDto) {
     try {
       this.logger.log(`Creating package for photographer ID: ${dto.photographerId}`);
@@ -298,42 +283,23 @@ export class PhotographerService {
         },
       });
       this.logger.log(`Package created successfully for photographer ID: ${dto.photographerId}`);
+
+      // Send a notification
+      await this.NotifyService.createNotification({
+        senderId: dto.photographerId, // Assuming the photographerId is the sender
+        receiverId: dto.photographerId, // Adjust the receiverId based on your logic
+        type: 'package_creation',
+        title: 'New Package Created',
+        description: `A new package named ${dto.name} has been created.`,
+      });
+
       return newPackage;
     } catch (error) {
       this.logger.error(`Error creating package for photographer ID: ${dto.photographerId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async updatePackageDetails(dto: updatePackageDto) {
-  //   const photographer = await this.prisma.photographer.findUnique({
-  //     where: {
-  //       userId: dto.photographerId,
-  //     },
-  //     include: {
-  //       user: true,
-  //     },
-  //   });
-  //   if (!photographer) {
-  //     throw new NotFoundException('Photographer not found');
-  //   }
-  //   return await this.prisma.package.update({
-  //     where: {
-  //       id: dto.packageId,
-  //     },
-  //     data: {
-  //       photographer: {
-  //         connect: {
-  //           userId: dto.photographerId,
-  //         },
-  //       },
-  //       name: dto.name,
-  //       description: dto.description,
-  //       coverPhotos: dto.coverPhotos,
-  //       price: dto.price,
-  //     },
-  //   });
-  // }
   async updatePackageDetails(dto: updatePackageDto) {
     try {
       this.logger.log(`Updating package details for package ID: ${dto.packageId}`);
@@ -368,28 +334,22 @@ export class PhotographerService {
       });
       this.logger.log(`Package updated successfully for package ID: ${dto.packageId}`);
 
+      // Send a notification
+      await this.NotifyService.createNotification({
+        senderId: dto.photographerId, // Assuming the photographerId is the sender
+        receiverId: dto.photographerId, // Adjust the receiverId based on your logic
+        type: 'package_update',
+        title: 'Package Updated',
+        description: `The package named ${dto.name} has been updated.`,
+      });
+
       return updatedPackage;
     } catch (error) {
       this.logger.error(`Error updating package details for package ID: ${dto.packageId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async getPackageDetails(photographerId: string) {
-  //   const packages = await this.prisma.package.findMany({
-  //     where: {
-  //       photographerId: photographerId,
-  //     },
-  //     include: {
-  //       booking: false,
-  //     },
-  //   });
-  //   const cleanedPackages = packages.map(pkg => ({
-  //     ...pkg,
-  //     price: pkg.price.toString() !== '' ? parseFloat(pkg.price.toString()) : null,
-  //   }));
-  //   return cleanedPackages;
-  // }
   async getPackageDetails(photographerId: string) {
     try {
       this.logger.log(`Fetching package details for photographer ID: ${photographerId}`);
@@ -416,13 +376,6 @@ export class PhotographerService {
     }
   }
 
-  // async getPackageById(packageId: string) {
-  //   return await this.prisma.package.findUnique({
-  //     where: {
-  //       id: packageId,
-  //     },
-  //   });
-  // }
   async getPackageById(packageId: string) {
     try {
       this.logger.log(`Fetching package with ID: ${packageId}`);
@@ -442,24 +395,6 @@ export class PhotographerService {
       throw error; 
     }
   }
-
-  // async deletePackageDetails(dto: deletePackageDto) {
-  //   const photographer = await this.prisma.photographer.findUnique({
-  //     where: {
-  //       userId: dto.photographerId,
-  //     },
-  //   });
-
-  //   if (!photographer) {
-  //     throw new NotFoundException('Photographer not found');
-  //   }
-
-  //   return await this.prisma.package.delete({
-  //     where: {
-  //       id: dto.packageId,
-  //     },
-  //   });
-  // }
   async deletePackageDetails(dto: deletePackageDto) {
     try {
       this.logger.log(`Deleting package with ID: ${dto.packageId}`);
@@ -480,6 +415,13 @@ export class PhotographerService {
       });
 
       this.logger.log(`Package deleted successfully with ID: ${dto.packageId}`);
+      await this.NotifyService.createNotification({
+        senderId: dto.photographerId, // Assuming the photographerId is the sender
+        receiverId: dto.photographerId, // Adjust the receiverId based on your logic
+        type: 'package_delete',
+        title: 'Package deleted',
+        description: `The package has been deleted.`,
+      });
 
       return deletedPackage;
     } catch (error) {
