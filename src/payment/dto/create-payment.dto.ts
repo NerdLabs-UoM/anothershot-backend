@@ -19,3 +19,20 @@ export class CreatePaymentDto {
     findOne: (id: number) => string;
     remove: (id: number) => string;
 }
+
+export class AlbumPayment{
+    @IsString()
+    clientId: string;
+
+    @IsString()
+    photographerId: string;
+
+    @IsString()
+    albumId: string;
+
+    @IsString()
+    amount: number;
+
+    @IsString()
+    currency: string;
+}
