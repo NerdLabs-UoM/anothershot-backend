@@ -6,7 +6,7 @@ import {
   PhotographerCategory,
 } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
-import { Injectable, NotFoundException, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -392,10 +392,7 @@ export class PhotographerService {
   // }
   async getPackageDetails(photographerId: string) {
     try {
-      // Logging the start of the get operation
       this.logger.log(`Fetching package details for photographer ID: ${photographerId}`);
-
-      // Performing the findMany operation
       const packages = await this.prisma.package.findMany({
         where: {
           photographerId: photographerId,
@@ -404,26 +401,18 @@ export class PhotographerService {
           booking: false,
         },
       });
-
       if (!packages.length) {
-        // Logging if no packages are found
         this.logger.warn(`No packages found for photographer ID: ${photographerId}`);
       }
-
-      // Cleaning the packages
       const cleanedPackages = packages.map(pkg => ({
         ...pkg,
         price: pkg.price.toString() !== '' ? parseFloat(pkg.price.toString()) : null,
       }));
-
-      // Logging the success of the get operation
       this.logger.log(`Package details fetched successfully for photographer ID: ${photographerId}`);
-
       return cleanedPackages;
     } catch (error) {
-      // Handling any errors that occur during the get operation
       this.logger.error(`Error fetching package details for photographer ID: ${photographerId}`, error);
-      throw error; // Re-throwing the error to propagate it to the caller
+      throw error; 
     }
   }
 
@@ -436,30 +425,21 @@ export class PhotographerService {
   // }
   async getPackageById(packageId: string) {
     try {
-      // Logging the start of the get operation
       this.logger.log(`Fetching package with ID: ${packageId}`);
-
-      // Performing the findUnique operation
       const pkg = await this.prisma.package.findUnique({
         where: {
           id: packageId,
         },
       });
-
       if (!pkg) {
-        // Logging if the package is not found
         this.logger.warn(`Package not found with ID: ${packageId}`);
         throw new Error(`Package with ID ${packageId} not found`);
       }
-
-      // Logging the success of the get operation
       this.logger.log(`Package fetched successfully with ID: ${packageId}`);
-
       return pkg;
     } catch (error) {
-      // Handling any errors that occur during the get operation
       this.logger.error(`Error fetching package with ID: ${packageId}`, error);
-      throw error; // Re-throwing the error to propagate it to the caller
+      throw error; 
     }
   }
 
@@ -482,37 +462,29 @@ export class PhotographerService {
   // }
   async deletePackageDetails(dto: deletePackageDto) {
     try {
-      // Logging the start of the delete operation
       this.logger.log(`Deleting package with ID: ${dto.packageId}`);
-
-      // Checking if the photographer exists
       const photographer = await this.prisma.photographer.findUnique({
         where: {
           userId: dto.photographerId,
         },
       });
-
       if (!photographer) {
         // Logging if the photographer is not found
         this.logger.warn(`Photographer not found with ID: ${dto.photographerId}`);
         throw new NotFoundException('Photographer not found');
       }
-
-      // Performing the delete operation
       const deletedPackage = await this.prisma.package.delete({
         where: {
           id: dto.packageId,
         },
       });
 
-      // Logging the success of the delete operation
       this.logger.log(`Package deleted successfully with ID: ${dto.packageId}`);
 
       return deletedPackage;
     } catch (error) {
-      // Handling any errors that occur during the delete operation
       this.logger.error(`Error deleting package with ID: ${dto.packageId}`, error);
-      throw error; // Re-throwing the error to propagate it to the caller
+      throw error; 
     }
   }
 
@@ -524,21 +496,15 @@ export class PhotographerService {
   // }
   async saveCoverPhotos(packageId: string, data: Partial<Package>) {
     try {
-      // Logging the start of the update operation
       this.logger.log(`Saving cover photos for package ID: ${packageId}`);
-
-      // Performing the update operation
       await this.prisma.package.update({
         where: { id: packageId },
         data,
       });
-
-      // Logging the success of the update operation
       this.logger.log(`Cover photos saved successfully for package ID: ${packageId}`);
     } catch (error) {
-      // Handling any errors that occur during the update operation
       this.logger.error(`Error saving cover photos for package ID: ${packageId}`, error);
-      throw error; // Re-throwing the error to propagate it to the caller
+      throw error; 
     }
   }
   // ------- featured section services ---------
@@ -552,30 +518,21 @@ export class PhotographerService {
   // }
   async getFeatured(userId: string) {
     try {
-      // Logging the start of the get operation
       this.logger.log(`Fetching featured photographer for user ID: ${userId}`);
-
-      // Performing the findUnique operation
       const photographer = await this.prisma.photographer.findUnique({
         where: {
           userId: userId,
         },
       });
-
       if (!photographer) {
-        // Logging if the photographer is not found
         this.logger.warn(`Featured photographer not found for user ID: ${userId}`);
         throw new NotFoundException('Featured photographer not found');
       }
-
-      // Logging the success of the get operation
       this.logger.log(`Featured photographer fetched successfully for user ID: ${userId}`);
-
       return photographer;
     } catch (error) {
-      // Handling any errors that occur during the get operation
       this.logger.error(`Error fetching featured photographer for user ID: ${userId}`, error);
-      throw error; // Re-throwing the error to propagate it to the caller
+      throw error; 
     }
   }
 
@@ -589,25 +546,18 @@ export class PhotographerService {
   // }
   async updateFeatured(id: string, data: Partial<Photographer>) {
     try {
-      // Logging the start of the update operation
       this.logger.log(`Updating featured photographer with user ID: ${id}`);
-
-      // Performing the update operation
       const updatedPhotographer = await this.prisma.photographer.update({
         where: {
           userId: id,
         },
         data,
       });
-
-      // Logging the success of the update operation
       this.logger.log(`Featured photographer updated successfully with user ID: ${id}`);
-
       return updatedPhotographer;
     } catch (error) {
-      // Handling any errors that occur during the update operation
       this.logger.error(`Error updating featured photographer with user ID: ${id}`, error);
-      throw error; // Re-throwing the error to propagate it to the caller
+      throw error; 
     }
   }
 
@@ -1148,7 +1098,6 @@ export class PhotographerService {
   }
 
   async clientBooking(dto: ClientBookingDto) {
-
     return await this.prisma.booking.create({
       data: {
         client: {
@@ -1269,45 +1218,56 @@ export class PhotographerService {
 
   //------- booking services ---------
 
-  async getBookings(photographerId: string) {
-    return await this.prisma.booking.findMany({
-      where: {
-        photographerId: photographerId
-      },
-      select: {
-        id: true,
-        subject: true,
-        start: true,
-        status: true,
-        location: true,
-        category: true,
-        client: {
-          select: {
-            name: true,
-            id: true,
-
-
-          },
+    async getBookings(photographerId: string) {
+    try {
+      this.logger.log(`Fetching bookings for photographer ID: ${photographerId}`);
+      const bookings = await this.prisma.booking.findMany({
+        where: {
+          photographerId: photographerId
         },
-        photographer: {
-          select: {
-            name: true,
-
+        select: {
+          id: true,
+          subject: true,
+          start: true,
+          status: true,
+          location: true,
+          category: true,
+          client: {
+            select: {
+              name: true,
+              id: true,
+            },
           },
-        },
-        offer: {
-          select: {
-            price: true,
+          photographer: {
+            select: {
+              name: true,
+            },
           },
-        },
-        package: {
-          select: {
-            name: true,
-            price: true,
+          offer: {
+            select: {
+              price: true,
+            },
           },
+          package: {
+            select: {
+              name: true,
+              price: true,
+            },
+          },
+        }
+      });
+      this.logger.log(`Bookings fetched successfully for photographer ID: ${photographerId}`);
+      return bookings;
+    } catch (error) {
+      this.logger.error(`Error fetching bookings for photographer ID: ${photographerId}`, error.message);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'There was a problem fetching the bookings.',
         },
-      }
-    })
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
 
