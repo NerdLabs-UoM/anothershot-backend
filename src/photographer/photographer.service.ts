@@ -6,7 +6,13 @@ import {
   PhotographerCategory,
 } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -15,7 +21,7 @@ import { FeedSaveDto } from './dto/feedSave.dto';
 import { DeleteFeedDto } from './dto/deleteFeed.dto';
 import { CaptionDto } from './dto/caption.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
-import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
+import { AlbumImagesDto, AlbumsDto, UpdateAlbumCoverDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
@@ -30,10 +36,9 @@ import { EarningsDto } from './dto/earnings.dto';
 
 @Injectable()
 export class PhotographerService {
-  constructor(
-    private prisma: PrismaService,
-    private NotifyService: NotifyService,
-  ) {}
+  private readonly logger = new Logger(PhotographerService.name);
+
+  constructor(private prisma: PrismaService) {}
 
   //------ photographer services -----------
 
@@ -228,13 +233,13 @@ export class PhotographerService {
         booking: false,
       },
     });
-    const cleanedPackages = packages.map(pkg => ({
+    const cleanedPackages = packages.map((pkg) => ({
       ...pkg,
-      price: pkg.price.toString() !== '' ? parseFloat(pkg.price.toString()) : null,
+      price:
+        pkg.price.toString() !== '' ? parseFloat(pkg.price.toString()) : null,
     }));
     return cleanedPackages;
   }
-  
 
   async getPackageById(packageId: string) {
     return await this.prisma.package.findUnique({
@@ -377,21 +382,45 @@ export class PhotographerService {
   }
 
   // ------- settings services ---------
-
   async getBankDetails(photographerId: string) {
-    return await this.prisma.bankDetails.findUnique({
-      where: {
-        photographerId: photographerId,
-      },
-      select: {
-        id: true,
-        bankName: true,
-        accountNumber: true,
-        accountName: true,
-        accountBranch: true,
-        accountBranchCode: true,
-      },
-    });
+    this.logger.log(
+      `Attempting to fetch bank details for photographer with ID: ${photographerId}`,
+    );
+
+    try {
+      // Fetching the bank details associated with the specified photographer ID
+      const bankDetails = await this.prisma.bankDetails.findUnique({
+        where: {
+          photographerId: photographerId,
+        },
+        select: {
+          id: true,
+          bankName: true,
+          accountNumber: true,
+          accountName: true,
+          accountBranch: true,
+          accountBranchCode: true,
+        },
+      });
+
+      // Handling the case where bank details are not found
+      this.logger.log(
+        `Successfully fetched category for photographer with ID: ${photographerId}`,
+      );
+      return bankDetails;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch category for photographer with ID: ${photographerId}`,
+        error.stack,
+      );
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw if it's a not found exception.
+      }
+      throw new HttpException(
+        'Error fetching category',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async updateBankDetails(userId: string, dto: bankDetailsDto) {
@@ -436,141 +465,409 @@ export class PhotographerService {
   }
 
   async getAllCategories() {
-    return PhotographerCategory;
+    this.logger.log('Attempting to fetch all photographer categories');
+
+    try {
+      // Fetching the predefined categories from the constants
+      const categories = PhotographerCategory;
+
+      this.logger.log('Successfully fetched all photographer categories');
+      return categories;
+    } catch (error) {
+      this.logger.error('Failed to fetch photographer categories', error.stack);
+
+      // Throwing an HTTP exception with internal server error status
+      throw new HttpException(
+        'Error fetching categories',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getCategoryById(id: string) {
-    return this.prisma.photographer.findUnique({
-      where: {
-        userId: id,
-      },
-      select: {
-        category: true,
-      },
-    });
+    this.logger.log(
+      `Attempting to fetch category for photographer with ID: ${id}`,
+    );
+
+    try {
+      const category = await this.prisma.photographer.findUnique({
+        where: {
+          userId: id,
+        },
+        select: {
+          category: true,
+        },
+      });
+      
+      this.logger.log(
+        `Successfully fetched category for photographer with ID: ${id}`,
+      );
+      return category;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch category for photographer with ID: ${id}`,
+        error.stack,
+      );
+      if (error instanceof NotFoundException) {
+        throw error; // Re-throw if it's a not found exception.
+      }
+      throw new HttpException(
+        'Error fetching category',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async updateCategory(userId: string, data: Partial<Photographer>) {
-    return await this.prisma.photographer.update({
-      where: {
-        userId: userId,
-      },
-      include: {
-        user: true,
-      },
-      data: {
-        category: {
-          set: data.category,
+    this.logger.log(
+      `Attempting to update category for photographer with ID: ${userId}`,
+    );
+
+    try {
+      const updatedPhotographer = await this.prisma.photographer.update({
+        where: {
+          userId: userId,
         },
-      },
-    });
+        include: {
+          user: true,
+        },
+        data: {
+          category: {
+            set: data.category,
+          },
+        },
+      });
+
+      this.logger.log(
+        `Successfully updated category for photographer with ID: ${userId}`,
+      );
+      return updatedPhotographer;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update category for photographer with ID: ${userId}`,
+        error.stack,
+      );
+
+      // Handling case where the photographer is not found
+      if (error.code === 'P2025') {
+        // P2025 is Prisma's code for a record not found error
+        throw new NotFoundException(
+          `Photographer with ID: ${userId} not found`,
+        );
+      }
+
+      // General error handling
+      throw new HttpException(
+        'Error updating category',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // ------- album services ---------
 
   async createAlbum(dto: AlbumsDto) {
-    return await this.prisma.album.create({
-      data: {
-        name: dto.name,
-        description: dto.description,
-        visibility: dto.visibility,
-        price:dto.price,
-        photographer: {
-          connect: {
-            userId: dto.photographerId,
+    this.logger.log(
+      `Attempting to create a new album for photographer with ID: ${dto.photographerId}`,
+    );
+
+    try {
+      // Creating a new album in the database with the provided details
+      const newAlbum = await this.prisma.album.create({
+        data: {
+          name: dto.name,
+          description: dto.description,
+          visibility: dto.visibility,
+          price: dto.price,
+          photographer: {
+            connect: {
+              userId: dto.photographerId,
+            },
           },
         },
-      },
-      include: {
-        images: true,
-      },
-    });
+        include: {
+          images: true, // Includes related images in the response
+        },
+      });
+
+      this.logger.log(
+        `Successfully created album '${dto.name}' for photographer with ID: ${dto.photographerId}`,
+      );
+      return newAlbum;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create album '${dto.name}' for photographer with ID: ${dto.photographerId}`,
+        error.stack,
+      );
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error creating album',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async editAlbum(dto: updateAlbumDto) {
-    return await this.prisma.album.update({
-      where: {
-        id: dto.albumId,
-      },
-      data: {
-        name: dto.name,
-        description: dto.description,
-        visibility: dto.visibility,
-        price:dto.price
-      },
-    });
+    try {
+      // Updating the album in the database with the provided details
+      const updatedAlbum = await this.prisma.album.update({
+        where: {
+          id: dto.albumId,
+        },
+        data: {
+          name: dto.name,
+          description: dto.description,
+          visibility: dto.visibility,
+          price: dto.price,
+        },
+      });
+
+      this.logger.log(`Successfully updated album with ID: ${dto.albumId}`);
+      return updatedAlbum;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update album with ID: ${dto.albumId}`,
+        error.stack,
+      );
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error updating album',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getAlbums(id: string) {
-    return this.prisma.album.findMany({
-      where: {
-        photographerId: id,
-      },
-      include: {
-        images: true,
-      },
-    });
+    this.logger.log(
+      `Attempting to fetch all albums for photographer with ID: ${id}`,
+    );
+
+    try {
+      // Fetching all albums for the specified photographer ID, including associated images
+      const albums = await this.prisma.album.findMany({
+        where: {
+          photographerId: id,
+        },
+        include: {
+          images: true, // Includes related images in the response
+        },
+      });
+
+      if (albums.length === 0) {
+        this.logger.warn(`No albums found for photographer with ID: ${id}`);
+        // Optionally: You can return an empty array or a specific message if no albums are found
+        return [];
+      }
+
+      this.logger.log(
+        `Successfully fetched ${albums.length} albums for photographer with ID: ${id}`,
+      );
+      return albums;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch albums for photographer with ID: ${id}`,
+        error.stack,
+      );
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error fetching albums',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getAlbum(id: string) {
-    return this.prisma.album.findMany({
-      where: {
-        id: id,
-      },
-    });
+    this.logger.log(`Attempting to fetch album with ID: ${id}`);
+
+    try {
+      // Fetching the album from the database by its ID
+      const album = await this.prisma.album.findMany({
+        where: {
+          id: id,
+        },
+      });
+
+      if (album.length === 0) {
+        this.logger.warn(`No album found with ID: ${id}`);
+        // Throwing a 404 exception if no album is found
+        throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+      }
+
+      this.logger.log(`Successfully fetched album with ID: ${id}`);
+      return album;
+    } catch (error) {
+      this.logger.error(`Failed to fetch album with ID: ${id}`, error.stack);
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error fetching album',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getImages(id: string) {
-    return this.prisma.albumImage.findMany({
-      where: {
-        albumId: id,
-      },
-    });
+    this.logger.log(`Attempting to fetch images for album with ID: ${id}`);
+
+    try {
+      // Fetching all images associated with the specified album ID
+      const images = await this.prisma.albumImage.findMany({
+        where: {
+          albumId: id,
+        },
+      });
+
+      if (images.length === 0) {
+        this.logger.warn(`No images found for album with ID: ${id}`);
+      } else {
+        this.logger.log(
+          `Successfully fetched ${images.length} images for album with ID: ${id}`,
+        );
+      }
+
+      return images;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch images for album with ID: ${id}`,
+        error.stack,
+      );
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error fetching images',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async deleteAlbum(id: string) {
-    return await this.prisma.album.delete({
-      where: {
-        id: id,
-      },
-    });
+    this.logger.log(`Attempting to delete album with ID: ${id}`);
+
+    try {
+      // Deleting the album with the specified ID
+      const deletedAlbum = await this.prisma.album.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      this.logger.log(`Successfully deleted album with ID: ${id}`);
+      return deletedAlbum;
+    } catch (error) {
+      this.logger.error(`Failed to delete album with ID: ${id}`, error.stack);
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error deleting album',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async addImages(dto: AlbumImagesDto) {
-    const album = await this.prisma.album.findUnique({
-      where: {
-        id: dto.albumId,
-      },
-    });
-
-    if (!album) {
-      throw new NotFoundException('Album not found');
-    }
-
-    const images = await Promise.all(
-      dto.images.map((imageUrl) =>
-        this.prisma.albumImage.create({
-          data: {
-            image: imageUrl,
-            album: {
-              connect: {
-                id: dto.albumId,
-              },
-            },
-          },
-        }),
-      ),
+    this.logger.log(
+      `Attempting to add images to album with ID: ${dto.albumId}`,
     );
 
-    return images;
+    try {
+      // Checking if the album exists
+      const album = await this.prisma.album.findUnique({
+        where: {
+          id: dto.albumId,
+        },
+      });
+
+      if (!album) {
+        this.logger.warn(`Album not found with ID: ${dto.albumId}`);
+        throw new NotFoundException('Album not found');
+      }
+
+      // Adding the images to the album
+      const images = await Promise.all(
+        dto.images.map((imageUrl) =>
+          this.prisma.albumImage.create({
+            data: {
+              image: imageUrl,
+              album: {
+                connect: {
+                  id: dto.albumId,
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      this.logger.log(
+        `Successfully added ${dto.images.length} images to album with ID: ${dto.albumId}`,
+      );
+      return images;
+    } catch (error) {
+      this.logger.error(
+        `Failed to add images to album with ID: ${dto.albumId}`,
+        error.stack,
+      );
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error adding images to album',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async deleteImage(id: string) {
-    return await this.prisma.albumImage.delete({
-      where: {
-        id: id,
-      },
-    });
+    this.logger.log(`Attempting to delete image with ID: ${id}`);
+
+    try {
+      // Deleting the image with the specified ID
+      const deletedImage = await this.prisma.albumImage.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      this.logger.log(`Successfully deleted image with ID: ${id}`);
+      return deletedImage;
+    } catch (error) {
+      this.logger.error(`Failed to delete image with ID: ${id}`, error.stack);
+
+      // Throwing a generic HTTP exception with internal server error status
+      throw new HttpException(
+        'Error deleting image',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updateAlbumCover(dto:UpdateAlbumCoverDto){
+    this.logger.log(`Attempting to update cover image for album ID: ${dto.albumId}`);
+
+    try {
+      // Check if the album exists
+      const album = await this.prisma.album.findUnique({
+        where: { id: dto.albumId },
+      });
+
+      if (!album) {
+        this.logger.warn(`Album with ID ${dto.albumId} not found`);
+        throw new NotFoundException(`Album with ID ${dto.albumId} not found`);
+      }
+
+      // Update the album's cover image
+      const updatedAlbum = await this.prisma.album.update({
+        where: { id: dto.albumId },
+        data: { coverImage: dto.coverImage },
+      });
+
+      this.logger.log(`Cover image updated successfully for album ID: ${dto.albumId}`);
+      return updatedAlbum;
+    } catch (error) {
+      this.logger.error(`Error updating cover image for album ID: ${dto.albumId}`, error.stack);
+      throw error; // Re-throw the error to be handled by the controller
+    }
   }
 
   // ------- feed services ---------
@@ -640,7 +937,6 @@ export class PhotographerService {
     let likeCount = feed.likeCount;
 
     if (dto.like) {
-      
       if (!existingLike) {
         await this.prisma.feedImage.update({
           where: {
@@ -825,7 +1121,6 @@ export class PhotographerService {
   }
 
   async clientBooking(dto: ClientBookingDto) {
-
     return await this.prisma.booking.create({
       data: {
         client: {
@@ -892,56 +1187,76 @@ export class PhotographerService {
   // ------- payment services ---------
 
   async getPayments(id: string) {
-    return await this.prisma.payment.findMany({
-      where: {
-        photographerId: id,
-      },
-      include: {
-        booking: {
-          select: {
-            id: true,
-            category: true
-          }
+    this.logger.log(`Fetching payments for photographer with ID: ${id}`);
+    try {
+      const payments = await this.prisma.payment.findMany({
+        where: {
+          photographerId: id,
         },
-        client: {
-          select: {
-            name: true
-          }
-        }
-      },
-    })
+        include: {
+          client: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+      this.logger.log(
+        `Successfully fetched payments for photographer with ID: ${id}`,
+      );
+      return payments;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch payments for photographer with ID: ${id}`,
+        error.stack,
+      );
+      throw new Error('Error fetching payments');
+    }
   }
 
-  
   async getEarnings(id: string) {
-    const earningsDtoData = new EarningsDto();
+    this.logger.log(`Calculating earnings for photographer with ID: ${id}`);
+    try {
+      // Fetch payments for the given photographer
+      const payments = await this.prisma.payment.findMany({
+        where: {
+          photographerId: id,
+        },
+        select: {
+          amount: true,
+          status: true,
+        },
+      });
 
-    const payments = await this.prisma.payment.findMany({
-      where: {
-        photographerId: id,
-      },
-      select: {
-        amount: true,
-        status: true
-      }
-    })
+      let paidTot = 0;
+      let pendingTot = 0;
 
-    let paidTot = 0;
-    let pendingTot = 0;
+      // Calculate total paid and pending amounts
+      payments.forEach((payment) => {
+        if (payment.status === 'PAID') {
+          paidTot += payment.amount;
+        } else if (payment.status === 'PENDING') {
+          pendingTot += payment.amount;
+        }
+      });
 
-    payments.map((payment) => {
-      if (payment.status === 'PAID') {
-        paidTot += payment.amount;
-      } else if (payment.status === 'PENDING') {
-        pendingTot += payment.amount;
-      }
-    })
+      // Create the earnings DTO
+      const earningsDtoData = new EarningsDto();
+      earningsDtoData.fees = 0.1 * paidTot; // 10% fees
+      earningsDtoData.totalAmount = paidTot - earningsDtoData.fees; // Net earnings after fees
+      earningsDtoData.pending = pendingTot; // Total pending payments
 
-    earningsDtoData.fees = 0.1 * paidTot;
-    earningsDtoData.totalAmount = paidTot - earningsDtoData.fees;
-    earningsDtoData.pending = pendingTot;
-
-    return earningsDtoData;
+      this.logger.log(
+        `Successfully calculated earnings for photographer with ID: ${id}`,
+      );
+      return earningsDtoData;
+    } catch (error) {
+      this.logger.error(
+        `Failed to calculate earnings for photographer with ID: ${id}`,
+        error.stack,
+      );
+      throw new Error('Error calculating earnings');
+    }
   }
 
   //------- booking services ---------
@@ -949,7 +1264,7 @@ export class PhotographerService {
   async getBookings(photographerId: string) {
     return await this.prisma.booking.findMany({
       where: {
-        photographerId: photographerId
+        photographerId: photographerId,
       },
       select: {
         id: true,
@@ -961,15 +1276,12 @@ export class PhotographerService {
         client: {
           select: {
             name: true,
-            id:true,
-
-
+            id: true,
           },
         },
         photographer: {
           select: {
             name: true,
-
           },
         },
         offer: {
@@ -983,16 +1295,16 @@ export class PhotographerService {
             price: true,
           },
         },
-      }
-    })
+      },
+    });
   }
-       
-
 
   //------- event services ---------
 
   async createEvents(dto: createEventDto) {
-    const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });    
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: dto.bookingId },
+    });
     if (!booking) {
       throw new Error('Booking not found');
     }
@@ -1002,7 +1314,7 @@ export class PhotographerService {
         Booking: {
           connect: {
             id: dto.bookingId,
-          }
+          },
         },
         description: dto.description,
         start: dto.start,
@@ -1013,47 +1325,44 @@ export class PhotographerService {
   }
 
   async getEvents(id: string) {
-  return await this.prisma.event.findMany({
-    where: {
-      Booking: {
-        photographerId: id,
+    return await this.prisma.event.findMany({
+      where: {
+        Booking: {
+          photographerId: id,
+        },
       },
-    },
-  });
-
-}
+    });
+  }
 
   async getEventById(eventId: string) {
-  return await this.prisma.package.findUnique({
-    where: {
-      id: eventId,
-    }
-  });
-}
+    return await this.prisma.package.findUnique({
+      where: {
+        id: eventId,
+      },
+    });
+  }
 
   async updateEvents(dto: updateEventDto) {
-  return await this.prisma.event.update({
-    where: {
-      id: dto.eventId,
-    },
-    data: {
-      title: dto.title,
-      description: dto.description,
-      bookingId: dto.bookingId,
-      start: dto.start,
-      end: dto.end,
-      allDay: dto.allDay,
-    },
-  });
-}
+    return await this.prisma.event.update({
+      where: {
+        id: dto.eventId,
+      },
+      data: {
+        title: dto.title,
+        description: dto.description,
+        bookingId: dto.bookingId,
+        start: dto.start,
+        end: dto.end,
+        allDay: dto.allDay,
+      },
+    });
+  }
 
   async deleteEvents(dto: deleteEventDto) {
-  return await this.prisma.event.delete({
-    where: {
-      id: dto.id,
-    },
-  });
+    return await this.prisma.event.delete({
+      where: {
+        id: dto.id,
+      },
+    });
+  }
 }
-
-}
-
