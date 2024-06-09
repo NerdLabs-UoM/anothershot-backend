@@ -95,6 +95,25 @@ export class PhotographerService {
     });
   }
 
+  async updateHeroSection(userId:string, data:Partial<Photographer> & Partial<User>){
+
+    if(data.image){
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          image: data.image,
+        },
+      });
+    }
+    else{
+      return await this.prisma.photographer.update({
+        where: { userId: userId },
+        data,
+      });
+    }
+  
+  }
+
   // ------- contact section services ---------
 
   async updateContactDetails(dto: contactDetailsDto) {
