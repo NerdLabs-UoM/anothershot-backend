@@ -61,6 +61,13 @@ export class PhotographerController {
     return await this.photographerService.updateUser(id, data);
   }
 
+  @Post(':id/updateHeroSection')
+  async updateHeroSection(
+    @Param('id') id: string,
+    @Body() data: Partial<Photographer>,
+  ) {
+    return await this.photographerService.updateHeroSection(id, data);
+  }
   @Put(':id/cover-photo')
   async updateCoverPhoto(
     @Param('id') id: string,
