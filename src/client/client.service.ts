@@ -177,6 +177,7 @@ export class ClientService {
                         },
                     },
                     clientId: true,
+                    end: true,
             },
             orderBy: {
                 id: 'desc',
@@ -191,7 +192,7 @@ export class ClientService {
     }
 
     // Delete a booking by booking ID
-    
+
     async deleteBooking(dto: DeleteBookingDto) {
         this.logger.log(`Deleting booking with ID: ${dto.bookingId} for client`);
         try {

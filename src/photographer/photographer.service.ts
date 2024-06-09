@@ -1071,7 +1071,7 @@ export class PhotographerService {
       }
 
       const lowercaseCategories = bookings.map((booking) => ({
-        category: booking.category.map((category) => category.toLowerCase()),
+        category: booking.category.map((category) => category.charAt(0) + category.slice(1).toLowerCase()),
       }));
 
       this.logger.log(
