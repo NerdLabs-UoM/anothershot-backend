@@ -99,67 +99,6 @@ export class PhotographerService {
 
   // ------- contact section services ---------
 
-  // async updateContactDetails(dto: contactDetailsDto) {
-  //   const tempUserId = dto.userId;
-  //   const existingContactDetails = await this.prisma.contactDetails.findUnique({
-  //     where: { photographerId: dto.userId },
-  //   });
-
-  //   if (existingContactDetails) {
-  //     await this.prisma.contactDetails.update({
-  //       where: { photographerId: dto.userId },
-  //       data: {
-  //         phoneNum1: dto.phoneNum1,
-  //         phoneNum2: dto.phoneNum2,
-  //         email: dto.email,
-  //         address: dto.address
-  //           ? {
-  //             upsert: {
-  //               where: { contactDetailsId: existingContactDetails.id },
-  //               create: { ...dto.address },
-  //               update: { ...dto.address },
-  //             },
-  //           }
-  //           : undefined,
-  //         socialMedia: dto.socialMedia
-  //           ? {
-  //             upsert: {
-  //               where: { contactDetailsId: existingContactDetails.id },
-  //               create: { ...dto.socialMedia },
-  //               update: { ...dto.socialMedia },
-  //             },
-  //           }
-  //           : undefined,
-  //       },
-  //     });
-  //   } else {
-  //     await this.prisma.contactDetails.create({
-  //       data: {
-  //         photographer: {
-  //           connect: {
-  //             userId: dto.userId,
-  //           },
-  //         },
-  //         phoneNum1: dto.phoneNum1,
-  //         phoneNum2: dto.phoneNum2,
-  //         email: dto.email,
-  //         address: dto.address ? { create: { ...dto.address } } : undefined,
-  //         socialMedia: dto.socialMedia
-  //           ? { create: { ...dto.socialMedia } }
-  //           : undefined,
-  //       },
-  //     });
-  //   }
-
-  //   return await this.prisma.contactDetails.findUnique({
-  //     where: { photographerId: dto.userId },
-  //     include: {
-  //       photographer: true,
-  //       address: true,
-  //       socialMedia: true,
-  //     },
-  //   });
-  // }
   async updateContactDetails(dto: contactDetailsDto) {
     try {
       const tempUserId = dto.userId;
@@ -176,21 +115,21 @@ export class PhotographerService {
             email: dto.email,
             address: dto.address
               ? {
-                upsert: {
-                  where: { contactDetailsId: existingContactDetails.id },
-                  create: { ...dto.address },
-                  update: { ...dto.address },
-                },
-              }
+                  upsert: {
+                    where: { contactDetailsId: existingContactDetails.id },
+                    create: { ...dto.address },
+                    update: { ...dto.address },
+                  },
+                }
               : undefined,
             socialMedia: dto.socialMedia
               ? {
-                upsert: {
-                  where: { contactDetailsId: existingContactDetails.id },
-                  create: { ...dto.socialMedia },
-                  update: { ...dto.socialMedia },
-                },
-              }
+                  upsert: {
+                    where: { contactDetailsId: existingContactDetails.id },
+                    create: { ...dto.socialMedia },
+                    update: { ...dto.socialMedia },
+                  },
+                }
               : undefined,
           },
         });
@@ -224,22 +163,10 @@ export class PhotographerService {
       return updatedContactDetails;
     } catch (error) {
       this.logger.error(`Error updating contact details for user ID: ${dto.userId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-
-  // async getContactDetails(id: string) {
-  //   return this.prisma.contactDetails.findUnique({
-  //     where: {
-  //       photographerId: id,
-  //     },
-  //     include: {
-  //       address: true,
-  //       socialMedia: true,
-  //     },
-  //   });
-  // }
   async getContactDetails(id: string) {
     try {
       this.logger.log(`Fetching contact details for photographer ID: ${id}`);
@@ -260,7 +187,7 @@ export class PhotographerService {
       return contactDetails;
     } catch (error) {
       this.logger.error(`Error fetching contact details for photographer ID: ${id}`, error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -283,16 +210,6 @@ export class PhotographerService {
         },
       });
       this.logger.log(`Package created successfully for photographer ID: ${dto.photographerId}`);
-
-      // Send a notification
-      await this.NotifyService.createNotification({
-        senderId: dto.photographerId, // Assuming the photographerId is the sender
-        receiverId: dto.photographerId, // Adjust the receiverId based on your logic
-        type: 'package_creation',
-        title: 'New Package Created',
-        description: `A new package named ${dto.name} has been created.`,
-      });
-
       return newPackage;
     } catch (error) {
       this.logger.error(`Error creating package for photographer ID: ${dto.photographerId}`, error);
@@ -333,16 +250,6 @@ export class PhotographerService {
         },
       });
       this.logger.log(`Package updated successfully for package ID: ${dto.packageId}`);
-
-      // Send a notification
-      await this.NotifyService.createNotification({
-        senderId: dto.photographerId, // Assuming the photographerId is the sender
-        receiverId: dto.photographerId, // Adjust the receiverId based on your logic
-        type: 'package_update',
-        title: 'Package Updated',
-        description: `The package named ${dto.name} has been updated.`,
-      });
-
       return updatedPackage;
     } catch (error) {
       this.logger.error(`Error updating package details for package ID: ${dto.packageId}`, error);
@@ -372,7 +279,7 @@ export class PhotographerService {
       return cleanedPackages;
     } catch (error) {
       this.logger.error(`Error fetching package details for photographer ID: ${photographerId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -392,7 +299,7 @@ export class PhotographerService {
       return pkg;
     } catch (error) {
       this.logger.error(`Error fetching package with ID: ${packageId}`, error);
-      throw error; 
+      throw error;
     }
   }
   async deletePackageDetails(dto: deletePackageDto) {
@@ -404,7 +311,6 @@ export class PhotographerService {
         },
       });
       if (!photographer) {
-        // Logging if the photographer is not found
         this.logger.warn(`Photographer not found with ID: ${dto.photographerId}`);
         throw new NotFoundException('Photographer not found');
       }
@@ -413,29 +319,14 @@ export class PhotographerService {
           id: dto.packageId,
         },
       });
-
       this.logger.log(`Package deleted successfully with ID: ${dto.packageId}`);
-      await this.NotifyService.createNotification({
-        senderId: dto.photographerId, // Assuming the photographerId is the sender
-        receiverId: dto.photographerId, // Adjust the receiverId based on your logic
-        type: 'package_delete',
-        title: 'Package deleted',
-        description: `The package has been deleted.`,
-      });
-
       return deletedPackage;
     } catch (error) {
       this.logger.error(`Error deleting package with ID: ${dto.packageId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async saveCoverPhotos(packageId: string, data: Partial<Package>) {
-  //   await this.prisma.package.update({
-  //     where: { id: packageId },
-  //     data,
-  //   });
-  // }
   async saveCoverPhotos(packageId: string, data: Partial<Package>) {
     try {
       this.logger.log(`Saving cover photos for package ID: ${packageId}`);
@@ -446,18 +337,12 @@ export class PhotographerService {
       this.logger.log(`Cover photos saved successfully for package ID: ${packageId}`);
     } catch (error) {
       this.logger.error(`Error saving cover photos for package ID: ${packageId}`, error);
-      throw error; 
+      throw error;
     }
   }
+
   // ------- featured section services ---------
 
-  // async getFeatured(userId: string) {
-  //   return await this.prisma.photographer.findUnique({
-  //     where: {
-  //       userId: userId,
-  //     },
-  //   });
-  // }
   async getFeatured(userId: string) {
     try {
       this.logger.log(`Fetching featured photographer for user ID: ${userId}`);
@@ -474,18 +359,10 @@ export class PhotographerService {
       return photographer;
     } catch (error) {
       this.logger.error(`Error fetching featured photographer for user ID: ${userId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async updateFeatured(id: string, data: Partial<Photographer>) {
-  //   return await this.prisma.photographer.update({
-  //     where: {
-  //       userId: id,
-  //     },
-  //     data,
-  //   });
-  // }
   async updateFeatured(id: string, data: Partial<Photographer>) {
     try {
       this.logger.log(`Updating featured photographer with user ID: ${id}`);
@@ -499,7 +376,7 @@ export class PhotographerService {
       return updatedPhotographer;
     } catch (error) {
       this.logger.error(`Error updating featured photographer with user ID: ${id}`, error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -1160,7 +1037,7 @@ export class PhotographerService {
 
   //------- booking services ---------
 
-    async getBookings(photographerId: string) {
+  async getBookings(photographerId: string) {
     try {
       this.logger.log(`Fetching bookings for photographer ID: ${photographerId}`);
       const bookings = await this.prisma.booking.findMany({
@@ -1213,29 +1090,7 @@ export class PhotographerService {
   }
 
 
-
   //------- event services ---------
-
-  // async createEvents(dto: createEventDto) {
-  //   const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });
-  //   if (!booking) {
-  //     throw new Error('Booking not found');
-  //   }
-  //   return await this.prisma.event.create({
-  //     data: {
-  //       title: dto.title,
-  //       Booking: {
-  //         connect: {
-  //           id: dto.bookingId,
-  //         }
-  //       },
-  //       description: dto.description,
-  //       start: dto.start,
-  //       end: dto.end,
-  //       allDay: dto.allDay,
-  //     },
-  //   });
-  // }
 
   async createEvents(dto: createEventDto) {
     try {
@@ -1263,19 +1118,11 @@ export class PhotographerService {
       return newEvent;
     } catch (error) {
       this.logger.error(`Error creating event with booking ID: ${dto.bookingId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async getEvents(id: string) {
-  //   return await this.prisma.event.findMany({
-  //     where: {
-  //       Booking: {
-  //         photographerId: id,
-  //       },
-  //     },
-  //   });
-  // }
+
   async getEvents(id: string) {
     try {
       this.logger.log(`Fetching events for photographer ID: ${id}`);
@@ -1290,17 +1137,10 @@ export class PhotographerService {
       return events;
     } catch (error) {
       this.logger.error(`Error fetching events for photographer ID: ${id}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async getEventById(eventId: string) {
-  //   return await this.prisma.package.findUnique({
-  //     where: {
-  //       id: eventId,
-  //     }
-  //   });
-  // }
   async getEventById(eventId: string) {
     try {
       this.logger.log(`Fetching event with ID: ${eventId}`);
@@ -1317,25 +1157,10 @@ export class PhotographerService {
       return event;
     } catch (error) {
       this.logger.error(`Error fetching event with ID: ${eventId}`, error);
-      throw error; 
+      throw error;
     }
   }
 
-  // async updateEvents(dto: updateEventDto) {
-  //   return await this.prisma.event.update({
-  //     where: {
-  //       id: dto.eventId,
-  //     },
-  //     data: {
-  //       title: dto.title,
-  //       description: dto.description,
-  //       bookingId: dto.bookingId,
-  //       start: dto.start,
-  //       end: dto.end,
-  //       allDay: dto.allDay,
-  //     },
-  //   });
-  // }
   async updateEvents(dto: updateEventDto) {
     try {
       this.logger.log(`Updating event with ID: ${dto.eventId}`);
@@ -1356,17 +1181,9 @@ export class PhotographerService {
       return updatedEvent;
     } catch (error) {
       this.logger.error(`Error updating event with ID: ${dto.eventId}`, error);
-      throw error; 
+      throw error;
     }
   }
-
-  //   async deleteEvents(dto: deleteEventDto) {
-  //   return await this.prisma.event.delete({
-  //     where: {
-  //       id: dto.id,
-  //     },
-  //   });
-  // }
 
   async deleteEvents(dto: deleteEventDto) {
     try {
