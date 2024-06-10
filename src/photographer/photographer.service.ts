@@ -19,7 +19,6 @@ import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';

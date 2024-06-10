@@ -1,4 +1,3 @@
-import { Address, SocialMedia } from "@prisma/client";
 import { IsEmail, IsObject, IsOptional, IsString } from "class-validator";
 
 export class contactDetailsDto {

@@ -9,6 +9,7 @@ import { AppGateway } from "src/app.gateway";
 @Module({
     controllers: [PhotographerController],
     providers: [PhotographerService, PrismaService, JwtService,NotifyService,AppGateway],
+   
 })
 
 export class PhotographerModule { }
