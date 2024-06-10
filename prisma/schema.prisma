@@ -340,7 +340,7 @@ model Testimonial {
   clientId       String                @db.ObjectId
   photographer   Photographer          @relation(fields: [photographerId], references: [userId], onDelete: Cascade)
   photographerId String                @db.ObjectId
-  visibility     TestimonialVisibility @default(PUBLIC)
+  visibility     TestimonialVisibility @default(PRIVATE)
   rating         Int
   review         String
   createdAt      DateTime              @default(now())
