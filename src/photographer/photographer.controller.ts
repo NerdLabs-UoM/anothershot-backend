@@ -17,15 +17,11 @@ import { PhotographerService } from './photographer.service';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { HttpException } from '@nestjs/common';
 import { Package, Photographer } from '@prisma/client';
-import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
 import { FeedLikeDto } from './dto/feedLike.dto';
 import { FeedSaveDto } from './dto/feedSave.dto';
 import { DeleteFeedDto } from './dto/deleteFeed.dto';
 import { CaptionDto } from './dto/caption.dto';
-import { createPackageDto } from './dto/createPackage.dto';
-import { updatePackageDto } from './dto/updatePackage.dto';
-import { deletePackageDto } from './dto/deletePackage.dto';
 import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
 import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
@@ -79,187 +75,187 @@ export class PhotographerController {
 
   // ------- contact section controllers ---------
 
-  @Put('contactdetails')
-  async updateContactDetails(@Body() dto: contactDetailsDto) {
-    try {
-      this.logger.log(`Updating contact details for user ID: ${dto.userId}`);
-      const updatedDetails = await this.photographerService.updateContactDetails(dto);
-      this.logger.log(`Contact details updated successfully for user ID: ${dto.userId}`);
-      return updatedDetails;
-    } catch (error) {
-      this.logger.error(`Error updating contact details for user ID: ${dto.userId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem updating the contact details.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Put('contactdetails')
+  // async updateContactDetails(@Body() dto: contactDetailsDto) {
+  //   try {
+  //     this.logger.log(`Updating contact details for user ID: ${dto.userId}`);
+  //     const updatedDetails = await this.photographerService.updateContactDetails(dto);
+  //     this.logger.log(`Contact details updated successfully for user ID: ${dto.userId}`);
+  //     return updatedDetails;
+  //   } catch (error) {
+  //     this.logger.error(`Error updating contact details for user ID: ${dto.userId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem updating the contact details.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
-  @Get('contactdetails/:id')
-  async getContactDetails(@Param('id') id: string) {
-    try {
-      this.logger.log(`Fetching contact details for user ID: ${id}`);
-      const contactDetails = await this.photographerService.getContactDetails(id);
-      if (!contactDetails) {
-        this.logger.warn(`No contact details found for user ID: ${id}`);
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: 'Contact details not found.',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      this.logger.log(`Contact details fetched successfully for user ID: ${id}`);
-      return contactDetails;
-    } catch (error) {
-      this.logger.error(`Error fetching contact details for user ID: ${id}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem fetching the contact details.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Get('contactdetails/:id')
+  // async getContactDetails(@Param('id') id: string) {
+  //   try {
+  //     this.logger.log(`Fetching contact details for user ID: ${id}`);
+  //     const contactDetails = await this.photographerService.getContactDetails(id);
+  //     if (!contactDetails) {
+  //       this.logger.warn(`No contact details found for user ID: ${id}`);
+  //       throw new HttpException(
+  //         {
+  //           status: HttpStatus.NOT_FOUND,
+  //           error: 'Contact details not found.',
+  //         },
+  //         HttpStatus.NOT_FOUND,
+  //       );
+  //     }
+  //     this.logger.log(`Contact details fetched successfully for user ID: ${id}`);
+  //     return contactDetails;
+  //   } catch (error) {
+  //     this.logger.error(`Error fetching contact details for user ID: ${id}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem fetching the contact details.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
   // ------- package section controllers ---------
 
-  @Post('packages/create')
-  async createPackage(@Body() dto: createPackageDto) {
-    try {
-      this.logger.log(`Creating package for photographer ID: ${dto.photographerId}`);
-      const createdPackage = await this.photographerService.createPackage(dto);
-      this.logger.log(`Package created successfully for photographer ID: ${dto.photographerId}`);
-      return createdPackage;
-    } catch (error) {
-      this.logger.error(`Error creating package for photographer ID: ${dto.photographerId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem creating the package.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Post('packages/create')
+  // async createPackage(@Body() dto: createPackageDto) {
+  //   try {
+  //     this.logger.log(`Creating package for photographer ID: ${dto.photographerId}`);
+  //     const createdPackage = await this.photographerService.createPackage(dto);
+  //     this.logger.log(`Package created successfully for photographer ID: ${dto.photographerId}`);
+  //     return createdPackage;
+  //   } catch (error) {
+  //     this.logger.error(`Error creating package for photographer ID: ${dto.photographerId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem creating the package.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
-  @Put('packages/edit')
-  async updatePackageDetails(@Body() dto: updatePackageDto) {
-    try {
-      this.logger.log(`Updating package details for package ID: ${dto.packageId}`);
-      const updatedPackage = await this.photographerService.updatePackageDetails(dto);
-      this.logger.log(`Package details updated successfully for package ID: ${dto.packageId}`);
-      return updatedPackage;
-    } catch (error) {
-      this.logger.error(`Error updating package details for package ID: ${dto.packageId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem updating the package details.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Put('packages/edit')
+  // async updatePackageDetails(@Body() dto: updatePackageDto) {
+  //   try {
+  //     this.logger.log(`Updating package details for package ID: ${dto.packageId}`);
+  //     const updatedPackage = await this.photographerService.updatePackageDetails(dto);
+  //     this.logger.log(`Package details updated successfully for package ID: ${dto.packageId}`);
+  //     return updatedPackage;
+  //   } catch (error) {
+  //     this.logger.error(`Error updating package details for package ID: ${dto.packageId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem updating the package details.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
-  @Get('packages/:photographerId')
-  async getPackageDetails(@Param('photographerId') photographerId: string) {
-    try {
-      this.logger.log(`Fetching package details for photographer ID: ${photographerId}`);
-      const packages = await this.photographerService.getPackageDetails(photographerId);
-      if (!packages || packages.length === 0) {
-        this.logger.warn(`No packages found for photographer ID: ${photographerId}`);
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: 'No packages found for the given photographer ID.',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      this.logger.log(`Package details fetched successfully for photographer ID: ${photographerId}`);
-      return packages;
-    } catch (error) {
-      this.logger.error(`Error fetching package details for photographer ID: ${photographerId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem fetching the package details.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Get('packages/:photographerId')
+  // async getPackageDetails(@Param('photographerId') photographerId: string) {
+  //   try {
+  //     this.logger.log(`Fetching package details for photographer ID: ${photographerId}`);
+  //     const packages = await this.photographerService.getPackageDetails(photographerId);
+  //     if (!packages || packages.length === 0) {
+  //       this.logger.warn(`No packages found for photographer ID: ${photographerId}`);
+  //       throw new HttpException(
+  //         {
+  //           status: HttpStatus.NOT_FOUND,
+  //           error: 'No packages found for the given photographer ID.',
+  //         },
+  //         HttpStatus.NOT_FOUND,
+  //       );
+  //     }
+  //     this.logger.log(`Package details fetched successfully for photographer ID: ${photographerId}`);
+  //     return packages;
+  //   } catch (error) {
+  //     this.logger.error(`Error fetching package details for photographer ID: ${photographerId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem fetching the package details.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
-  @Get(':packageId/package')
-  async getPackageById(@Param('packageId') packageId: string) {
-    try {
-      this.logger.log(`Fetching package details for package ID: ${packageId}`);
-      const packageDetails = await this.photographerService.getPackageById(packageId);
-      if (!packageDetails) {
-        this.logger.warn(`No package found for package ID: ${packageId}`);
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: 'Package not found for the given package ID.',
-          },
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      this.logger.log(`Package details fetched successfully for package ID: ${packageId}`);
-      return packageDetails;
-    } catch (error) {
-      this.logger.error(`Error fetching package details for package ID: ${packageId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem fetching the package details.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Get(':packageId/package')
+  // async getPackageById(@Param('packageId') packageId: string) {
+  //   try {
+  //     this.logger.log(`Fetching package details for package ID: ${packageId}`);
+  //     const packageDetails = await this.photographerService.getPackageById(packageId);
+  //     if (!packageDetails) {
+  //       this.logger.warn(`No package found for package ID: ${packageId}`);
+  //       throw new HttpException(
+  //         {
+  //           status: HttpStatus.NOT_FOUND,
+  //           error: 'Package not found for the given package ID.',
+  //         },
+  //         HttpStatus.NOT_FOUND,
+  //       );
+  //     }
+  //     this.logger.log(`Package details fetched successfully for package ID: ${packageId}`);
+  //     return packageDetails;
+  //   } catch (error) {
+  //     this.logger.error(`Error fetching package details for package ID: ${packageId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem fetching the package details.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
-  @Delete('packages/delete')
-  async deletePackage(@Body() dto: deletePackageDto) {
-    try {
-      this.logger.log(`Deleting package with ID: ${dto.packageId} for photographer ID: ${dto.photographerId}`);
-      const deletedPackage = await this.photographerService.deletePackageDetails(dto);
-      this.logger.log(`Package deleted successfully with ID: ${dto.packageId} for photographer ID: ${dto.photographerId}`);
-      return deletedPackage;
-    } catch (error) {
-      this.logger.error(`Error deleting package with ID: ${dto.packageId} for photographer ID: ${dto.photographerId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem deleting the package.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  @Put(':packageId/coverphotos')
-  async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
-    try {
-      this.logger.log(`Saving cover photos for package ID: ${packageId}`);
-      await this.photographerService.saveCoverPhotos(packageId, coverPhotos);
-      this.logger.log(`Cover photos saved successfully for package ID: ${packageId}`);
-    } catch (error) {
-      this.logger.error(`Error saving cover photos for package ID: ${packageId}`, error.message);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem saving the cover photos.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // @Delete('packages/delete')
+  // async deletePackage(@Body() dto: deletePackageDto) {
+  //   try {
+  //     this.logger.log(`Deleting package with ID: ${dto.packageId} for photographer ID: ${dto.photographerId}`);
+  //     const deletedPackage = await this.photographerService.deletePackageDetails(dto);
+  //     this.logger.log(`Package deleted successfully with ID: ${dto.packageId} for photographer ID: ${dto.photographerId}`);
+  //     return deletedPackage;
+  //   } catch (error) {
+  //     this.logger.error(`Error deleting package with ID: ${dto.packageId} for photographer ID: ${dto.photographerId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem deleting the package.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
+  // @Put(':packageId/coverphotos')
+  // async saveCoverPhotos(@Param('packageId') packageId: string, @Body() coverPhotos: Partial<Package>) {
+  //   try {
+  //     this.logger.log(`Saving cover photos for package ID: ${packageId}`);
+  //     await this.photographerService.saveCoverPhotos(packageId, coverPhotos);
+  //     this.logger.log(`Cover photos saved successfully for package ID: ${packageId}`);
+  //   } catch (error) {
+  //     this.logger.error(`Error saving cover photos for package ID: ${packageId}`, error.message);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: 'There was a problem saving the cover photos.',
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
   // ------- featured section controllers ---------
   @Get('featured/:photographerId')
   async getFeatured(@Param('photographerId') id: string) {
