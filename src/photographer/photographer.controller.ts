@@ -28,9 +28,7 @@ import { ClientBookingDto } from './dto/clientBooking.dto';
 export class PhotographerController {
   private readonly logger = new Logger(PhotographerController.name);
 
-  private readonly logger = new Logger(PhotographerController.name);
-
-  constructor(private photographerService: PhotographerService) { }
+   constructor(private photographerService: PhotographerService) { }
 
   //------ photographer controllers -----------
 
