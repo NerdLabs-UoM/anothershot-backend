@@ -1,12 +1,18 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, NotFoundException, Logger, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { contactDetailsDto } from './dto/contactDetails.dto';
+import { Photographer } from '@prisma/client';
 
 
 @Injectable()
 export class ContactSectionService {
-  private prisma: PrismaService;
+
   private readonly logger = new Logger(ContactSectionService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    
+  ) { }
   async updateContactDetails(dto: contactDetailsDto) {
     try {
       const tempUserId = dto.userId;
