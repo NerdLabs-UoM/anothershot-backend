@@ -5,10 +5,12 @@ import { PhotographerController } from './photographer.controller';
 import { JwtService } from "@nestjs/jwt";
 import { NotifyService } from "src/notification/notify.service";
 import { AppGateway } from "src/app.gateway";
+import { AlbumsModule } from './albums/albums.module';
 
 @Module({
     controllers: [PhotographerController],
     providers: [PhotographerService, PrismaService, JwtService,NotifyService,AppGateway],
+    imports: [AlbumsModule],
 })
 
 export class PhotographerModule { }
