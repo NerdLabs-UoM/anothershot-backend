@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
   Param,
   Put,
   Patch,
@@ -13,6 +12,8 @@ import {
 import { CreateTestimonialDto } from './dto/testimonial.dto';
 import { VisibilityDto } from './dto/visibility.dto';
 import { PhotographerService } from './photographer.service';
+import { HttpException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Package, Photographer } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
@@ -24,8 +25,6 @@ import { CaptionDto } from './dto/caption.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-import { AlbumsDto, updateAlbumDto, AlbumImagesDto } from './dto/album.dto';
-import { bankDetailsDto } from './dto/bankDetails.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
@@ -35,6 +34,7 @@ import { deleteEventDto } from './dto/deleteEvent.dto';
 
 @Controller('api/photographer')
 export class PhotographerController {
+  private readonly logger = new Logger(PhotographerController.name);
 
   private readonly logger = new Logger(PhotographerController.name);
 
@@ -185,81 +185,7 @@ export class PhotographerController {
             throw new HttpException('Failed to update testimonials', HttpStatus.BAD_REQUEST);
         }
   }
-
-  // ------- settings controllers ---------
-
-  @Get('bankdetails/:id')
-  async getBankDetails(@Param('id') id: string) {
-    return await this.photographerService.getBankDetails(id);
-  }
-
-  @Put('bankdetails/:id')
-  async updateBankDetails(
-    @Param('id') id: string,
-    @Body() dto: bankDetailsDto) {
-    return await this.photographerService.updateBankDetails(id, dto);
-  }
-
-  @Get('getallcategories')
-  async getAllCategories() {
-    return await this.photographerService.getAllCategories();
-  }
-
-  @Get(':id/getcategory')
-  async getCategoryById(@Param('id') id: string) {
-    return await this.photographerService.getCategoryById(id);
-  }
-
-  @Put(':id/categories')
-  async updateCategory(
-    @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
-  ) {
-    return await this.photographerService.updateCategory(id, data);
-  }
-
-  // ------- album controllers ---------
-
-  @Post(':id/createalbum')
-  async createAlbum(@Body() dto: AlbumsDto) {
-    return await this.photographerService.createAlbum(dto);
-  }
-
-  @Put(':id/editalbum')
-  async editAlbum(@Body() dto: updateAlbumDto) {
-    return await this.photographerService.editAlbum(dto);
-  }
-
-  @Get(':id/getalbum')
-  async getAlbum(@Param('id') id: string) {
-    return await this.photographerService.getAlbum(id);
-  }
   
-  @Get(':id/getalbums')
-  async getAlbums(@Param('id') id: string) {
-    return await this.photographerService.getAlbums(id);
-  }
-
-  @Get(':id/getimages')
-  async getImages(@Param('id') id: string) {
-    return await this.photographerService.getImages(id);
-  }
-
-  @Delete(':id/deletealbum')
-  async deleteAlbum(@Param('id') id: string) {
-    return await this.photographerService.deleteAlbum(id);
-  }
-
-  @Post(':id/addimages')
-  async addImages(@Body() dto: AlbumImagesDto) {
-    return await this.photographerService.addImages(dto);
-  }
-
-  @Delete(':id/deleteimage')
-  async deleteImage(@Param('id') id: string) {
-    return await this.photographerService.deleteImage(id);
-  }
-
   // ------- feed controllers ---------
 
   @Get(':id/feed')
@@ -442,16 +368,6 @@ export class PhotographerController {
     }
   }
 
-  // ------- getting earnings and payments controllers ---------
-  @Get(':id/getPayments')
-  async getPayments(@Param('id') id: string){
-    return await this.photographerService.getPayments(id);
-  }
-
-  @Get(':id/earnings')
-  async getEarnings(@Param('id') id: string){
-    return await this.photographerService.getEarnings(id);
-  }
-
 
 }
+
