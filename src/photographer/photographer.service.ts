@@ -12,26 +12,21 @@ import {
 } from '@nestjs/common';
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
-import { bankDetailsDto } from './dto/bankDetails.dto';
-import { AlbumImagesDto, AlbumsDto, updateAlbumDto } from './dto/album.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';
-import { NotifyService } from '../notification/notify.service';
-import { EarningsDto } from './dto/earnings.dto';
+
 
 @Injectable()
 export class PhotographerService {
   private readonly logger = new Logger(PhotographerService.name);
 
-  constructor(
-    private prisma: PrismaService,
-    private NotifyService: NotifyService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
+
+
 
   //------ photographer services -----------
 
@@ -304,256 +299,7 @@ export class PhotographerService {
       data,
     });
   }
-
-  // ------- settings services ---------
-
-  async getBankDetails(photographerId: string) {
-    return await this.prisma.bankDetails.findUnique({
-      where: {
-        photographerId: photographerId,
-      },
-      select: {
-        id: true,
-        bankName: true,
-        accountNumber: true,
-        accountName: true,
-        accountBranch: true,
-        accountBranchCode: true,
-      },
-    });
-  }
-
-  async updateBankDetails(userId: string, dto: bankDetailsDto) {
-    const excistingBankDetails = await this.prisma.bankDetails.findUnique({
-      where: { photographerId: userId },
-    });
-
-    if (excistingBankDetails) {
-      await this.prisma.bankDetails.update({
-        where: { photographerId: userId },
-        data: {
-          bankName: dto.bankName,
-          accountNumber: dto.accountNumber,
-          accountName: dto.accountName,
-          accountBranch: dto.accountBranch,
-          accountBranchCode: dto.accountBranchCode
-            ? dto.accountBranchCode
-            : null,
-        },
-      });
-    } else {
-      await this.prisma.bankDetails.create({
-        data: {
-          photographer: {
-            connect: {
-              userId: userId,
-            },
-          },
-          bankName: dto.bankName,
-          accountNumber: dto.accountNumber,
-          accountName: dto.accountName,
-          accountBranch: dto.accountBranch,
-          accountBranchCode: dto.accountBranchCode
-            ? dto.accountBranchCode
-            : undefined,
-        },
-      });
-    }
-    return await this.prisma.bankDetails.findUnique({
-      where: { photographerId: userId },
-    });
-  }
-
-  async getAllCategories() {
-    return PhotographerCategory;
-  }
-
-  async getCategoryById(id: string) {
-    return this.prisma.photographer.findUnique({
-      where: {
-        userId: id,
-      },
-      select: {
-        category: true,
-      },
-    });
-  }
-
-  async updateCategory(userId: string, data: Partial<Photographer>) {
-    return await this.prisma.photographer.update({
-      where: {
-        userId: userId,
-      },
-      include: {
-        user: true,
-      },
-      data: {
-        category: {
-          set: data.category,
-        },
-      },
-    });
-  }
-
-  // ------- album services ---------
-
-  async createAlbum(dto: AlbumsDto) {
-    return await this.prisma.album.create({
-      data: {
-        name: dto.name,
-        description: dto.description,
-        visibility: dto.visibility,
-        price: dto.price,
-        photographer: {
-          connect: {
-            userId: dto.photographerId,
-          },
-        },
-      },
-      include: {
-        images: true,
-      },
-    });
-  }
-
-  async editAlbum(dto: updateAlbumDto) {
-    return await this.prisma.album.update({
-      where: {
-        id: dto.albumId,
-      },
-      data: {
-        name: dto.name,
-        description: dto.description,
-        visibility: dto.visibility,
-        price: dto.price,
-      },
-    });
-  }
-
-  async getAlbums(id: string) {
-    return this.prisma.album.findMany({
-      where: {
-        photographerId: id,
-      },
-      include: {
-        images: true,
-      },
-    });
-  }
-
-  async getAlbum(id: string) {
-    return this.prisma.album.findMany({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  async getImages(id: string) {
-    return this.prisma.albumImage.findMany({
-      where: {
-        albumId: id,
-      },
-    });
-  }
-
-  async deleteAlbum(id: string) {
-    return await this.prisma.album.delete({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  async addImages(dto: AlbumImagesDto) {
-    const album = await this.prisma.album.findUnique({
-      where: {
-        id: dto.albumId,
-      },
-    });
-
-    if (!album) {
-      throw new NotFoundException('Album not found');
-    }
-
-    const images = await Promise.all(
-      dto.images.map((imageUrl) =>
-        this.prisma.albumImage.create({
-          data: {
-            image: imageUrl,
-            album: {
-              connect: {
-                id: dto.albumId,
-              },
-            },
-          },
-        }),
-      ),
-    );
-
-    return images;
-  }
-
-  async deleteImage(id: string) {
-    return await this.prisma.albumImage.delete({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  // ------- payment services ---------
-
-  async getPayments(id: string) {
-    return await this.prisma.payment.findMany({
-      where: {
-        photographerId: id,
-      },
-      include: {
-        booking: {
-          select: {
-            id: true,
-            category: true,
-          },
-        },
-        client: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-  }
-
-  async getEarnings(id: string) {
-    const earningsDtoData = new EarningsDto();
-
-    const payments = await this.prisma.payment.findMany({
-      where: {
-        photographerId: id,
-      },
-      select: {
-        amount: true,
-        status: true,
-      },
-    });
-
-    let paidTot = 0;
-    let pendingTot = 0;
-
-    payments.map((payment) => {
-      if (payment.status === 'PAID') {
-        paidTot += payment.amount;
-      } else if (payment.status === 'PENDING') {
-        pendingTot += payment.amount;
-      }
-    });
-
-    earningsDtoData.fees = 0.1 * paidTot;
-    earningsDtoData.totalAmount = paidTot - earningsDtoData.fees;
-    earningsDtoData.pending = pendingTot;
-
-    return earningsDtoData;
+  
   }
 
   //------- booking services ---------
