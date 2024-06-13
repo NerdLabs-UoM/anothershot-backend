@@ -18,6 +18,8 @@ import { PaymentModule } from './payment/payment.module';
 import { StripeModule } from './stripe/stripe.module';
 import { NotifyModule } from './notification/notify.module';
 import { ReportModule } from './report/report.module';
+import { SettingsModule } from './photographer/settings/settings.module';
+import { AlbumsModule } from './photographer/albums/albums.module';
 
 const logger = new Logger('AppModule');
 
@@ -36,6 +38,8 @@ const logger = new Logger('AppModule');
     StripeModule,
     NotifyModule,
     ReportModule,
+    SettingsModule,
+    AlbumsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, AppGateway],
