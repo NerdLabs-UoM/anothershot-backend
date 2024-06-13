@@ -78,10 +78,10 @@ export class TestimonialService {
           client: {
             select: {
               id: true,
-              name: true,
               user: {
                 select: {
                   image: true,
+                  userName: true,
                 },
               },
             },
