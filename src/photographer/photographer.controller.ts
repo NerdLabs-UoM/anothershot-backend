@@ -12,9 +12,6 @@ import {
 import { CreateTestimonialDto } from './dto/testimonial.dto';
 import { VisibilityDto } from './dto/visibility.dto';
 import { PhotographerService } from './photographer.service';
-import { HttpException } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Package, Photographer } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -34,8 +31,6 @@ import { deleteEventDto } from './dto/deleteEvent.dto';
 
 @Controller('api/photographer')
 export class PhotographerController {
-  private readonly logger = new Logger(PhotographerController.name);
-
   private readonly logger = new Logger(PhotographerController.name);
 
   constructor(private photographerService: PhotographerService) { }

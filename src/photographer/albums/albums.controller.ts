@@ -126,4 +126,24 @@ export class AlbumsController {
     }
   }
 
+
+  @Get(':userId/:albumId/getStatus')
+  async getPaymentStatus(
+    @Param('userId') userId: string,
+    @Param('albumId') albumId: string
+  ) {
+    this.logger.log(`Received request to fetch payment status for album ID: ${albumId} and user ID: ${userId}`);
+
+    try {
+      const status = await this.albumsService.getPaymentStatus(userId, albumId);
+      this.logger.log(`Successfully fetched payment status for album ID: ${albumId} and user ID: ${userId}`);
+      return status;
+    } catch (error) {
+      this.logger.error(`Failed to get payment status for album ID ${albumId} and user ID ${userId}: ${error.message}`, error.stack);
+      // Handle the error and return a meaningful response to the client
+      throw new HttpException('Failed to fetch payment status', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
+
 }

@@ -6,13 +6,7 @@ import {
   PhotographerCategory,
 } from '@prisma/client';
 import { VisibilityDto } from './dto/visibility.dto';
-import {
-  Injectable,
-  NotFoundException,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+
 import { Photographer, User } from '@prisma/client';
 import { contactDetailsDto } from './dto/contactDetails.dto';
 import { FeedDto } from './dto/feed.dto';
@@ -23,11 +17,11 @@ import { CaptionDto } from './dto/caption.dto';
 import { updatePackageDto } from './dto/updatePackage.dto';
 import { createPackageDto } from './dto/createPackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
-
 import { createEventDto } from './dto/createEvent.dto';
 import { updateEventDto } from './dto/updateEvent.dto';
 import { deleteEventDto } from './dto/deleteEvent.dto';
 import { ClientBookingDto } from './dto/clientBooking.dto';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class PhotographerService {
