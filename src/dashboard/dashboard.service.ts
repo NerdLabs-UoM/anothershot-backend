@@ -40,6 +40,9 @@ async getTotalRevenue() {
 
   async getRecentPayments() {
     const recentPayments = await this.prisma.payment.findMany({
+      where:{
+        amount:{gt:0}
+      },
       take: 5,
       orderBy: {
         createdAt: 'desc',
