@@ -9,17 +9,15 @@ import {
   HttpException, HttpStatus, Logger
 } from '@nestjs/common';
 import { PhotographerService } from './photographer.service';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Package, Photographer } from '@prisma/client';
 
 
 
 @Controller('api/photographer')
 export class PhotographerController {
-
   private readonly logger = new Logger(PhotographerController.name);
 
-   constructor(private photographerService: PhotographerService) { }
+  constructor(private photographerService: PhotographerService) { }
 
   //------ photographer controllers -----------
 
