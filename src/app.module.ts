@@ -20,6 +20,7 @@ import { NotifyModule } from './notification/notify.module';
 import { ReportModule } from './report/report.module';
 import { SettingsModule } from './photographer/settings/settings.module';
 import { AlbumsModule } from './photographer/albums/albums.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 const logger = new Logger('AppModule');
 
@@ -40,6 +41,7 @@ const logger = new Logger('AppModule');
     ReportModule,
     SettingsModule,
     AlbumsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, AppGateway],

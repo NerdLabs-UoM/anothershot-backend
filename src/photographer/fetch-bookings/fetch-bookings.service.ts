@@ -63,4 +63,21 @@ async getBookings(photographerId: string) {
     );
   }
 }
+
+
+// async getTotalUsers() {
+//   const users = await this.prisma.user.count();
+//   return users;
+// }
+
+async grtMonthlyBookings() {
+  const total = await this.prisma.booking.groupBy({
+    by: ['createdAt'],
+    _count: {
+      _all: true,
+    },
+  });
+
 }
+}
+

@@ -8,9 +8,6 @@ export class updateEventDto {
   title: string;
 
   @IsString()
-  bookingId: string;
-
-  @IsString()
   description: string;
 
   @IsDateString()
