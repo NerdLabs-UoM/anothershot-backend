@@ -2,8 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking, Offer,BookingStatus } from '@prisma/client';
-import { CreateBookingDto } from './dto/create-booking';
+import { Booking,BookingStatus } from '@prisma/client';
 
 @Injectable()
 export class OfferService {

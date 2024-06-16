@@ -17,17 +17,10 @@ export class CreateOfferDto {
     description:string
 
     @IsString()
-    packageName :string
-
-    @IsString()
     clientName:string
 
     @IsNumber()
     price:number
-
-    @IsDate()
-    @Type(() => Date)
-    date: Date;
 }
 
 

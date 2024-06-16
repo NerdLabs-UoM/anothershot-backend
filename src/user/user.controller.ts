@@ -141,4 +141,14 @@ export class UserController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Put(':id/suspend')
+  async suspendUser(@Param('id') userId: string): Promise<void> {
+     return await this.userService.updateSuspended(userId);
+ } 
+  @Put(':id/unlock')
+  async unlockUser(@Param('id') userId: string): Promise<void> {
+     return await this.userService.updateUnlock(userId);
+ } 
+ 
 }

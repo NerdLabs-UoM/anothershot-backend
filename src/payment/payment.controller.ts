@@ -13,6 +13,7 @@ import {
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
+import { CkeckoutDto } from './dto/create-checkout.dto';
 
 @Controller('api/payment')
 export class PaymentController {
