@@ -181,10 +181,8 @@ model Offer {
   booking        Booking      @relation(fields: [bookingsId], references: [id], onDelete: Cascade)
   bookingsId     String       @unique @db.ObjectId
   description    String
-  packageName    String
   clientName     String
   price          Float
-  date           DateTime?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }

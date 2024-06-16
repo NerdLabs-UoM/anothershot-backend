@@ -3,6 +3,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
+import { CkeckoutDto } from './dto/create-checkout.dto';
 
 @Injectable()
 export class PaymentService {
@@ -37,13 +38,13 @@ export class PaymentService {
             product_data: {
               name: data.name,
             },
-            unit_amount: data.price * 100,
+            unit_amount: data.price,
           },
           quantity: 1,
         },
       ],
-      success_url: `${process.env.BASE_URL}/success`,
-      cancel_url: `${process.env.BASE_URL}/error`,
+      success_url: `${process.env.BASE_URL}/user/client/${data.clientId}/bookings/checkout/success`,
+      cancel_url: `${process.env.BASE_URL}/user/client/${data.clientId}/bookings/checkout/error`,
     });
 
     return session.url;
@@ -65,7 +66,7 @@ export class PaymentService {
             product_data: {
               name: data.name,
             },
-            unit_amount: data.price * 100,
+            unit_amount: data.price,
           },
           quantity: 1,
         },

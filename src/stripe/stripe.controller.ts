@@ -8,12 +8,14 @@ import {
   Logger,
   InternalServerErrorException,
   BadRequestException,
+  HttpException,
 } from '@nestjs/common';
 import { Stripe } from 'stripe';
 import { Request } from 'express';
 import { BookingStatus, PaymentStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StripeService } from './stripe.service';
+import { NotifyService } from '../notification/notify.service';
 
 @Controller('webhook')
 export class StripeController {
@@ -23,6 +25,7 @@ export class StripeController {
   constructor(
     private readonly prisma: PrismaService,
     private stripeService: StripeService,
+    private notificationService: NotifyService
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2023-10-16', // your preferred Stripe API version
@@ -88,8 +91,27 @@ export class StripeController {
                 currency: checkoutSession.currency,
               },
             });
+            this.logger.log(`Payment for Booking with ID ${checkoutSession.metadata.bookingId} completed successfully`);
 
-            this.logger.log(`Booking with ID ${checkoutSession.metadata.bookingId} completed successfully`);
+            try {
+              const newNotification = await this.notificationService.createNotification({
+                senderId: bookingDetails.clientId, 
+                receiverId: bookingDetails.photographerId, 
+                type: 'Payment',
+                title: `has Payed the ${checkoutSession.amount_total}`,
+                description: 'Payment has been made for the booking.',
+              });
+              this.logger.log(
+                `Successfully created notification with ID: ${newNotification.id}`,
+              );
+              return newNotification;
+            } catch (error) {
+              this.logger.error(`Failed to create notification`, error.stack);
+              throw new HttpException(
+                'Failed to create notification',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }
 
           } catch (error) {
             this.logger.error('Failed to process booking payment', error.stack);
@@ -123,6 +145,26 @@ export class StripeController {
             });
 
             this.logger.log(`Album payment with ID ${checkoutSession.metadata.albumId} processed successfully`);
+
+            try {
+              const newNotification = await this.notificationService.createNotification({
+                senderId: checkoutSession.metadata.clientId, 
+                receiverId: albumDetails.photographerId, 
+                type: 'Payment',
+                title: `has Payed the ${checkoutSession.amount_total}`,
+                description: 'Payment has been made for the booking.',
+              });
+              this.logger.log(
+                `Successfully created notification with ID: ${newNotification.id}`,
+              );
+              return newNotification;
+            } catch (error) {
+              this.logger.error(`Failed to create notification`, error.stack);
+              throw new HttpException(
+                'Failed to create notification',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }
 
           } catch (error) {
             this.logger.error('Failed to process album payment', error.stack);
