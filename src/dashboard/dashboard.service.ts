@@ -117,30 +117,35 @@ export class DashboardService {
     }
   }
 
-  async getMonthlyTotals() {
-    const payments = await this.prisma.payment.groupBy({
-      by: ['createdAt'],
-      _sum: {
-        amount: true,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
-
-    const monthlyTotals = payments.reduce((acc, payment) => {
-      const month = payment.createdAt.getMonth();
-      const year = payment.createdAt.getFullYear();
-      const key = `${year}-${month + 1}`;
-
-      if (!acc[key]) {
-        acc[key] = { name: key, total: 0 };
-      }
-
-      acc[key].total += payment._sum.amount;
-      return acc;
-    }, {});
-
-    return Object.values(monthlyTotals);
+  async getMonthlyTotals(): Promise<any[]> {
+    this.logger.log('Fetching monthly totals');
+    try {
+      const payments = await this.prisma.payment.groupBy({
+        by: ['createdAt'],
+        _sum: {
+          amount: true,
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+      this.logger.log(`Payments grouped by month: ${JSON.stringify(payments)}`);
+      const monthlyTotals = payments.reduce((acc, payment) => {
+        const month = payment.createdAt.getMonth();
+        const year = payment.createdAt.getFullYear();
+        const key = `${year}-${month + 1}`;
+        if (!acc[key]) {
+          acc[key] = { name: key, total: 0 };
+        }
+        acc[key].total += payment._sum.amount;
+        return acc;
+      }, {});
+      const result = Object.values(monthlyTotals);
+      this.logger.log(`Monthly totals calculated: ${JSON.stringify(result)}`);
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to fetch monthly totals', error);
+      throw new Error('Could not fetch monthly totals');
+    }
   }
 }

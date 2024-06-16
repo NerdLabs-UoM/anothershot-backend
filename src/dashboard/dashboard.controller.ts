@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete ,Query, Logger, UsePipes, ValidationPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete ,Query, Logger, UsePipes, ValidationPipe, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DashboardDto } from './dto/dashboard.dto';
 
@@ -91,7 +91,7 @@ export class DashboardController {
       return monthlyTotals;
     } catch (error) {
       this.logger.error('Failed to get monthly totals', error);
-      throw new Error('Could not fetch monthly totals');
+      throw new InternalServerErrorException('Could not fetch monthly totals');
     }
   }
   
