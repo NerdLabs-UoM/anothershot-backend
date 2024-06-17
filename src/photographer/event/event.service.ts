@@ -92,7 +92,6 @@ export class EventService {
         data: {
           title: dto.title,
           description: dto.description,
-          bookingId: dto.bookingId,
           start: dto.start,
           end: dto.end,
           allDay: dto.allDay,
@@ -105,6 +104,7 @@ export class EventService {
       throw error;
     }
   }
+  
 
   async deleteEvents(dto: deleteEventDto) {
     try {

@@ -41,6 +41,8 @@ model User {
   userName         String        @default("UserName")
   email            String        @unique
   emailVerified    Boolean       @default(false)
+  isActive         Boolean       @default(false)
+  lastActivity     DateTime?
   password         String
   userRole         UserRole      @default(CLIENT)
   image            String?

@@ -7,6 +7,7 @@ import { JwtService } from "@nestjs/jwt";
 @Module({
     controllers: [AdminController],
     providers: [AdminService, PrismaService, JwtService],
+   
 })
 
 export class AdminModule { }
