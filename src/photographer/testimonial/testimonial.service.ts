@@ -173,5 +173,49 @@ export class TestimonialService {
       );
     }
   }
+
+  //Get public testimonials for a photographer.
+  
+  async getPublicTestimonials(photographerId: string) {
+    this.logger.log(
+      `Fetching public testimonials for photographer ID: ${photographerId}`,
+    );
+    try {
+      return await this.prisma.testimonial.findMany({
+        where: {
+          photographerId: photographerId,
+          visibility: TestimonialVisibility.PUBLIC,
+        },
+        select: {
+          id: true,
+          review: true,
+          rating: true,
+          client: {
+            select: {
+              id: true,
+              user: {
+                select: {
+                  image: true,
+                  userName: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          id: 'desc',
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error fetching public testimonials: ${error.message}`,
+        error.stack,
+      );
+      throw new HttpException(
+        'Failed to fetch public testimonials',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
   
 }
