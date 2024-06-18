@@ -84,4 +84,25 @@ export class TestimonialController {
       );
     }
   }
+  @Get(':id/profile/testimonials/public')
+  async getPublicTestimonials(@Param('id') photographerId: string) {
+    this.logger.log(
+      `Fetching public testimonials for photographer ID: ${photographerId}`,
+    );
+    try {
+      const testimonials =
+        await this.testimonialService.getPublicTestimonials(photographerId);
+      this.logger.log('Public testimonials fetched successfully');
+      return testimonials;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching public testimonials: ${error.message}`,
+        error.stack,
+      );
+      throw new HttpException(
+        'Failed to fetch public testimonials',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
