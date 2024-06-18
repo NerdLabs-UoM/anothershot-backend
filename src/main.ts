@@ -24,8 +24,8 @@ async function bootstrap() {
     }));
     logger.log('Global validation pipe applied');
 
-    await app.listen(8000);
-    logger.log('Application is listening on port 8000');
+    await app.listen(8080);
+    logger.log('Application is listening on port 8080');
   } catch (error) {
     logger.error('Error during bootstrap', error.stack);
   }
