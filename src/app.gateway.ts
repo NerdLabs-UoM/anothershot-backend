@@ -1,11 +1,9 @@
-// AppGateway
-
 import { WebSocketServer, WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { MessageSendDto } from './chat/dto/message.dto';
 import { Chat } from '@prisma/client';
-import { CreateNotifyDto, SendNotifyDto, UpdateNotifyDto } from './notification/dto/create-notify.dto';
+import { SendNotifyDto } from './notification/dto/create-notify.dto';
 
 @WebSocketGateway({
   cors: {
@@ -32,17 +30,20 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.connectedUsers.set(userId, client);
       }
     }
+    this.broadcastOnlineUserCount();
   }
 
   @SubscribeMessage('disconnect-user')
   handleDisconnect(@MessageBody() userId: string) {
     this.logger.log(`User disconnected: ${userId}`);
     this.connectedUsers.delete(userId);
+    this.broadcastOnlineUserCount();
   }
 
   // ChatGateway
 
-  handleSendMessage(dto: MessageSendDto) {
+  @SubscribeMessage('send-message')
+  handleSendMessage(@MessageBody() dto: MessageSendDto) {
     this.logger.log(`Sending message from ${dto.senderId} to ${dto.receiverId}`);
     const receiver = this.connectedUsers.get(dto.receiverId);
     if (receiver) {
@@ -78,5 +79,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (receiver) {
       receiver.emit('receive-notify', notify);
     }
+  }
+
+  private broadcastOnlineUserCount() {
+    const onlineUserCount = this.connectedUsers.size;
+    this.server.emit('online-user-count', onlineUserCount);
+    this.logger.log(`Online user count: ${onlineUserCount}`);
   }
 }
