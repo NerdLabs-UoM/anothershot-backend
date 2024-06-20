@@ -70,10 +70,7 @@ export class DashboardController {
   async getRecentPayments( dto: DashboardDto) {
     this.logger.log('Request received to get recent payments');
     try {
-      if (!dto || !dto.clientId) {
-        throw new BadRequestException('Invalid request: clientId is required');
-      }
-      const recentPayments = await this.dashboardService.getRecentPayments(dto);
+      const recentPayments = await this.dashboardService.getRecentPayments();
       this.logger.log(`Recent payments retrieved: ${JSON.stringify(recentPayments)}`);
       return recentPayments;
     } catch (error) {

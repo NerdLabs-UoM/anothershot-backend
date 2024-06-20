@@ -75,15 +75,13 @@ export class DashboardService {
   }
 
   // Fetch recent payments for a specific client
-  async getRecentPayments(dto: DashboardDto) {
+  async getRecentPayments() {
     this.logger.log('Fetching recent payments');
     try {
       const recentPayments = await this.prisma.payment.findMany({
         where: {
           amount: { gt: 0 },
-          client: {
-            id: dto.clientId,
-          },
+          
         },
         take: 5,
         orderBy: {
