@@ -23,6 +23,7 @@ async getBookings(photographerId: string) {
         id: true,
         subject: true,
         start: true,
+        end:true,
         status: true,
         location: true,
         category: true,
