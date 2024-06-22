@@ -5,6 +5,13 @@ import { updatePackageDto } from './dto/updatePackage.dto';
 import { deletePackageDto } from './dto/deletePackage.dto';
 import {Package} from '@prisma/client';
 
+class NoPackagesFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NoPackagesFoundError';
+  }
+}
+
 @Injectable()
 export class PackagesService {
   private prisma: PrismaService;
@@ -13,6 +20,7 @@ export class PackagesService {
   constructor(prisma: PrismaService) {
     this.prisma = prisma;
   }
+
 
  // ------- package section services ---------
 
@@ -93,6 +101,7 @@ async getPackageDetails(photographerId: string) {
     });
     if (!packages.length) {
       this.logger.warn(`No packages found for photographer ID: ${photographerId}`);
+      throw new NoPackagesFoundError('No packages found for the specified photographer.');
     }
     const cleanedPackages = packages.map(pkg => ({
       ...pkg,
@@ -102,9 +111,14 @@ async getPackageDetails(photographerId: string) {
     return cleanedPackages;
   } catch (error) {
     this.logger.error(`Error fetching package details for photographer ID: ${photographerId}`, error);
-    throw error;
+    if (error instanceof NoPackagesFoundError) {
+      throw error; 
+    } else {
+      throw new Error('An unexpected error occurred while fetching package details.');
+    }
   }
 }
+
 
 async getPackageById(packageId: string) {
   try {
