@@ -255,9 +255,9 @@ export class SettingsService {
     
           // Create the earnings DTO
           const earningsDtoData = new EarningsDto();
-          earningsDtoData.fees = 0.1 * paidTot; // 10% fees
-          earningsDtoData.totalAmount = paidTot - earningsDtoData.fees; // Net earnings after fees
-          earningsDtoData.pending = pendingTot; // Total pending payments
+          earningsDtoData.fees = parseFloat((0.1 * paidTot).toFixed(2));// 10% fees
+          earningsDtoData.totalAmount = parseFloat((paidTot - earningsDtoData.fees).toFixed(2));// Net earnings after fees
+          earningsDtoData.pending =  parseFloat(pendingTot.toFixed(2)); // Total pending payments
     
           this.logger.log(
             `Successfully calculated earnings for photographer with ID: ${id}`,
