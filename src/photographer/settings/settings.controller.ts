@@ -7,6 +7,7 @@ import {
   Logger,
   Param,
   Put,
+  Query,
 } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 import { bankDetailsDto } from '../dto/bankDetails.dto';
@@ -93,10 +94,10 @@ export class SettingsController {
     }
 
     @Get(':id/getPayments')
-  async getPayments(@Param('id') id: string){
+  async getPayments(@Param('id') id: string, @Query('page') page: number){
     this.logger.log(`Received request to fetch payments for photographer with ID: ${id}`);
     try {
-      const payments = await this.settingsService.getPayments(id);
+      const payments = await this.settingsService.getPayments(id,page);
       this.logger.log(`Successfully fetched payments for photographer with ID: ${id}`);
       return payments;
     } catch (error) {
@@ -118,6 +119,17 @@ export class SettingsController {
     }
   }
 
-  // @Get('getlastPaypage')
+  @Get(':id/getlastPaypage')
+  async getLastPaypage(@Param('id') id: string){
+    this.logger.log('Received request to fetch last paypage');
+    try {
+      const lastPaypage = await this.settingsService.findLastPagePaySummary(id);
+      this.logger.log('Successfully fetched last paypage');
+      return lastPaypage;
+    } catch (error) {
+      this.logger.error('Failed to fetch last paypage', error.stack);
+      throw new HttpException('Error fetching last paypage', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
 }
