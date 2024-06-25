@@ -85,5 +85,5 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const onlineUserCount = this.connectedUsers.size;
     this.server.emit('online-user-count', onlineUserCount);
     this.logger.log(`Online user count: ${onlineUserCount}`);
-  }
+ }
 }
