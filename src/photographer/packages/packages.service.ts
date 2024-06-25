@@ -95,26 +95,19 @@ async getPackageDetails(photographerId: string) {
       where: {
         photographerId: photographerId,
       },
-      include: {
-        booking: false,
-      },
     });
     if (!packages.length) {
       this.logger.warn(`No packages found for photographer ID: ${photographerId}`);
       throw new NoPackagesFoundError('No packages found for the specified photographer.');
     }
-    const cleanedPackages = packages.map(pkg => ({
-      ...pkg,
-      price: pkg.price.toString() !== '' ? parseFloat(pkg.price.toString()) : null,
-    }));
     this.logger.log(`Package details fetched successfully for photographer ID: ${photographerId}`);
-    return cleanedPackages;
+    return packages;
   } catch (error) {
     this.logger.error(`Error fetching package details for photographer ID: ${photographerId}`, error);
     if (error instanceof NoPackagesFoundError) {
-      throw error; 
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     } else {
-      throw new Error('An unexpected error occurred while fetching package details.');
+      throw new HttpException('An unexpected error occurred while fetching package details.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
