@@ -8,7 +8,6 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { bankDetailsDto } from '../dto/bankDetails.dto';
 import { Photographer, PhotographerCategory } from '@prisma/client';
-import { PhotographerService } from '../photographer.service';
 import { EarningsDto } from '../dto/earnings.dto';
 
 @Injectable()
@@ -19,7 +18,7 @@ export class SettingsService {
 
   async getBankDetails(photographerId: string) {
     this.logger.log(
-      `Attempting to fetch bank details for photographer with ID: ${photographerId}`,
+      `Attempting to fetch bank details for photographer with ID: ${photographerId}`
     );
 
     try {
@@ -40,20 +39,20 @@ export class SettingsService {
 
       // Handling the case where bank details are not found
       this.logger.log(
-        `Successfully fetched category for photographer with ID: ${photographerId}`,
+        `Successfully fetched category for photographer with ID: ${photographerId}`
       );
       return bankDetails;
     } catch (error) {
       this.logger.error(
         `Failed to fetch category for photographer with ID: ${photographerId}`,
-        error.stack,
+        error.stack
       );
       if (error instanceof NotFoundException) {
         throw error; // Re-throw if it's a not found exception.
       }
       throw new HttpException(
         'Error fetching category',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -114,14 +113,14 @@ export class SettingsService {
       // Throwing an HTTP exception with internal server error status
       throw new HttpException(
         'Error fetching categories',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async getCategoryById(id: string) {
     this.logger.log(
-      `Attempting to fetch category for photographer with ID: ${id}`,
+      `Attempting to fetch category for photographer with ID: ${id}`
     );
 
     try {
@@ -135,27 +134,27 @@ export class SettingsService {
       });
 
       this.logger.log(
-        `Successfully fetched category for photographer with ID: ${id}`,
+        `Successfully fetched category for photographer with ID: ${id}`
       );
       return category;
     } catch (error) {
       this.logger.error(
         `Failed to fetch category for photographer with ID: ${id}`,
-        error.stack,
+        error.stack
       );
       if (error instanceof NotFoundException) {
         throw error; // Re-throw if it's a not found exception.
       }
       throw new HttpException(
         'Error fetching category',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async updateCategory(userId: string, data: Partial<Photographer>) {
     this.logger.log(
-      `Attempting to update category for photographer with ID: ${userId}`,
+      `Attempting to update category for photographer with ID: ${userId}`
     );
 
     try {
@@ -174,32 +173,32 @@ export class SettingsService {
       });
 
       this.logger.log(
-        `Successfully updated category for photographer with ID: ${userId}`,
+        `Successfully updated category for photographer with ID: ${userId}`
       );
       return updatedPhotographer;
     } catch (error) {
       this.logger.error(
         `Failed to update category for photographer with ID: ${userId}`,
-        error.stack,
+        error.stack
       );
 
       // Handling case where the photographer is not found
       if (error.code === 'P2025') {
         // P2025 is Prisma's code for a record not found error
         throw new NotFoundException(
-          `Photographer with ID: ${userId} not found`,
+          `Photographer with ID: ${userId} not found`
         );
       }
 
       // General error handling
       throw new HttpException(
         'Error updating category',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
-  async getPayments(id: string,page: number) {
+  async getPayments(id: string, page: number) {
     const pageSize = 3;
     const skip = (page - 1) * pageSize;
     const take = pageSize;
@@ -220,13 +219,13 @@ export class SettingsService {
         },
       });
       this.logger.log(
-        `Successfully fetched payments for photographer with ID: ${id}`,
+        `Successfully fetched payments for photographer with ID: ${id}`
       );
       return payments;
     } catch (error) {
       this.logger.error(
         `Failed to fetch payments for photographer with ID: ${id}`,
-        error.stack,
+        error.stack
       );
       throw new Error('Error fetching payments');
     }
@@ -262,23 +261,22 @@ export class SettingsService {
       const earningsDtoData = new EarningsDto();
       earningsDtoData.fees = parseFloat((0.1 * paidTot).toFixed(2)); // 10% fees
       earningsDtoData.totalAmount = parseFloat(
-        (paidTot - earningsDtoData.fees).toFixed(2),
+        (paidTot - earningsDtoData.fees).toFixed(2)
       ); // Net earnings after fees
       earningsDtoData.pending = parseFloat(pendingTot.toFixed(2)); // Total pending payments
 
       this.logger.log(
-        `Successfully calculated earnings for photographer with ID: ${id}`,
+        `Successfully calculated earnings for photographer with ID: ${id}`
       );
       return earningsDtoData;
     } catch (error) {
       this.logger.error(
         `Failed to calculate earnings for photographer with ID: ${id}`,
-        error.stack,
+        error.stack
       );
       throw new Error('Error calculating earnings');
     }
   }
-
 
   async findLastPagePaySummary(id: string) {
     const pageSize = 3;
@@ -290,18 +288,18 @@ export class SettingsService {
       });
       const lastPage = Math.ceil(totPays / pageSize); // Calculate the last page number
       this.logger.log(
-        `Total system reports: ${totPays}. Calculated last page: ${lastPage}.`,
+        `Total system reports: ${totPays}. Calculated last page: ${lastPage}.`
       );
       this.logger.log(`Successfully fetched last page: ${lastPage}`);
       return lastPage;
     } catch (error) {
       this.logger.error(
         'Failed to calculate the last page of system reports',
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Error calculating the last page of system reports',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

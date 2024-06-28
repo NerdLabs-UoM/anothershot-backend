@@ -13,11 +13,13 @@ export class ChatService {
   constructor(
     private prisma: PrismaService,
     private socketGateway: AppGateway
-  ) { }
+  ) {}
 
   // Create a new chat
   async create(dto: ChatCreateDto) {
-    this.logger.log(`Creating chat between sender: ${dto.senderId} and receiver: ${dto.receiverId}`);
+    this.logger.log(
+      `Creating chat between sender: ${dto.senderId} and receiver: ${dto.receiverId}`
+    );
     try {
       const existingChat = await this.prisma.chat.findFirst({
         where: {
@@ -54,10 +56,7 @@ export class ChatService {
             },
           },
           users: {
-            connect: [
-              { id: dto.senderId },
-              { id: dto.receiverId },
-            ],
+            connect: [{ id: dto.senderId }, { id: dto.receiverId }],
           },
         },
         include: {
@@ -137,7 +136,9 @@ export class ChatService {
 
   // Send a message
   async sendMessage(dto: MessageSendDto) {
-    this.logger.log(`Sending message from ${dto.senderId} to ${dto.receiverId}`);
+    this.logger.log(
+      `Sending message from ${dto.senderId} to ${dto.receiverId}`
+    );
     try {
       const message = await this.prisma.message.create({
         data: {
@@ -172,7 +173,10 @@ export class ChatService {
 
       return message;
     } catch (error) {
-      this.logger.error(`Sending message failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Sending message failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -190,9 +194,9 @@ export class ChatService {
         },
       });
 
-      const receiver = chat.users.find(user => user.id !== userId);
+      const receiver = chat.users.find((user) => user.id !== userId);
 
-      if (chat.users.some(user => user.id === userId)) {
+      if (chat.users.some((user) => user.id === userId)) {
         await this.prisma.chat.delete({
           where: {
             id: chatId,

@@ -5,19 +5,18 @@ import { ReportStatus } from '@prisma/client';
 
 export class UpdateReportDto extends PartialType(CreateReportDto) {}
 
-
 export class UpdateReportStatus {
-    @IsString()
-    status: ReportStatus;
+  @IsString()
+  status: ReportStatus;
 
-    @IsString()
-    ReportId:string;
+  @IsString()
+  ReportId: string;
 }
 
 export class UpdateImageReportStatus {
-    @IsString()
-    status: ReportStatus;
+  @IsString()
+  status: ReportStatus;
 
-    @IsString()
-    ImageReportId:string;
+  @IsString()
+  ImageReportId: string;
 }

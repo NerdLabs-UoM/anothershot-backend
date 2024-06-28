@@ -1,7 +1,12 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsDate,
+} from 'class-validator';
 
 export class EarningsDto {
-
   @IsString()
   @IsNotEmpty()
   photographerId: string;
@@ -12,7 +17,7 @@ export class EarningsDto {
 
   @IsNumber()
   @IsOptional()
-  pending:number;
+  pending: number;
 
   @IsNumber()
   @IsOptional()
@@ -20,7 +25,4 @@ export class EarningsDto {
 
   @IsDate()
   date: Date;
-
 }
-  
-

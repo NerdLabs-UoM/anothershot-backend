@@ -6,7 +6,7 @@ import { AppGateway } from 'src/app.gateway';
 
 // ChatModule
 @Module({
-    controllers: [ChatController],
-    providers: [ChatService, PrismaService, AppGateway],
+  controllers: [ChatController],
+  providers: [ChatService, PrismaService, AppGateway],
 })
-export class ChatModule { }
+export class ChatModule {}

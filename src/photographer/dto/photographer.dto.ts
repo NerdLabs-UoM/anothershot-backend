@@ -1,5 +1,4 @@
 import { UserRole } from '@prisma/client';
-import { IsEmail, IsString } from 'class-validator';
 
 export class UpdatePhotographerDto {
   id: string;

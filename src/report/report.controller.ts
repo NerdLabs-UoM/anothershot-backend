@@ -1,30 +1,21 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Put } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { CreateReportDto, reportImageDto } from './dto/create-report.dto';
-import { UpdateImageReportStatus, UpdateReportStatus } from './dto/update-report.dto';
+import {
+  UpdateImageReportStatus,
+  UpdateReportStatus,
+} from './dto/update-report.dto';
 
 @Controller('api/report')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
   // -------- Cretate Reports --------------------------------
-  
+
   @Post('create-report')
   create(@Body() createReportDto: CreateReportDto) {
     return this.reportService.create(createReportDto);
   }
-
-  
 
   @Post('report-image')
   async reportImage(@Body() createReportDto: reportImageDto) {
@@ -38,9 +29,7 @@ export class ReportController {
   }
 
   @Get('getlastpage')
-  async getLastPage(
-    @Query('name') name: string,
-  ) {
+  async getLastPage(@Query('name') name: string) {
     try {
       return await this.reportService.findLastPage(name);
     } catch (err) {
@@ -53,7 +42,7 @@ export class ReportController {
   @Get('getallimagereports')
   async getImageReports(
     @Query('page') page: number,
-    @Query('name') name: string,
+    @Query('name') name: string
   ) {
     const reports = await this.reportService.findallImageReports(page, name);
     return reports;

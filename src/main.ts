@@ -17,11 +17,13 @@ async function bootstrap() {
     app.use(rawBodyMiddleware());
     logger.log('Raw body middleware applied');
 
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      })
+    );
     logger.log('Global validation pipe applied');
 
     await app.listen(8080);

@@ -3,7 +3,6 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
-import { CkeckoutDto } from './dto/create-checkout.dto';
 
 @Injectable()
 export class PaymentService {
@@ -25,7 +24,6 @@ export class PaymentService {
 
   // Ceate a Checkout Session
   async createCheckoutSession(data: any) {
-    
     const session = await this.stripe.checkout.sessions.create({
       metadata: {
         bookingId: data.bookingId,
@@ -51,13 +49,12 @@ export class PaymentService {
   }
 
   async createCheckoutSessionAlbum(data: any) {
-
     const session = await this.stripe.checkout.sessions.create({
       metadata: {
         albumId: data.albumId,
         clientId: data.clientId,
       },
-      
+
       mode: 'payment',
       line_items: [
         {
@@ -78,11 +75,9 @@ export class PaymentService {
     return session.url;
   }
 
-
   async SuccessSession(Session) {
     console.log(Session);
   }
-
 
   async createPaymentIntent(items: CreatePaymentDto) {
     const amount = this.calculateOrderAmount(items);
@@ -104,8 +99,6 @@ export class PaymentService {
   private calculateOrderAmount(items: CreatePaymentDto): number {
     return items.amount * 100;
   }
-
-  
 
   //------Admin Panel Payment Handling Services --------
 
@@ -174,7 +167,7 @@ export class PaymentService {
 
   //-- find all users page by page --
 
-  async findall(page: number, name: string ) {
+  async findall(page: number, name: string) {
     const pageSize = 4;
     const skip = (page - 1) * pageSize;
     const take = pageSize;

@@ -1,21 +1,10 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  Package,
-  PhotographerCategory,
-} from '@prisma/client';
-import {
-  Injectable,
-  NotFoundException,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Photographer, User } from '@prisma/client';
 
 @Injectable()
 export class PhotographerService {
   private readonly logger = new Logger(PhotographerService.name);
-
 
   constructor(private prisma: PrismaService) {}
 
@@ -60,7 +49,7 @@ export class PhotographerService {
 
   async updateProfilePicture(
     userId: string,
-    data: Partial<Photographer & { image: string }>,
+    data: Partial<Photographer & { image: string }>
   ) {
     return await this.prisma.photographer.update({
       where: {
@@ -79,30 +68,22 @@ export class PhotographerService {
     });
   }
 
-
-  async updateHeroSection(userId:string, data:Partial<Photographer> & Partial<User>){
-
-    if(data.image){
+  async updateHeroSection(
+    userId: string,
+    data: Partial<Photographer> & Partial<User>
+  ) {
+    if (data.image) {
       return await this.prisma.user.update({
         where: { id: userId },
         data: {
           image: data.image,
         },
       });
-    }
-    else{
+    } else {
       return await this.prisma.photographer.update({
         where: { userId: userId },
         data,
       });
     }
-  
   }
-
-
 }
-
-
-
-
-

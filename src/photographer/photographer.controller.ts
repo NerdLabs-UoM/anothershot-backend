@@ -5,19 +5,16 @@ import {
   Body,
   Param,
   Put,
-  Delete,
-  HttpException, HttpStatus, Logger
+  Logger,
 } from '@nestjs/common';
 import { PhotographerService } from './photographer.service';
-import { Package, Photographer } from '@prisma/client';
-
-
+import { Photographer } from '@prisma/client';
 
 @Controller('api/photographer')
 export class PhotographerController {
   private readonly logger = new Logger(PhotographerController.name);
 
-  constructor(private photographerService: PhotographerService) { }
+  constructor(private photographerService: PhotographerService) {}
 
   //------ photographer controllers -----------
 
@@ -36,7 +33,7 @@ export class PhotographerController {
   @Put(':id/updateuser')
   async updateUser(
     @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
+    @Body() data: Partial<Photographer>
   ) {
     return await this.photographerService.updateUser(id, data);
   }
@@ -44,14 +41,14 @@ export class PhotographerController {
   @Post(':id/updateHeroSection')
   async updateHeroSection(
     @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
+    @Body() data: Partial<Photographer>
   ) {
     return await this.photographerService.updateHeroSection(id, data);
   }
   @Put(':id/cover-photo')
   async updateCoverPhoto(
     @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
+    @Body() data: Partial<Photographer>
   ) {
     return await this.photographerService.updateCoverPhoto(id, data);
   }
@@ -59,12 +56,8 @@ export class PhotographerController {
   @Put(':id/profile-picture')
   async updateProfilePicture(
     @Param('id') id: string,
-    @Body() data: Partial<Photographer>,
+    @Body() data: Partial<Photographer>
   ) {
     return await this.photographerService.updateProfilePicture(id, data);
   }
-
- }
-  
-
-
+}

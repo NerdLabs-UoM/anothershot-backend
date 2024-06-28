@@ -1,11 +1,6 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 
-import {
-  Injectable,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { FeedDto } from '../dto/feed.dto';
 import { FeedLikeDto } from '../dto/feedLike.dto';
 import { FeedSaveDto } from '../dto/feedSave.dto';
@@ -16,9 +11,7 @@ import { CaptionDto } from '../dto/caption.dto';
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);
 
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   // ------- feed services ---------
 
@@ -58,13 +51,13 @@ export class FeedService {
       });
 
       this.logger.log(
-        `Successfully fetched ${feed.length} feed items for photographer ID: ${id}`,
+        `Successfully fetched ${feed.length} feed items for photographer ID: ${id}`
       );
       return feed;
     } catch (error) {
       this.logger.error(
         `Failed to fetch feed for photographer ID: ${id}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException('Failed to fetch feed', HttpStatus.NOT_FOUND);
     }
@@ -75,7 +68,7 @@ export class FeedService {
   async createFeedComponent(dto: FeedDto) {
     try {
       this.logger.log(
-        `Creating feed component for photographer ID: ${dto.photographerId}`,
+        `Creating feed component for photographer ID: ${dto.photographerId}`
       );
 
       const newFeedComponent = await this.prisma.feedImage.create({
@@ -90,17 +83,17 @@ export class FeedService {
       });
 
       this.logger.log(
-        `Successfully created feed component with ID: ${newFeedComponent.id} for photographer ID: ${dto.photographerId}`,
+        `Successfully created feed component with ID: ${newFeedComponent.id} for photographer ID: ${dto.photographerId}`
       );
       return newFeedComponent;
     } catch (error) {
       this.logger.error(
         `Failed to create feed component for photographer ID: ${dto.photographerId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to create feed component',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -110,7 +103,7 @@ export class FeedService {
   async feedLike(dto: FeedLikeDto) {
     try {
       this.logger.log(
-        `Processing like for feed ID: ${dto.feedId} by user ID: ${dto.userId}`,
+        `Processing like for feed ID: ${dto.feedId} by user ID: ${dto.userId}`
       );
 
       // Check if the like already exists
@@ -159,7 +152,7 @@ export class FeedService {
           });
           likeCount++;
           this.logger.log(
-            `User ID: ${dto.userId} liked feed ID: ${dto.feedId}`,
+            `User ID: ${dto.userId} liked feed ID: ${dto.feedId}`
           );
         }
       } else {
@@ -172,7 +165,7 @@ export class FeedService {
             data: {
               likedUserIds: {
                 set: existingLike.likedUserIds.filter(
-                  (id) => id !== dto.userId,
+                  (id) => id !== dto.userId
                 ),
               },
             },
@@ -187,7 +180,7 @@ export class FeedService {
             },
           });
           this.logger.log(
-            `User ID: ${dto.userId} unliked feed ID: ${dto.feedId}`,
+            `User ID: ${dto.userId} unliked feed ID: ${dto.feedId}`
           );
         }
       }
@@ -203,13 +196,13 @@ export class FeedService {
       });
 
       this.logger.log(
-        `Updated like count for feed ID: ${dto.feedId} to ${likeCount}`,
+        `Updated like count for feed ID: ${dto.feedId} to ${likeCount}`
       );
       return updatedFeed;
     } catch (error) {
       this.logger.error(
         `Failed to process like for feed ID: ${dto.feedId} by user ID: ${dto.userId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException('Failed to process like', HttpStatus.BAD_REQUEST);
     }
@@ -220,7 +213,7 @@ export class FeedService {
   async feedSave(photographerId: string, dto: FeedSaveDto) {
     try {
       this.logger.log(
-        `Processing save for feed ID: ${dto.feedId} by user ID: ${dto.userId}`,
+        `Processing save for feed ID: ${dto.feedId} by user ID: ${dto.userId}`
       );
 
       // Check if the save already exists
@@ -269,7 +262,7 @@ export class FeedService {
           });
           saveCount++;
           this.logger.log(
-            `User ID: ${dto.userId} saved feed ID: ${dto.feedId}`,
+            `User ID: ${dto.userId} saved feed ID: ${dto.feedId}`
           );
         }
       } else {
@@ -282,7 +275,7 @@ export class FeedService {
             data: {
               savedUserIds: {
                 set: existingSave.savedUserIds.filter(
-                  (id) => id !== dto.userId,
+                  (id) => id !== dto.userId
                 ),
               },
             },
@@ -297,7 +290,7 @@ export class FeedService {
             },
           });
           this.logger.log(
-            `User ID: ${dto.userId} unsaved feed ID: ${dto.feedId}`,
+            `User ID: ${dto.userId} unsaved feed ID: ${dto.feedId}`
           );
         }
       }
@@ -313,13 +306,13 @@ export class FeedService {
       });
 
       this.logger.log(
-        `Updated save count for feed ID: ${dto.feedId} to ${saveCount}`,
+        `Updated save count for feed ID: ${dto.feedId} to ${saveCount}`
       );
       return updatedFeed;
     } catch (error) {
       this.logger.error(
         `Failed to process save for feed ID: ${dto.feedId} by user ID: ${dto.userId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException('Failed to process save', HttpStatus.BAD_REQUEST);
     }
@@ -342,7 +335,7 @@ export class FeedService {
     } catch (error) {
       this.logger.error(
         `Failed to delete feed with ID: ${dto.feedId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException('Failed to delete feed', HttpStatus.BAD_REQUEST);
     }
@@ -374,13 +367,13 @@ export class FeedService {
       }
 
       this.logger.log(
-        `Successfully fetched header for photographer with user ID: ${id}`,
+        `Successfully fetched header for photographer with user ID: ${id}`
       );
       return header;
     } catch (error) {
       this.logger.error(
         `Failed to fetch header for photographer with user ID: ${id}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException('Failed to fetch header', HttpStatus.NOT_FOUND);
     }
@@ -402,19 +395,18 @@ export class FeedService {
       });
 
       this.logger.log(
-        `Successfully updated caption for feed ID: ${dto.feedId}`,
+        `Successfully updated caption for feed ID: ${dto.feedId}`
       );
       return updatedFeed;
     } catch (error) {
       this.logger.error(
         `Failed to update caption for feed ID: ${dto.feedId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to update caption',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
 }
-

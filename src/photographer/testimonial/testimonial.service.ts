@@ -1,23 +1,14 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTestimonialDto } from '../dto/testimonial.dto';
-import {
-  TestimonialVisibility,
-} from '@prisma/client';
+import { TestimonialVisibility } from '@prisma/client';
 import { VisibilityDto } from '../dto/visibility.dto';
-import {
-  Injectable,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class TestimonialService {
   private readonly logger = new Logger(TestimonialService.name);
 
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   // ------- testmonial services ---------
 
@@ -25,7 +16,7 @@ export class TestimonialService {
 
   async createTestimonial(dto: CreateTestimonialDto) {
     this.logger.log(
-      `Creating or updating testimonial for photographer ID: ${dto.photographerId}`,
+      `Creating or updating testimonial for photographer ID: ${dto.photographerId}`
     );
     try {
       const existingTestimonial = await this.prisma.testimonial.findFirst({
@@ -50,11 +41,11 @@ export class TestimonialService {
     } catch (error) {
       this.logger.error(
         `Error creating/updating testimonial: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to create or update testimonial',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -63,7 +54,7 @@ export class TestimonialService {
 
   async getTestimonials(photographerId: string) {
     this.logger.log(
-      `Fetching testimonials for photographer ID: ${photographerId}`,
+      `Fetching testimonials for photographer ID: ${photographerId}`
     );
     try {
       return await this.prisma.testimonial.findMany({
@@ -94,11 +85,11 @@ export class TestimonialService {
     } catch (error) {
       this.logger.error(
         `Error fetching testimonials: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to fetch testimonials',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -120,11 +111,11 @@ export class TestimonialService {
     } catch (error) {
       this.logger.error(
         `Error updating testimonial: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to update testimonial',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -134,8 +125,8 @@ export class TestimonialService {
   async updateTestimonialVisibility(dto: VisibilityDto) {
     this.logger.log(
       `Updating testimonial visibility for testimonial IDs: ${dto.testimonialId.join(
-        ', ',
-      )}`,
+        ', '
+      )}`
     );
     try {
       const testimonials = await this.prisma.testimonial.findMany({
@@ -165,20 +156,20 @@ export class TestimonialService {
     } catch (error) {
       this.logger.error(
         `Error updating testimonial visibility: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to update testimonial visibility',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
 
   //Get public testimonials for a photographer.
-  
+
   async getPublicTestimonials(photographerId: string) {
     this.logger.log(
-      `Fetching public testimonials for photographer ID: ${photographerId}`,
+      `Fetching public testimonials for photographer ID: ${photographerId}`
     );
     try {
       return await this.prisma.testimonial.findMany({
@@ -209,13 +200,12 @@ export class TestimonialService {
     } catch (error) {
       this.logger.error(
         `Error fetching public testimonials: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to fetch public testimonials',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
-  
 }

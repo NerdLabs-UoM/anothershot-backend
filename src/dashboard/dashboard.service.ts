@@ -1,6 +1,5 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
-import { DashboardDto } from './dto/dashboard.dto';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class DashboardService {
@@ -81,7 +80,6 @@ export class DashboardService {
       const recentPayments = await this.prisma.payment.findMany({
         where: {
           amount: { gt: 0 },
-          
         },
         take: 5,
         orderBy: {
@@ -107,7 +105,9 @@ export class DashboardService {
         throw new BadRequestException('No recent payments found');
       }
 
-      this.logger.log(`Recent payments fetched: ${JSON.stringify(recentPayments)}`);
+      this.logger.log(
+        `Recent payments fetched: ${JSON.stringify(recentPayments)}`
+      );
       return recentPayments;
     } catch (error) {
       this.logger.error('Failed to fetch recent payments', error);

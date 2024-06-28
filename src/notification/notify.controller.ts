@@ -25,17 +25,17 @@ export class NotifyController {
     try {
       const notifications = await this.notifyService.getNotifications(userId);
       this.logger.log(
-        `Successfully fetched notifications for user ID: ${userId}`,
+        `Successfully fetched notifications for user ID: ${userId}`
       );
       return notifications;
     } catch (error) {
       this.logger.error(
         `Failed to fetch notifications for user ID: ${userId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to fetch notifications',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -51,11 +51,11 @@ export class NotifyController {
     } catch (error) {
       this.logger.error(
         `Failed to update notification with ID: ${dto}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to update notification',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -63,29 +63,29 @@ export class NotifyController {
   @Delete('/delete/:notifyId/:userId')
   async deleteNotify(
     @Param('notifyId') notifyId: string,
-    @Param('userId') userId: string,
+    @Param('userId') userId: string
   ) {
     this.logger.log(
-      `Attempting to delete notification ID: ${notifyId} for user ID: ${userId}`,
+      `Attempting to delete notification ID: ${notifyId} for user ID: ${userId}`
     );
 
     try {
       const deletedNotification = await this.notifyService.deleteNotify(
         notifyId,
-        userId,
+        userId
       );
       this.logger.log(
-        `Successfully deleted notification ID: ${notifyId} for user ID: ${userId}`,
+        `Successfully deleted notification ID: ${notifyId} for user ID: ${userId}`
       );
       return deletedNotification;
     } catch (error) {
       this.logger.error(
         `Failed to delete notification ID: ${notifyId} for user ID: ${userId}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to delete notification',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -97,14 +97,14 @@ export class NotifyController {
     try {
       const newNotification = await this.notifyService.createNotification(dto);
       this.logger.log(
-        `Successfully created notification with ID: ${newNotification.id}`,
+        `Successfully created notification with ID: ${newNotification.id}`
       );
       return newNotification;
     } catch (error) {
       this.logger.error(`Failed to create notification`, error.stack);
       throw new HttpException(
         'Failed to create notification',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

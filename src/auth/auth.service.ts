@@ -1,108 +1,114 @@
-import { Injectable, UnauthorizedException, Logger, BadRequestException } from "@nestjs/common";
-import { LoginDto } from "./dto/auth.dto";
-import { UserService } from "src/user/user.service";
-import { compare } from "bcrypt";
-import { JwtService } from "@nestjs/jwt";
+import {
+  Injectable,
+  UnauthorizedException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
+import { LoginDto } from './dto/auth.dto';
+import { UserService } from 'src/user/user.service';
+import { compare } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 // AuthService
 @Injectable()
 export class AuthService {
-    private readonly logger = new Logger(AuthService.name);
+  private readonly logger = new Logger(AuthService.name);
 
-    constructor(
-        private userService: UserService,
-        private jwtService: JwtService
-    ) { }
+  constructor(
+    private userService: UserService,
+    private jwtService: JwtService
+  ) {}
 
-    // Login a user and return tokens
-    async login(dto: LoginDto) {
-        this.logger.log(`Authenticating user with email: ${dto.email}`);
-        const user = await this.validateUser(dto);
+  // Login a user and return tokens
+  async login(dto: LoginDto) {
+    this.logger.log(`Authenticating user with email: ${dto.email}`);
+    const user = await this.validateUser(dto);
 
-        if (!user) {
-            this.logger.error('Authentication failed: Incorrect email or password');
-            throw new UnauthorizedException('Incorrect email or password');
-        }
-
-        const payload = { email: user.email, sub: user.id };
-
-        return {
-            user,
-            accessToken: await this.jwtService.signAsync(payload, {
-                expiresIn: '1d',
-                secret: process.env.jwtSecretKey,
-            }),
-            refreshToken: await this.jwtService.signAsync(payload, {
-                expiresIn: '7d',
-                secret: process.env.jwtRefreshTokenKey,
-            }),
-            expiresIn: new Date().setTime(new Date().getTime() + 20000),
-        };
+    if (!user) {
+      this.logger.error('Authentication failed: Incorrect email or password');
+      throw new UnauthorizedException('Incorrect email or password');
     }
 
-    // Validate user credentials
-    async validateUser(dto: LoginDto) {
-        const user = await this.userService.findByEmail(dto.email);
+    const payload = { email: user.email, sub: user.id };
 
-        if (!user) {
-            this.logger.error('Validation failed: User not found');
-            throw new UnauthorizedException('Incorrect email or password');
-        }
+    return {
+      user,
+      accessToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '1d',
+        secret: process.env.jwtSecretKey,
+      }),
+      refreshToken: await this.jwtService.signAsync(payload, {
+        expiresIn: '7d',
+        secret: process.env.jwtRefreshTokenKey,
+      }),
+      expiresIn: new Date().setTime(new Date().getTime() + 20000),
+    };
+  }
 
-        const isPasswordValid = await compare(dto.password, user.password);
+  // Validate user credentials
+  async validateUser(dto: LoginDto) {
+    const user = await this.userService.findByEmail(dto.email);
 
-        if (!isPasswordValid) {
-            this.logger.error('Validation failed: Incorrect password');
-            throw new UnauthorizedException('Incorrect email or password');
-        }
-
-        const { password, ...result } = user;
-        return result;
+    if (!user) {
+      this.logger.error('Validation failed: User not found');
+      throw new UnauthorizedException('Incorrect email or password');
     }
 
-    // Refresh tokens
-    async refreshToken(user: any) {
-        this.logger.log(`Refreshing token for user with email: ${user.email}`);
-        const payload = { email: user.email, id: user.id };
+    const isPasswordValid = await compare(dto.password, user.password);
 
-        try {
-            return {
-                accessToken: await this.jwtService.signAsync(payload, {
-                    expiresIn: '20s',
-                    secret: process.env.jwtSecretKey,
-                }),
-                refreshToken: await this.jwtService.signAsync(payload, {
-                    expiresIn: '7d',
-                    secret: process.env.jwtRefreshTokenKey,
-                }),
-                expiresIn: new Date().setTime(new Date().getTime() + 20000),
-            };
-        } catch (error) {
-            this.logger.error(`Token refresh failed: ${error.message}`, error.stack);
-            throw new BadRequestException('Token refresh failed');
-        }
+    if (!isPasswordValid) {
+      this.logger.error('Validation failed: Incorrect password');
+      throw new UnauthorizedException('Incorrect email or password');
     }
 
-    // Create a token for a user
-    async createToken(userId: string, data: any) {
-        this.logger.log(`Creating token for user ID: ${userId}`);
-        const payload = { email: data.email, id: userId };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...result } = user;
+    return result;
+  }
 
-        try {
-            return {
-                accessToken: await this.jwtService.signAsync(payload, {
-                    expiresIn: '20s',
-                    secret: process.env.jwtSecretKey,
-                }),
-                refreshToken: await this.jwtService.signAsync(payload, {
-                    expiresIn: '7d',
-                    secret: process.env.jwtRefreshTokenKey,
-                }),
-                expiresIn: new Date().setTime(new Date().getTime() + 20000),
-            };
-        } catch (error) {
-            this.logger.error(`Token creation failed: ${error.message}`, error.stack);
-            throw new BadRequestException('Token creation failed');
-        }
+  // Refresh tokens
+  async refreshToken(user: any) {
+    this.logger.log(`Refreshing token for user with email: ${user.email}`);
+    const payload = { email: user.email, id: user.id };
+
+    try {
+      return {
+        accessToken: await this.jwtService.signAsync(payload, {
+          expiresIn: '20s',
+          secret: process.env.jwtSecretKey,
+        }),
+        refreshToken: await this.jwtService.signAsync(payload, {
+          expiresIn: '7d',
+          secret: process.env.jwtRefreshTokenKey,
+        }),
+        expiresIn: new Date().setTime(new Date().getTime() + 20000),
+      };
+    } catch (error) {
+      this.logger.error(`Token refresh failed: ${error.message}`, error.stack);
+      throw new BadRequestException('Token refresh failed');
     }
+  }
+
+  // Create a token for a user
+  async createToken(userId: string, data: any) {
+    this.logger.log(`Creating token for user ID: ${userId}`);
+    const payload = { email: data.email, id: userId };
+
+    try {
+      return {
+        accessToken: await this.jwtService.signAsync(payload, {
+          expiresIn: '20s',
+          secret: process.env.jwtSecretKey,
+        }),
+        refreshToken: await this.jwtService.signAsync(payload, {
+          expiresIn: '7d',
+          secret: process.env.jwtRefreshTokenKey,
+        }),
+        expiresIn: new Date().setTime(new Date().getTime() + 20000),
+      };
+    } catch (error) {
+      this.logger.error(`Token creation failed: ${error.message}`, error.stack);
+      throw new BadRequestException('Token creation failed');
+    }
+  }
 }

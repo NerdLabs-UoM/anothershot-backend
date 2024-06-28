@@ -1,12 +1,11 @@
 // UserDto
 
-import { UserRole } from "@prisma/client";
-import { IsEmail,IsObject, IsOptional, IsString } from "class-validator";
+import { UserRole } from '@prisma/client';
+import { IsEmail, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto {
-
   @IsEmail()
-  email: string
+  email: string;
 
   @IsString()
   userName: string;

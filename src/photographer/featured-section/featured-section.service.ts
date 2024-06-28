@@ -1,15 +1,12 @@
-import { Injectable, NotFoundException, Logger, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { Photographer } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-
 @Injectable()
-export class FeaturedSectionService {  private readonly logger = new Logger(FeaturedSectionService.name);
+export class FeaturedSectionService {
+  private readonly logger = new Logger(FeaturedSectionService.name);
 
-  constructor(
-    private prisma: PrismaService,
-    
-  ) { }
+  constructor(private prisma: PrismaService) {}
   // ------- featured section services ---------
 
   async getFeatured(userId: string) {
@@ -21,13 +18,20 @@ export class FeaturedSectionService {  private readonly logger = new Logger(Feat
         },
       });
       if (!photographer) {
-        this.logger.warn(`Featured photographer not found for user ID: ${userId}`);
+        this.logger.warn(
+          `Featured photographer not found for user ID: ${userId}`
+        );
         throw new NotFoundException('Featured photographer not found');
       }
-      this.logger.log(`Featured photographer fetched successfully for user ID: ${userId}`);
+      this.logger.log(
+        `Featured photographer fetched successfully for user ID: ${userId}`
+      );
       return photographer;
     } catch (error) {
-      this.logger.error(`Error fetching featured photographer for user ID: ${userId}`, error);
+      this.logger.error(
+        `Error fetching featured photographer for user ID: ${userId}`,
+        error
+      );
       throw error;
     }
   }
@@ -41,10 +45,15 @@ export class FeaturedSectionService {  private readonly logger = new Logger(Feat
         },
         data,
       });
-      this.logger.log(`Featured photographer updated successfully with user ID: ${id}`);
+      this.logger.log(
+        `Featured photographer updated successfully with user ID: ${id}`
+      );
       return updatedPhotographer;
     } catch (error) {
-      this.logger.error(`Error updating featured photographer with user ID: ${id}`, error);
+      this.logger.error(
+        `Error updating featured photographer with user ID: ${id}`,
+        error
+      );
       throw error;
     }
   }

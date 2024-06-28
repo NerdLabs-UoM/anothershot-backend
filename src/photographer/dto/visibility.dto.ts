@@ -1,6 +1,6 @@
-import { IsArray, IsString } from "class-validator";
+import { IsArray, IsString } from 'class-validator';
 export class VisibilityDto {
-    @IsArray()
-    @IsString({ each: true })
-    testimonialId: string[];
+  @IsArray()
+  @IsString({ each: true })
+  testimonialId: string[];
 }

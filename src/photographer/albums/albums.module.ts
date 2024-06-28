@@ -7,6 +7,6 @@ import { AppGateway } from 'src/app.gateway';
 
 @Module({
   controllers: [AlbumsController],
-  providers: [AlbumsService,PrismaService,JwtService,AppGateway]
+  providers: [AlbumsService, PrismaService, JwtService, AppGateway],
 })
 export class AlbumsModule {}

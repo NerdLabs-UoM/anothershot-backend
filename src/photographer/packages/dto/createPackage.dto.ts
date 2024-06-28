@@ -1,21 +1,19 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class createPackageDto {
+  @IsString()
+  photographerId: string;
 
-    @IsString()
-    photographerId: string;
+  @IsString()
+  name: string;
 
-    @IsString()
-    name: string;
+  @IsString()
+  description: string;
 
-    @IsString()
-    description: string;
+  @IsString({ each: true }) // use each:true for the string array - access to the each element in the array
+  @IsOptional()
+  coverPhotos: string[];
 
-    @IsString({ each: true })       // use each:true for the string array - access to the each element in the array
-    @IsOptional()
-    coverPhotos: string[];
-
-    @IsNumber()
-    price: number;
-
+  @IsNumber()
+  price: number;
 }

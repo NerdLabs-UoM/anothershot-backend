@@ -1,34 +1,32 @@
-import { UserRole } from "@prisma/client";
-import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsNumber, IsString } from "class-validator";
+import { Type } from 'class-transformer';
+import { IsDate, IsString } from 'class-validator';
 
+export class CreateBookingDto {
+  @IsString()
+  id: string;
 
-export class CreateBookingDto{
-    @IsString()
-    id: string;
+  @IsString()
+  clientId: string;
 
-    @IsString()
-    clientId: string;
+  @IsString()
+  photographerId: string;
 
-    @IsString()
-    photographerId: string;
+  @IsString()
+  bookingsId: string;
 
-    @IsString()
-    bookingsId: string;
+  @IsString()
+  description: string;
 
-    @IsString()
-    description: string;
+  @IsString()
+  packageName: string;
 
-    @IsString()
-    packageName: string;
+  @IsString()
+  clientName: string;
 
-    @IsString()
-    clientName: string;
+  @IsString()
+  price: number;
 
-    @IsString()
-    price: number;
-
-    @IsDate()
-    @Type(() => Date)
-    date: Date;
+  @IsDate()
+  @Type(() => Date)
+  date: Date;
 }

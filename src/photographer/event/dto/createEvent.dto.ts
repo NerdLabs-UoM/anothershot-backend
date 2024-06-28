@@ -1,25 +1,22 @@
-import {  IsBoolean, IsDate,  IsDateString,  IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
 
-export class createEventDto{
-       
-    @IsString()
-    title: string;
+export class createEventDto {
+  @IsString()
+  title: string;
 
-    @IsString()
-    bookingId: string;
+  @IsString()
+  bookingId: string;
 
-    @IsString()
-    description:string;
+  @IsString()
+  description: string;
 
-    @IsDateString()
-    start: string;
+  @IsDateString()
+  start: string;
 
-    @IsDateString()
-    end: string;
-        
-    @IsBoolean()
-    @IsOptional()
-    allDay: boolean;
+  @IsDateString()
+  end: string;
 
-
+  @IsBoolean()
+  @IsOptional()
+  allDay: boolean;
 }

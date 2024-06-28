@@ -11,20 +11,19 @@ export class CreateReportDto {
   photographerId: string;
 
   @IsString()
-  userId:string;
+  userId: string;
 }
 
-
 export class reportImageDto {
-    @IsString()
-    subject: string;
-  
-    @IsString()
-    description: string;
-  
-    @IsString()
-    userId: string;
-  
-    @IsString()
-    feedImageId: string;
-  }
+  @IsString()
+  subject: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  userId: string;
+
+  @IsString()
+  feedImageId: string;
+}

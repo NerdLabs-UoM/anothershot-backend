@@ -1,0 +1,9 @@
+node_modules
+dist
+commitlint.config.js
+.eslintignore
+.eslintrc.js
+.prettierignore
+.prettierrc.js
+package.json
+package-lock.json
