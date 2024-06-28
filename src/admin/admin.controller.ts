@@ -23,10 +23,10 @@ export class AdminController {
   async getAllUsers(
     @Query('page') page: number,
     @Query('name') name: string,
-    @Query('roles') roles: string,
+    @Query('roles') roles: string
   ) {
     this.logger.log(
-      `Fetching all users with page: ${page}, name: ${name}, roles: ${roles}`,
+      `Fetching all users with page: ${page}, name: ${name}, roles: ${roles}`
     );
 
     try {
@@ -36,11 +36,11 @@ export class AdminController {
     } catch (error) {
       this.logger.error(
         `Failed to fetch users with page: ${page}, name: ${name}, roles: ${roles}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Error fetching users',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -48,10 +48,10 @@ export class AdminController {
   @Get('getlastpage')
   async getLastPage(
     @Query('name') name: string,
-    @Query('roles') roles: string,
+    @Query('roles') roles: string
   ) {
     this.logger.log(
-      `Fetching last page for users with name: ${name}, roles: ${roles}`,
+      `Fetching last page for users with name: ${name}, roles: ${roles}`
     );
 
     try {
@@ -61,11 +61,11 @@ export class AdminController {
     } catch (error) {
       this.logger.error(
         `Failed to fetch last page with name: ${name}, roles: ${roles}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Error fetching last page',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -77,14 +77,14 @@ export class AdminController {
     try {
       const reports = await this.adminService.getSystemReports(page);
       this.logger.log(
-        `Successfully fetched system reports. Count: ${reports.length}`,
+        `Successfully fetched system reports. Count: ${reports.length}`
       );
       return reports;
     } catch (error) {
       this.logger.error(`Failed to fetch system reports`, error.stack);
       throw new HttpException(
         'Error fetching system reports',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -100,11 +100,11 @@ export class AdminController {
     } catch (error) {
       this.logger.error(
         `Failed to fetch last page for system reports`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Error fetching last page',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -120,7 +120,7 @@ export class AdminController {
       this.logger.error(`Failed to update system report status`, error.stack);
       throw new HttpException(
         'Error updating system report status',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -136,7 +136,7 @@ export class AdminController {
       this.logger.error(`Failed to delete system report with ID: ${id}`);
       throw new HttpException(
         'Error deleting system report',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

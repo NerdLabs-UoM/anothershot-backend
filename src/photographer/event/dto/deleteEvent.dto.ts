@@ -1,7 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
-export class deleteEventDto{
-    @IsString()
-    id: string;
-  
+export class deleteEventDto {
+  @IsString()
+  id: string;
 }

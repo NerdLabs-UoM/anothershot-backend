@@ -1,4 +1,12 @@
-import { WebSocketServer, WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import {
+  WebSocketServer,
+  WebSocketGateway,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
+} from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { MessageSendDto } from './chat/dto/message.dto';
@@ -19,7 +27,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private connectedUsers: Map<string, Socket> = new Map();
 
   @SubscribeMessage('connect-user')
-  handleConnection(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
+  handleConnection(
+    @MessageBody() userId: string,
+    @ConnectedSocket() client: Socket
+  ) {
     this.logger.log(`User connected: ${userId}`);
     const isConnected = this.connectedUsers.get(userId);
     if (isConnected === client) {
@@ -44,7 +55,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('send-message')
   handleSendMessage(@MessageBody() dto: MessageSendDto) {
-    this.logger.log(`Sending message from ${dto.senderId} to ${dto.receiverId}`);
+    this.logger.log(
+      `Sending message from ${dto.senderId} to ${dto.receiverId}`
+    );
     const receiver = this.connectedUsers.get(dto.receiverId);
     if (receiver) {
       receiver.emit('receive-msg', dto);
@@ -60,7 +73,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDeleteChat(chatId: string, receiverId: string, userId: string) {
-    this.logger.log(`Deleting chat ${chatId} for users: ${receiverId} and ${userId}`);
+    this.logger.log(
+      `Deleting chat ${chatId} for users: ${receiverId} and ${userId}`
+    );
     const receiver = this.connectedUsers.get(receiverId);
     const sender = this.connectedUsers.get(userId);
     if (receiver) {
@@ -85,5 +100,5 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const onlineUserCount = this.connectedUsers.size;
     this.server.emit('online-user-count', onlineUserCount);
     this.logger.log(`Online user count: ${onlineUserCount}`);
- }
+  }
 }

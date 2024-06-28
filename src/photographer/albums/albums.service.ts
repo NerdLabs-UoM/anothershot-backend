@@ -12,7 +12,6 @@ import {
   UpdateAlbumCoverDto,
   updateAlbumDto,
 } from '../dto/album.dto';
-import { PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class AlbumsService {
@@ -22,7 +21,7 @@ export class AlbumsService {
 
   async createAlbum(dto: AlbumsDto) {
     this.logger.log(
-      `Attempting to create a new album for photographer with ID: ${dto.photographerId}`,
+      `Attempting to create a new album for photographer with ID: ${dto.photographerId}`
     );
 
     try {
@@ -45,19 +44,19 @@ export class AlbumsService {
       });
 
       this.logger.log(
-        `Successfully created album '${dto.name}' for photographer with ID: ${dto.photographerId}`,
+        `Successfully created album '${dto.name}' for photographer with ID: ${dto.photographerId}`
       );
       return newAlbum;
     } catch (error) {
       this.logger.error(
         `Failed to create album '${dto.name}' for photographer with ID: ${dto.photographerId}`,
-        error.stack,
+        error.stack
       );
 
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error creating album',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -82,20 +81,20 @@ export class AlbumsService {
     } catch (error) {
       this.logger.error(
         `Failed to update album with ID: ${dto.albumId}`,
-        error.stack,
+        error.stack
       );
 
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error updating album',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async getAlbums(id: string) {
     this.logger.log(
-      `Attempting to fetch all albums for photographer with ID: ${id}`,
+      `Attempting to fetch all albums for photographer with ID: ${id}`
     );
 
     try {
@@ -110,19 +109,19 @@ export class AlbumsService {
       });
 
       this.logger.log(
-        `Successfully fetched ${albums.length} albums for photographer with ID: ${id}`,
+        `Successfully fetched ${albums.length} albums for photographer with ID: ${id}`
       );
       return albums;
     } catch (error) {
       this.logger.error(
         `Failed to fetch albums for photographer with ID: ${id}`,
-        error.stack,
+        error.stack
       );
 
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error fetching albums',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -145,7 +144,7 @@ export class AlbumsService {
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error fetching album',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -165,18 +164,18 @@ export class AlbumsService {
       });
 
       this.logger.log(
-        `Successfully fetched ${images.length} images for album with ID: ${id}`,
+        `Successfully fetched ${images.length} images for album with ID: ${id}`
       );
       return images;
     } catch (error) {
       this.logger.error(
         `Failed to fetch images for album with ID: ${id}`,
-        error.stack,
+        error.stack
       );
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error fetching images',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -200,24 +199,24 @@ export class AlbumsService {
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error deleting album',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async addImages(dto: AlbumImagesDto) {
     this.logger.log(
-      `Attempting to add images to album with ID: ${dto.albumId}`,
+      `Attempting to add images to album with ID: ${dto.albumId}`
     );
 
     try {
       // Checking if the album exists
-      const album = await this.prisma.album.findUnique({
+      await this.prisma.album.findUnique({
         where: {
           id: dto.albumId,
         },
       });
-      
+
       const images = await Promise.all(
         dto.images.map((imageUrl) =>
           this.prisma.albumImage.create({
@@ -229,24 +228,24 @@ export class AlbumsService {
                 },
               },
             },
-          }),
-        ),
+          })
+        )
       );
 
       this.logger.log(
-        `Successfully added ${dto.images.length} images to album with ID: ${dto.albumId}`,
+        `Successfully added ${dto.images.length} images to album with ID: ${dto.albumId}`
       );
       return images;
     } catch (error) {
       this.logger.error(
         `Failed to add images to album with ID: ${dto.albumId}`,
-        error.stack,
+        error.stack
       );
 
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error adding images to album',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -270,14 +269,14 @@ export class AlbumsService {
       // Throwing a generic HTTP exception with internal server error status
       throw new HttpException(
         'Error deleting image',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async updateAlbumCover(dto: UpdateAlbumCoverDto) {
     this.logger.log(
-      `Attempting to update cover image for album ID: ${dto.albumId}`,
+      `Attempting to update cover image for album ID: ${dto.albumId}`
     );
 
     try {
@@ -298,13 +297,13 @@ export class AlbumsService {
       });
 
       this.logger.log(
-        `Cover image updated successfully for album ID: ${dto.albumId}`,
+        `Cover image updated successfully for album ID: ${dto.albumId}`
       );
       return updatedAlbum;
     } catch (error) {
       this.logger.error(
         `Error updating cover image for album ID: ${dto.albumId}`,
-        error.stack,
+        error.stack
       );
       throw error; // Re-throw the error to be handled by the controller
     }
@@ -312,7 +311,7 @@ export class AlbumsService {
 
   async getPaymentStatus(userId: string, albumId: string) {
     this.logger.log(
-      `Attempting to get payment status for album ID: ${albumId} for user ID: ${userId}`,
+      `Attempting to get payment status for album ID: ${albumId} for user ID: ${userId}`
     );
     try {
       return await this.prisma.albumPayment.findUnique({
@@ -326,7 +325,7 @@ export class AlbumsService {
       });
     } catch (error) {
       this.logger.error(
-        `Error fetching payment status for album ID: ${albumId} and user ID: ${userId}`,
+        `Error fetching payment status for album ID: ${albumId} and user ID: ${userId}`
       );
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }

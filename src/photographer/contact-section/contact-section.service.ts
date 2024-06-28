@@ -1,25 +1,20 @@
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable, NotFoundException, Logger, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { contactDetailsDto } from './dto/contactDetails.dto';
-import { Photographer } from '@prisma/client';
-
 
 @Injectable()
 export class ContactSectionService {
-
   private readonly logger = new Logger(ContactSectionService.name);
 
-  constructor(
-    private prisma: PrismaService,
-    
-  ) { }
+  constructor(private prisma: PrismaService) {}
   async updateContactDetails(dto: contactDetailsDto) {
     try {
       const tempUserId = dto.userId;
       this.logger.log(`Updating contact details for user ID: ${tempUserId}`);
-      const existingContactDetails = await this.prisma.contactDetails.findUnique({
-        where: { photographerId: dto.userId },
-      });
+      const existingContactDetails =
+        await this.prisma.contactDetails.findUnique({
+          where: { photographerId: dto.userId },
+        });
       if (existingContactDetails) {
         await this.prisma.contactDetails.update({
           where: { photographerId: dto.userId },
@@ -47,7 +42,9 @@ export class ContactSectionService {
               : undefined,
           },
         });
-        this.logger.log(`Contact details updated successfully for user ID: ${tempUserId}`);
+        this.logger.log(
+          `Contact details updated successfully for user ID: ${tempUserId}`
+        );
       } else {
         await this.prisma.contactDetails.create({
           data: {
@@ -60,23 +57,34 @@ export class ContactSectionService {
             phoneNum2: dto.phoneNum2,
             email: dto.email,
             address: dto.address ? { create: { ...dto.address } } : undefined,
-            socialMedia: dto.socialMedia ? { create: { ...dto.socialMedia } } : undefined,
+            socialMedia: dto.socialMedia
+              ? { create: { ...dto.socialMedia } }
+              : undefined,
           },
         });
-        this.logger.log(`Contact details created successfully for user ID: ${tempUserId}`);
+        this.logger.log(
+          `Contact details created successfully for user ID: ${tempUserId}`
+        );
       }
-      const updatedContactDetails = await this.prisma.contactDetails.findUnique({
-        where: { photographerId: dto.userId },
-        include: {
-          photographer: true,
-          address: true,
-          socialMedia: true,
-        },
-      });
-      this.logger.log(`Contact details fetched successfully for user ID: ${tempUserId}`);
+      const updatedContactDetails = await this.prisma.contactDetails.findUnique(
+        {
+          where: { photographerId: dto.userId },
+          include: {
+            photographer: true,
+            address: true,
+            socialMedia: true,
+          },
+        }
+      );
+      this.logger.log(
+        `Contact details fetched successfully for user ID: ${tempUserId}`
+      );
       return updatedContactDetails;
     } catch (error) {
-      this.logger.error(`Error updating contact details for user ID: ${dto.userId}`, error);
+      this.logger.error(
+        `Error updating contact details for user ID: ${dto.userId}`,
+        error
+      );
       throw error;
     }
   }
@@ -94,15 +102,21 @@ export class ContactSectionService {
         },
       });
       if (!contactDetails) {
-        this.logger.warn(`Contact details not found for photographer ID: ${id}`);
+        this.logger.warn(
+          `Contact details not found for photographer ID: ${id}`
+        );
         throw new Error(`Contact details not found for photographer ID: ${id}`);
       }
-      this.logger.log(`Contact details fetched successfully for photographer ID: ${id}`);
+      this.logger.log(
+        `Contact details fetched successfully for photographer ID: ${id}`
+      );
       return contactDetails;
     } catch (error) {
-      this.logger.error(`Error fetching contact details for photographer ID: ${id}`, error);
+      this.logger.error(
+        `Error fetching contact details for photographer ID: ${id}`,
+        error
+      );
       throw error;
     }
   }
-  
 }

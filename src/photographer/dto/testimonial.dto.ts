@@ -1,14 +1,14 @@
-import { IsString, IsNumber } from "class-validator";
+import { IsString, IsNumber } from 'class-validator';
 export class CreateTestimonialDto {
-    @IsString()
-    review: string;
+  @IsString()
+  review: string;
 
-    @IsNumber()
-    rating: number;
+  @IsNumber()
+  rating: number;
 
-    @IsString()
-    clientId: string;
+  @IsString()
+  clientId: string;
 
-    @IsString()
-    photographerId: string;
+  @IsString()
+  photographerId: string;
 }

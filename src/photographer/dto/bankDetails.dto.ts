@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 export class bankDetailsDto {
   @IsString()
   bankName: string;
@@ -15,5 +15,4 @@ export class bankDetailsDto {
   @IsOptional()
   @IsString()
   accountBranchCode: string;
-
 }

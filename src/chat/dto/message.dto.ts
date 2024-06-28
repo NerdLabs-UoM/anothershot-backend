@@ -1,23 +1,23 @@
 // Message DTO
 
-import { Attachment } from "@prisma/client";
-import { IsArray, IsOptional, IsString } from "class-validator";
+import { Attachment } from '@prisma/client';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 // DTO for sending a message
 export class MessageSendDto {
-    @IsString()
-    senderId: string;
+  @IsString()
+  senderId: string;
 
-    @IsString()
-    receiverId: string;
+  @IsString()
+  receiverId: string;
 
-    @IsString()
-    message: string;
+  @IsString()
+  message: string;
 
-    @IsString()
-    chatId: string;
+  @IsString()
+  chatId: string;
 
-    @IsOptional()
-    @IsArray()
-    attachments?: Attachment[];
+  @IsOptional()
+  @IsArray()
+  attachments?: Attachment[];
 }

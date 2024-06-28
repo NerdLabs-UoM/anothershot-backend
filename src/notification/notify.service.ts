@@ -15,7 +15,7 @@ export class NotifyService {
   constructor(
     private prisma: PrismaService,
 
-    private socketGateway: AppGateway,
+    private socketGateway: AppGateway
   ) {}
 
   async getNotifications(id: string) {
@@ -45,7 +45,7 @@ export class NotifyService {
         this.logger.warn(`No notifications found for user ID: ${id}`);
       } else {
         this.logger.log(
-          `Fetched ${notifications.length} notifications for user ID: ${id}`,
+          `Fetched ${notifications.length} notifications for user ID: ${id}`
         );
       }
 
@@ -53,18 +53,18 @@ export class NotifyService {
     } catch (error) {
       this.logger.error(
         `Failed to fetch notifications for user ID: ${id}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to fetch notifications',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async updateNotify(dto: UpdateNotifyDto) {
     this.logger.log(
-      `Updating notification ID: ${dto.notifyId} with read status: ${dto.read}`,
+      `Updating notification ID: ${dto.notifyId} with read status: ${dto.read}`
     );
 
     try {
@@ -82,7 +82,7 @@ export class NotifyService {
     } catch (error) {
       this.logger.error(
         `Failed to update notification ID: ${dto.notifyId}`,
-        error.stack,
+        error.stack
       );
       if (error.code === 'P2025') {
         // Prisma specific error code for record not found
@@ -90,7 +90,7 @@ export class NotifyService {
       } else {
         throw new HttpException(
           'Failed to update notification',
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR
         );
       }
     }
@@ -98,7 +98,7 @@ export class NotifyService {
 
   async deleteNotify(notifyId: string, userId: string) {
     this.logger.log(
-      `Attempting to delete notification ID: ${notifyId} for user ID: ${userId}`,
+      `Attempting to delete notification ID: ${notifyId} for user ID: ${userId}`
     );
 
     try {
@@ -116,7 +116,7 @@ export class NotifyService {
 
       if (notification.receiverId !== userId) {
         this.logger.warn(
-          `User ID: ${userId} is not authorized to delete notification ID: ${notifyId}`,
+          `User ID: ${userId} is not authorized to delete notification ID: ${notifyId}`
         );
         throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
       }
@@ -129,13 +129,13 @@ export class NotifyService {
       });
 
       this.logger.log(
-        `Notification ID: ${notifyId} deleted successfully for user ID: ${userId}`,
+        `Notification ID: ${notifyId} deleted successfully for user ID: ${userId}`
       );
       return deletedNotification;
     } catch (error) {
       this.logger.error(
         `Failed to delete notification ID: ${notifyId} for user ID: ${userId}`,
-        error.stack,
+        error.stack
       );
       if (error.code === 'P2025') {
         // Prisma specific error code for record not found
@@ -143,7 +143,7 @@ export class NotifyService {
       } else {
         throw new HttpException(
           'Failed to delete notification',
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR
         );
       }
     }
@@ -151,7 +151,7 @@ export class NotifyService {
 
   async createNotification(dto: CreateNotifyDto) {
     this.logger.log(
-      `Creating notification for receiver ID: ${dto.receiverId} from sender ID: ${dto.senderId}`,
+      `Creating notification for receiver ID: ${dto.receiverId} from sender ID: ${dto.senderId}`
     );
 
     try {
@@ -191,14 +191,14 @@ export class NotifyService {
       await this.socketGateway.handleNewNotification(notification);
 
       this.logger.log(
-        `Notification created successfully for receiver ID: ${dto.receiverId}`,
+        `Notification created successfully for receiver ID: ${dto.receiverId}`
       );
       return notification;
     } catch (error) {
       this.logger.error('Failed to create notification', error.stack);
       throw new HttpException(
         'Failed to create notification',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

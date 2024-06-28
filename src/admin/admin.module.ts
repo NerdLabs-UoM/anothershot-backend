@@ -1,13 +1,11 @@
-import { Module } from "@nestjs/common";
-import { AdminService } from "./admin.service";
-import { PrismaService } from "src/prisma/prisma.service";
+import { Module } from '@nestjs/common';
+import { AdminService } from './admin.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { AdminController } from './admin.controller';
-import { JwtService } from "@nestjs/jwt";
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
-    controllers: [AdminController],
-    providers: [AdminService, PrismaService, JwtService],
-   
+  controllers: [AdminController],
+  providers: [AdminService, PrismaService, JwtService],
 })
-
-export class AdminModule { }
+export class AdminModule {}

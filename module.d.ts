@@ -1,7 +1,7 @@
 declare namespace NodeJS {
-    export interface ProcessEnv {
-        DATABASE_URL: string;
-        jwtSecretKey: string;
-        jwtRefreshTokenKey: string;
-    }
+  export interface ProcessEnv {
+    DATABASE_URL: string;
+    jwtSecretKey: string;
+    jwtRefreshTokenKey: string;
+  }
 }

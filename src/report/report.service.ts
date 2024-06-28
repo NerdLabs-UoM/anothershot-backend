@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateReportDto, reportImageDto } from './dto/create-report.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateImageReportStatus, UpdateReportStatus } from './dto/update-report.dto';
+import {
+  UpdateImageReportStatus,
+  UpdateReportStatus,
+} from './dto/update-report.dto';
 
 @Injectable()
 export class ReportService {
   constructor(private prisma: PrismaService) {}
 
   //---------- Create Profile Reports ----------
-  
+
   async create(data: CreateReportDto) {
     const existingReport = await this.prisma.profilereport.findFirst({
       where: {
@@ -69,7 +72,7 @@ export class ReportService {
     if (existingReport) {
       return await this.prisma.imagereport.update({
         where: {
-          id: existingReport.id, 
+          id: existingReport.id,
         },
         data: {
           user: {
@@ -108,7 +111,7 @@ export class ReportService {
   }
   //------------- Update Image Report Status --------------
 
-  async updateImageReportStatus( data: UpdateImageReportStatus) {
+  async updateImageReportStatus(data: UpdateImageReportStatus) {
     const report = await this.prisma.imagereport.findUnique({
       where: {
         id: data.ImageReportId,
@@ -130,10 +133,9 @@ export class ReportService {
     }
   }
 
-    //------------- Update  Report Status --------------
+  //------------- Update  Report Status --------------
 
-
-  async updateReportStatus( data: UpdateReportStatus) {
+  async updateReportStatus(data: UpdateReportStatus) {
     const report = await this.prisma.profilereport.findUnique({
       where: {
         id: data.ReportId,
@@ -144,7 +146,6 @@ export class ReportService {
       throw new Error(`payment with id not found`);
     } else {
       const reportUpdate = await this.prisma.profilereport.update({
-       
         where: {
           id: data.ReportId,
         },
@@ -156,8 +157,6 @@ export class ReportService {
     }
   }
 
-
-
   //-------- Admin panel profile Reports --------------------------------
 
   async findall(page: number, name: string) {
@@ -165,7 +164,7 @@ export class ReportService {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
 
-    let whereClause = {}; 
+    let whereClause = {};
 
     if (name) {
       whereClause = {
@@ -190,7 +189,7 @@ export class ReportService {
             user: true,
           },
         },
-        user:true
+        user: true,
       },
     });
     return values;
@@ -220,9 +219,6 @@ export class ReportService {
     return lastPage;
   }
 
-
-
-
   // ------ Admin Panel Image Reports --------------------------------
 
   async findallImageReports(page: number, name: string) {
@@ -234,18 +230,18 @@ export class ReportService {
 
     if (name) {
       whereClause = {
-          user: {
-            userName: {
-              contains: name,
-              mode: 'insensitive',
-            },
+        user: {
+          userName: {
+            contains: name,
+            mode: 'insensitive',
           },
+        },
       }; // If name is provided, filter by photographer user-name
     }
 
     const values = await this.prisma.imagereport.findMany({
-      skip, 
-      take, 
+      skip,
+      take,
       where: whereClause,
       include: {
         user: true,
@@ -261,12 +257,12 @@ export class ReportService {
 
     if (name) {
       whereClause = {
-          user: {
-            userName: {
-              contains: name,
-              mode: 'insensitive',
-            },
+        user: {
+          userName: {
+            contains: name,
+            mode: 'insensitive',
           },
+        },
       };
     }
 

@@ -1,38 +1,37 @@
-import { IsEmail, IsObject, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class contactDetailsDto {
+  @IsString()
+  userId: string;
 
-    @IsString()
-    userId: string;
+  @IsString()
+  phoneNum1: string;
 
-    @IsString()
-    phoneNum1: string;
+  @IsEmail()
+  email: string;
 
-    @IsEmail()
-    email: string;
+  @IsString()
+  @IsOptional()
+  phoneNum2: string;
 
-    @IsString()
-    @IsOptional()
-    phoneNum2: string;
+  @IsOptional()
+  @IsObject()
+  readonly address?: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zip: string;
+  };
 
-    @IsOptional()
-    @IsObject()
-    readonly address?: {
-        street: string;
-        city: string;
-        state: string;
-        country: string;
-        zip: string;
-    };
-
-    @IsOptional()
-    @IsObject()
-    readonly socialMedia?: {
-        facebook?: string;        //use ? for optional parameters
-        instagram?: string;
-        twitter?: string;
-        linkedin?: string;
-        youtube?: string;
-        tiktok?: string;
-    };
+  @IsOptional()
+  @IsObject()
+  readonly socialMedia?: {
+    facebook?: string; //use ? for optional parameters
+    instagram?: string;
+    twitter?: string;
+    linkedin?: string;
+    youtube?: string;
+    tiktok?: string;
+  };
 }

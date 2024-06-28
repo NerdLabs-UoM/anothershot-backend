@@ -7,6 +7,6 @@ import { AppGateway } from 'src/app.gateway';
 
 @Module({
   controllers: [SettingsController],
-  providers: [SettingsService,PrismaService,JwtService,AppGateway],
+  providers: [SettingsService, PrismaService, JwtService, AppGateway],
 })
 export class SettingsModule {}

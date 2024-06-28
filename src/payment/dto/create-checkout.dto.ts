@@ -1,18 +1,18 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
-export class CkeckoutDto{
-    @IsString()
-    bookingId: string;
+export class CkeckoutDto {
+  @IsString()
+  bookingId: string;
 
-    @IsString()
-    name: string;
+  @IsString()
+  name: string;
 
-    @IsString()
-    price: number;
+  @IsString()
+  price: number;
 
-    @IsString()
-    currency: string;
+  @IsString()
+  currency: string;
 
-    @IsString()
-    clientId: string;
+  @IsString()
+  clientId: string;
 }

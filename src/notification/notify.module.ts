@@ -5,8 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AppGateway } from 'src/app.gateway';
 
 @Module({
-    controllers: [NotifyController],
-    providers: [NotifyService,PrismaService,AppGateway]
+  controllers: [NotifyController],
+  providers: [NotifyService, PrismaService, AppGateway],
 })
-
-export class NotifyModule{}
+export class NotifyModule {}

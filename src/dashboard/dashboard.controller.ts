@@ -1,7 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete ,Query, Logger, UsePipes, ValidationPipe, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  UsePipes,
+  ValidationPipe,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DashboardDto } from './dto/dashboard.dto';
-
 
 @Controller('api/dashboard')
 export class DashboardController {
@@ -67,11 +74,14 @@ export class DashboardController {
   // Endpoint to get recent payments for a specific client
   @Get('recentPayments')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async getRecentPayments( dto: DashboardDto) {
+  async getRecentPayments(dto: DashboardDto) {
     this.logger.log('Request received to get recent payments');
+    this.logger.log(`Request data: ${JSON.stringify(dto)}`);
     try {
       const recentPayments = await this.dashboardService.getRecentPayments();
-      this.logger.log(`Recent payments retrieved: ${JSON.stringify(recentPayments)}`);
+      this.logger.log(
+        `Recent payments retrieved: ${JSON.stringify(recentPayments)}`
+      );
       return recentPayments;
     } catch (error) {
       this.logger.error('Failed to get recent payments', error);
@@ -84,12 +94,13 @@ export class DashboardController {
     this.logger.log('Request received to get monthly totals');
     try {
       const monthlyTotals = await this.dashboardService.getMonthlyTotals();
-      this.logger.log(`Monthly totals retrieved: ${JSON.stringify(monthlyTotals)}`);
+      this.logger.log(
+        `Monthly totals retrieved: ${JSON.stringify(monthlyTotals)}`
+      );
       return monthlyTotals;
     } catch (error) {
       this.logger.error('Failed to get monthly totals', error);
       throw new InternalServerErrorException('Could not fetch monthly totals');
     }
   }
-  
 }

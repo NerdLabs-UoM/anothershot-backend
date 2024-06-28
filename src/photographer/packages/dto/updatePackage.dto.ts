@@ -1,24 +1,22 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class updatePackageDto {
+  @IsString()
+  packageId: string;
 
-    @IsString()
-    packageId: string;
+  @IsString()
+  photographerId: string;
 
-    @IsString()
-    photographerId: string;
+  @IsString()
+  name: string;
 
-    @IsString()
-    name: string;
+  @IsString()
+  description: string;
 
-    @IsString()
-    description: string;
+  @IsString({ each: true })
+  @IsOptional()
+  coverPhotos: string[];
 
-    @IsString({ each: true })
-    @IsOptional()
-    coverPhotos: string[];
-
-    @IsNumber()
-    price: number;
-
+  @IsNumber()
+  price: number;
 }

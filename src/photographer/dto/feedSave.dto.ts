@@ -1,12 +1,12 @@
-import { IsBoolean, IsString } from "class-validator";
+import { IsBoolean, IsString } from 'class-validator';
 
 export class FeedSaveDto {
-    @IsString()
-    feedId: string;
+  @IsString()
+  feedId: string;
 
-    @IsString()
-    userId: string;
+  @IsString()
+  userId: string;
 
-    @IsBoolean()
-    save: boolean;
+  @IsBoolean()
+  save: boolean;
 }

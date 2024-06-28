@@ -13,7 +13,6 @@ import {
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
-import { CkeckoutDto } from './dto/create-checkout.dto';
 
 @Controller('api/payment')
 export class PaymentController {
@@ -41,7 +40,9 @@ export class PaymentController {
       return this.paymentService.createCheckoutSession(createPaymentDto);
     } catch (error) {
       this.logger.error('Failed to create checkout session', error.stack);
-      throw new InternalServerErrorException('Could not create checkout session');
+      throw new InternalServerErrorException(
+        'Could not create checkout session'
+      );
     }
   }
 
@@ -52,8 +53,13 @@ export class PaymentController {
       this.logger.log('Creating checkout session for album');
       return this.paymentService.createCheckoutSessionAlbum(createPaymentDto);
     } catch (error) {
-      this.logger.error('Failed to create checkout session for album', error.stack);
-      throw new InternalServerErrorException('Could not create checkout session for album');
+      this.logger.error(
+        'Failed to create checkout session for album',
+        error.stack
+      );
+      throw new InternalServerErrorException(
+        'Could not create checkout session for album'
+      );
     }
   }
 
@@ -65,7 +71,9 @@ export class PaymentController {
       return this.paymentService.SuccessSession(res);
     } catch (error) {
       this.logger.error('Failed to handle payment success', error.stack);
-      throw new InternalServerErrorException('Could not handle payment success');
+      throw new InternalServerErrorException(
+        'Could not handle payment success'
+      );
     }
   }
 
@@ -97,20 +105,23 @@ export class PaymentController {
   @Put('update-payment-status/:id')
   async updatePaymentStatus(
     @Param('id') id: string,
-    @Body() data: UpdatePaymentStatusDto,
+    @Body() data: UpdatePaymentStatusDto
   ) {
     try {
       this.logger.log(`Updating payment status for ID: ${id}`);
       return this.paymentService.updatePaymentStatus(id, data);
     } catch (error) {
-      this.logger.error(`Failed to update payment status for ID: ${id}`, error.stack);
+      this.logger.error(
+        `Failed to update payment status for ID: ${id}`,
+        error.stack
+      );
       throw new InternalServerErrorException('Could not update payment status');
     }
   }
 
   // Get all users with pagination and optional name filter
   @Get('getallusers')
-  async getAllUsers(@Query('page') page: number, @Query('name') name: string ) {
+  async getAllUsers(@Query('page') page: number, @Query('name') name: string) {
     try {
       this.logger.log('Fetching all users with pagination');
       return await this.paymentService.findall(page, name);
@@ -122,7 +133,10 @@ export class PaymentController {
 
   // Get last page of users with optional name and roles filter
   @Get('getlastpage')
-  async getLastPage(@Query('name') name: string, @Query('roles') roles: string){
+  async getLastPage(
+    @Query('name') name: string,
+    @Query('roles') roles: string
+  ) {
     try {
       this.logger.log('Fetching last page of users');
       return await this.paymentService.findLastPage(name, roles);

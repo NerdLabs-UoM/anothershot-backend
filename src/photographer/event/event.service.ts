@@ -6,17 +6,16 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class EventService {
-   //------- event services ---------
-   private readonly logger = new Logger(EventService.name);
+  //------- event services ---------
+  private readonly logger = new Logger(EventService.name);
 
-   constructor(
-     private prisma: PrismaService,
-     
-   ) { }
-   async createEvents(dto: createEventDto) {
+  constructor(private prisma: PrismaService) {}
+  async createEvents(dto: createEventDto) {
     try {
       this.logger.log(`Creating event with booking ID: ${dto.bookingId}`);
-      const booking = await this.prisma.booking.findUnique({ where: { id: dto.bookingId } });
+      const booking = await this.prisma.booking.findUnique({
+        where: { id: dto.bookingId },
+      });
       if (!booking) {
         this.logger.warn(`Booking not found with ID: ${dto.bookingId}`);
         throw new Error('Booking not found');
@@ -35,14 +34,18 @@ export class EventService {
           allDay: dto.allDay,
         },
       });
-      this.logger.log(`Event created successfully with booking ID: ${dto.bookingId}`);
+      this.logger.log(
+        `Event created successfully with booking ID: ${dto.bookingId}`
+      );
       return newEvent;
     } catch (error) {
-      this.logger.error(`Error creating event with booking ID: ${dto.bookingId}`, error);
+      this.logger.error(
+        `Error creating event with booking ID: ${dto.bookingId}`,
+        error
+      );
       throw error;
     }
   }
-
 
   async getEvents(id: string) {
     try {
@@ -57,7 +60,10 @@ export class EventService {
       this.logger.log(`Events fetched successfully for photographer ID: ${id}`);
       return events;
     } catch (error) {
-      this.logger.error(`Error fetching events for photographer ID: ${id}`, error);
+      this.logger.error(
+        `Error fetching events for photographer ID: ${id}`,
+        error
+      );
       throw error;
     }
   }
@@ -104,7 +110,6 @@ export class EventService {
       throw error;
     }
   }
-  
 
   async deleteEvents(dto: deleteEventDto) {
     try {

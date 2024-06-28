@@ -1,19 +1,21 @@
 // UserService
 
-import { ConflictException, Injectable, NotFoundException, Logger, BadRequestException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto, PasswordResetDto } from './dto/user.dto';
 import { hash } from 'bcrypt';
-import { Client, UserRole, Suspended, Admin, Account, User } from '@prisma/client';
+import { Client, UserRole, Suspended, Admin, Account } from '@prisma/client';
 import { SystemReportDto } from './dto/systemReport.dto';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
-
-  createToken(data: any) {
-    throw new Error("Method not implemented.");
-  }
 
   constructor(private prisma: PrismaService) {}
 
@@ -94,7 +96,10 @@ export class UserService {
         data: { emailVerified: true },
       });
     } catch (error) {
-      this.logger.error(`User activation failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `User activation failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -137,7 +142,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Account linking failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Account linking failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -154,7 +162,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Finding user by email failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Finding user by email failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -174,7 +185,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Finding user by ID failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Finding user by ID failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -203,7 +217,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Finding user profile by ID failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Finding user profile by ID failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -228,7 +245,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Deleting user by ID failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Deleting user by ID failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -254,21 +274,21 @@ export class UserService {
               email: data.email,
               address: data.address
                 ? {
-                  upsert: {
-                    where: { contactDetailsId: contactDetails.id },
-                    create: { ...data.address },
-                    update: { ...data.address },
-                  },
-                }
+                    upsert: {
+                      where: { contactDetailsId: contactDetails.id },
+                      create: { ...data.address },
+                      update: { ...data.address },
+                    },
+                  }
                 : undefined,
               socialMedia: data.socialMedia
                 ? {
-                  upsert: {
-                    where: { contactDetailsId: contactDetails.id },
-                    create: { ...data.socialMedia },
-                    update: { ...data.socialMedia },
-                  },
-                }
+                    upsert: {
+                      where: { contactDetailsId: contactDetails.id },
+                      create: { ...data.socialMedia },
+                      update: { ...data.socialMedia },
+                    },
+                  }
                 : undefined,
             },
           });
@@ -314,7 +334,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Updating user details failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Updating user details failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -327,7 +350,10 @@ export class UserService {
         data,
       });
     } catch (error) {
-      this.logger.error(`Updating client details failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Updating client details failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -340,7 +366,10 @@ export class UserService {
         data,
       });
     } catch (error) {
-      this.logger.error(`Updating admin details failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Updating admin details failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -361,7 +390,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Suspending user failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Suspending user failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }
@@ -402,7 +434,10 @@ export class UserService {
         },
       });
     } catch (error) {
-      this.logger.error(`Creating system report failed: ${error.message}`, error.stack);
+      this.logger.error(
+        `Creating system report failed: ${error.message}`,
+        error.stack
+      );
       throw new BadRequestException(error.message);
     }
   }

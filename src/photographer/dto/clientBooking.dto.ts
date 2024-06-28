@@ -1,29 +1,26 @@
 import { IsDateString, IsString } from 'class-validator';
 export class ClientBookingDto {
+  @IsString()
+  clientId: string;
 
-    @IsString()
-    clientId: string;
-    
-    @IsString()
-    photographerId: string;
+  @IsString()
+  photographerId: string;
 
-    @IsString()
-    eventName: string;
+  @IsString()
+  eventName: string;
 
-    @IsString()
-    eventLocation: string;
+  @IsString()
+  eventLocation: string;
 
+  @IsDateString()
+  start: string;
 
-    @IsDateString()
-    start: string;
+  @IsDateString()
+  end: string;
 
-    @IsDateString()
-    end: string;
+  @IsString()
+  category: string;
 
-    @IsString()
-    category: string;
-
-    @IsString()
-    packageId: string;
-
+  @IsString()
+  packageId: string;
 }

@@ -24,7 +24,7 @@ export class TestimonialController {
   @Post(':id/profile/testimonial')
   async createTestimonial(@Body() dto: CreateTestimonialDto) {
     this.logger.log(
-      `Creating testimonial for photographer ID: ${dto.photographerId}`,
+      `Creating testimonial for photographer ID: ${dto.photographerId}`
     );
     try {
       const result = await this.testimonialService.createTestimonial(dto);
@@ -33,11 +33,11 @@ export class TestimonialController {
     } catch (error) {
       this.logger.error(
         `Error creating testimonial: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to create testimonial',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -45,7 +45,7 @@ export class TestimonialController {
   @Get(':id/profile/testimonials')
   async getTestimonials(@Param('id') photographerId: string) {
     this.logger.log(
-      `Fetching testimonials for photographer ID: ${photographerId}`,
+      `Fetching testimonials for photographer ID: ${photographerId}`
     );
     try {
       const testimonials =
@@ -55,11 +55,11 @@ export class TestimonialController {
     } catch (error) {
       this.logger.error(
         `Error fetching testimonials: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to fetch testimonials',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -67,7 +67,7 @@ export class TestimonialController {
   @Patch(':id/profile/testimonials/visibility')
   async updateTestimonialVisibility(@Body() dto: VisibilityDto) {
     this.logger.log(
-      `Updating testimonial visibility for testimonial ID: ${dto.testimonialId}`,
+      `Updating testimonial visibility for testimonial ID: ${dto.testimonialId}`
     );
     try {
       await this.testimonialService.updateTestimonialVisibility(dto);
@@ -76,18 +76,18 @@ export class TestimonialController {
     } catch (error) {
       this.logger.error(
         `Error updating testimonial visibility: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to update testimonials',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
   @Get(':id/profile/testimonials/public')
   async getPublicTestimonials(@Param('id') photographerId: string) {
     this.logger.log(
-      `Fetching public testimonials for photographer ID: ${photographerId}`,
+      `Fetching public testimonials for photographer ID: ${photographerId}`
     );
     try {
       const testimonials =
@@ -97,11 +97,11 @@ export class TestimonialController {
     } catch (error) {
       this.logger.error(
         `Error fetching public testimonials: ${error.message}`,
-        error.stack,
+        error.stack
       );
       throw new HttpException(
         'Failed to fetch public testimonials',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
