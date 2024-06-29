@@ -217,6 +217,9 @@ export class SettingsService {
             },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
       this.logger.log(
         `Successfully fetched payments for photographer with ID: ${id}`
