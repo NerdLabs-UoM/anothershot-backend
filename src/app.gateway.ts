@@ -26,6 +26,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private connectedUsers: Map<string, Socket> = new Map();
 
+  private getActiveUserCount(): number {
+    return this.connectedUsers.size;
+  }
+
+  private emitActiveUserCount() {
+    this.server.emit('online-user-count', this.getActiveUserCount());
+  }
+
   @SubscribeMessage('connect-user')
   handleConnection(
     @MessageBody() userId: string,
@@ -39,22 +47,26 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (isConnected !== client) {
       if (userId !== 'undefined') {
         this.connectedUsers.set(userId, client);
+        this.emitActiveUserCount();
       }
     }
-    this.broadcastOnlineUserCount();
   }
 
   @SubscribeMessage('disconnect-user')
   handleDisconnect(@MessageBody() userId: string) {
     this.logger.log(`User disconnected: ${userId}`);
     this.connectedUsers.delete(userId);
-    this.broadcastOnlineUserCount();
+    this.emitActiveUserCount();
+  }
+
+  @SubscribeMessage('get-active-user-count')
+  handleGetActiveUserCount(@ConnectedSocket() client: Socket) {
+    client.emit('online-user-count', this.getActiveUserCount());
   }
 
   // ChatGateway
 
-  @SubscribeMessage('send-message')
-  handleSendMessage(@MessageBody() dto: MessageSendDto) {
+  handleSendMessage(dto: MessageSendDto) {
     this.logger.log(
       `Sending message from ${dto.senderId} to ${dto.receiverId}`
     );
@@ -94,11 +106,5 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (receiver) {
       receiver.emit('receive-notify', notify);
     }
-  }
-
-  private broadcastOnlineUserCount() {
-    const onlineUserCount = this.connectedUsers.size;
-    this.server.emit('online-user-count', onlineUserCount);
-    this.logger.log(`Online user count: ${onlineUserCount}`);
   }
 }
