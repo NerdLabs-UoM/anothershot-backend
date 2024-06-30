@@ -36,7 +36,7 @@ export class PaymentService {
             product_data: {
               name: data.name,
             },
-            unit_amount: data.price,
+            unit_amount: data.price * 100,
           },
           quantity: 1,
         },
