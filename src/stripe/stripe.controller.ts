@@ -96,7 +96,7 @@ export class StripeController {
                 clientId: bookingDetails.clientId,
                 photographerId: bookingDetails.photographerId,
                 bookingsId: checkoutSession.metadata.bookingId,
-                amount: checkoutSession.amount_total,
+                amount: checkoutSession.amount_total/100,
                 currency: checkoutSession.currency,
               },
             });
@@ -110,13 +110,12 @@ export class StripeController {
                   senderId: bookingDetails.clientId,
                   receiverId: bookingDetails.photographerId,
                   type: 'Payment',
-                  title: `has Payed the ${checkoutSession.amount_total}`,
+                  title: `has Payed the ${checkoutSession.amount_total/100}`,
                   description: 'Payment has been made for the booking.',
                 });
               this.logger.log(
                 `Successfully created notification with ID: ${newNotification.id}`
               );
-              return newNotification;
             } catch (error) {
               this.logger.error(`Failed to create notification`, error.stack);
               throw new HttpException(
@@ -152,7 +151,7 @@ export class StripeController {
                 clientId: checkoutSession.metadata.clientId,
                 photographerId: albumDetails.photographerId,
                 albumId: checkoutSession.metadata.albumId,
-                amount: checkoutSession.amount_total,
+                amount: checkoutSession.amount_total/100,
                 currency: checkoutSession.currency,
               },
             });
@@ -167,7 +166,7 @@ export class StripeController {
                   senderId: checkoutSession.metadata.clientId,
                   receiverId: albumDetails.photographerId,
                   type: 'Payment',
-                  title: `has Payed the ${checkoutSession.amount_total}`,
+                  title: `has Payed the ${checkoutSession.amount_total/100}`,
                   description: 'Payment has been made for the booking.',
                 });
               this.logger.log(
