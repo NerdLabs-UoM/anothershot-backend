@@ -47,7 +47,7 @@ export class AuthController {
     try {
       return await this.authService.login(dto);
     } catch (error) {
-      this.logger.error(`User login failed: ${error.message}`, error.stack);
+      this.logger.error(`User login failed: ${error.message}`);
       throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
     }
   }

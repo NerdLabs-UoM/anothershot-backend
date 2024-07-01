@@ -29,6 +29,11 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect email or password');
     }
 
+    if (!user.emailVerified) {
+      this.logger.error('Authentication failed: Email not verified');
+      throw new UnauthorizedException('Email not verified');
+    }
+
     const payload = { email: user.email, sub: user.id };
 
     return {

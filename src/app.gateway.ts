@@ -1,3 +1,5 @@
+// AppGateway
+
 import {
   WebSocketServer,
   WebSocketGateway,
@@ -26,14 +28,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private connectedUsers: Map<string, Socket> = new Map();
 
-  private getActiveUserCount(): number {
-    return this.connectedUsers.size;
-  }
-
-  private emitActiveUserCount() {
-    this.server.emit('online-user-count', this.getActiveUserCount());
-  }
-
   @SubscribeMessage('connect-user')
   handleConnection(
     @MessageBody() userId: string,
@@ -47,7 +41,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (isConnected !== client) {
       if (userId !== 'undefined') {
         this.connectedUsers.set(userId, client);
-        this.emitActiveUserCount();
       }
     }
   }
@@ -56,12 +49,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(@MessageBody() userId: string) {
     this.logger.log(`User disconnected: ${userId}`);
     this.connectedUsers.delete(userId);
-    this.emitActiveUserCount();
-  }
-
-  @SubscribeMessage('get-active-user-count')
-  handleGetActiveUserCount(@ConnectedSocket() client: Socket) {
-    client.emit('online-user-count', this.getActiveUserCount());
   }
 
   // ChatGateway
